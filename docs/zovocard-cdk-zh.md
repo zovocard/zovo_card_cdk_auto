@@ -19,7 +19,7 @@
 
 | 欄位 | 要求與含義 |
 | --- | --- |
-| `plan` | 必填。`go`、`plus`、`pro_5x`、`pro_20x`、`pro_20x_renew`、`credit250`、`credit500`、`credit1000`，並須仍可購買 |
+| `plan` | 必填。`go`、`plus`、`pro_5x`、`pro_20x`、`pro_20x_renew`、`credit250`、`credit500`、`credit1000`、`credit2500`、`credit5000`、`credit25000`，並須仍可購買 |
 | `count` | 預設1，建議1–200；單次最多 **200** 張 |
 | `funding_confirmed` | 必須為 `true`，確認由所有者承擔兌換資金 |
 | `payment_country` | 可選 PH / US / JP / CL / EG；依 `/gpt-direct/plans` 的 `payment_regions`，省略預設 PH |

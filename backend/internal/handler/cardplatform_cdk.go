@@ -1136,8 +1136,8 @@ const docsDefaultNote = "★这是文档默认兜底价，不是你的账户实�
 // docsDefaultRegistry 未配置 API Key / 卡台不可达时的参考价目表。
 //
 // ★点数必须带上 checkout_amount_minor★：点数的 $0.10 只是我们的服务费，
-// 代理真正要垫的是那笔比索付款（₱565/₱1130/₱2260）。只列服务费的话，
-// 代理会把「一张 ₱2260 的码」当成一毛钱的东西发出去。
+// 代理真正要垫的是那笔比索付款（₱565 … ₱56,500）。只列服务费的话，
+// 代理会把「一张 ₱56,500 的码」当成一毛钱的东西发出去。
 func docsDefaultRegistry() []cardplatform.SellablePlan {
 	return []cardplatform.SellablePlan{
 		{Key: "plus", Label: "Plus", Flow: "direct", SortOrder: 2, ServiceFeeUsdMinor: 100, ServiceFeeUSD: 1},
@@ -1152,6 +1152,18 @@ func docsDefaultRegistry() []cardplatform.SellablePlan {
 		{Key: "credit1000", Label: "Codex 点数 1000", Flow: "credit", SortOrder: 7, IsCredit: true,
 			RequiresActiveSubscription: true, ServiceFeeUsdMinor: 10, ServiceFeeUSD: 0.1,
 			CheckoutCurrency: "PHP", CheckoutAmountMinor: 226000},
+		// 大额三档（2026-09-26 加）。菲区点数线性按件计价：₱2.26 × 数量。
+		// 服务费 15 = 卡台注册表现值；上面三档写 10 是历史漂移，本次不动。
+		// ★25000 档代理要垫 ₱56,500（约 $900+）★，别当成一毛钱的码发出去。
+		{Key: "credit2500", Label: "Codex 点数 2500", Flow: "credit", SortOrder: 8, IsCredit: true,
+			RequiresActiveSubscription: true, ServiceFeeUsdMinor: 15, ServiceFeeUSD: 0.15,
+			CheckoutCurrency: "PHP", CheckoutAmountMinor: 565000},
+		{Key: "credit5000", Label: "Codex 点数 5000", Flow: "credit", SortOrder: 9, IsCredit: true,
+			RequiresActiveSubscription: true, ServiceFeeUsdMinor: 15, ServiceFeeUSD: 0.15,
+			CheckoutCurrency: "PHP", CheckoutAmountMinor: 1130000},
+		{Key: "credit25000", Label: "Codex 点数 25000", Flow: "credit", SortOrder: 10, IsCredit: true,
+			RequiresActiveSubscription: true, ServiceFeeUsdMinor: 15, ServiceFeeUSD: 0.15,
+			CheckoutCurrency: "PHP", CheckoutAmountMinor: 5650000},
 	}
 }
 

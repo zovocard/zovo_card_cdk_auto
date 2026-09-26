@@ -1094,6 +1094,9 @@ VIP 達標後自動開放，不需要管理員再寫入 `gpt_direct_enabled`。�
 | `credit250` | Codex 點數 250 | **0.15 U** | ₱565（按實時匯率折美元，約 $8–$13） |
 | `credit500` | Codex 點數 500 | **0.15 U** | ₱1,130（約 $16–$26） |
 | `credit1000` | Codex 點數 1000 | **0.15 U** | ₱2,260（約 $32–$51） |
+| `credit2500` | Codex 點數 2500 | **0.15 U** | ₱5,650（約 $81–$130） |
+| `credit5000` | Codex 點數 5000 | **0.15 U** | ₱11,300（約 $161–$260） |
+| `credit25000` | Codex 點數 25000 | **0.15 U** | ₱56,500（約 $807–$1,300） |
 
 > **Pro 20x 續費（`pro_20x_renew`）——綁卡檔，與其它檔語義完全不同**
 > - 它賣的**不是開通**，而是「給已在 Pro 20x 的賬號換一張有錢的卡並設為預設卡」。
@@ -1109,7 +1112,7 @@ VIP 達標後自動開放，不需要管理員再寫入 `gpt_direct_enabled`。�
 >   OpenAI 自己的續費週期裡。請確保卡上餘額足夠屆時支付 Pro 帳單。
 > - **不涉及國家定價**：續費本單不扣款，`payment_country` / `payment_currency` 對它無意義；付款地區只影響新開、升級與點數檔的報價。
 
-> **Codex 點數（credit250 / credit500 / credit1000）**
+> **Codex 點數（credit250 / credit500 / credit1000 / credit2500 / credit5000 / credit25000）**
 > - 點數是訂閱的★加購項★：目標賬號必須已有生效中的 Plus/Pro 订阅，否则下单会被拒
 >   （`GPT_CREDIT_REQUIRES_SUBSCRIPTION`）——免費號買了也用不了。
 > - 買點數★不改變賬號套餐★，同一賬號可以反覆購買，不會被「套餐仍在有效期内」拦下。
@@ -1369,7 +1372,7 @@ curl -X POST https://zovocard.com/openapi/v1/gpt-direct/orders \
 
 | 欄位 | 要求與含義 |
 | --- | --- |
-| `plan` | 必填。`go`、`plus`、`pro_5x`、`pro_20x`、`pro_20x_renew`、`credit250`、`credit500`、`credit1000`，並須仍可購買 |
+| `plan` | 必填。`go`、`plus`、`pro_5x`、`pro_20x`、`pro_20x_renew`、`credit250`、`credit500`、`credit1000`、`credit2500`、`credit5000`、`credit25000`，並須仍可購買 |
 | `count` | 預設1，建議1–200；單次最多 **200** 張 |
 | `funding_confirmed` | 必須為 `true`，確認由所有者承擔兌換資金 |
 | `payment_country` | 可選 PH / US / JP / CL / EG；依 `/gpt-direct/plans` 的 `payment_regions`，省略預設 PH |
