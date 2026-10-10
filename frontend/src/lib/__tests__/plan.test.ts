@@ -47,6 +47,8 @@ describe('planLabel', () => {
   })
   it('续费档要能看出是「续费」，不能被显示成 Pro 20x', () => {
     expect(planLabel('pro_20x_renew')).toBe('Pro 20x 续费')
+    expect(planLabel('pro_5x_renew')).toBe('Pro 5x 续费')
+    expect(isCardAttachPlan('pro_5x_renew')).toBe(true)
   })
 
   it('既有档位文案不变', () => {
