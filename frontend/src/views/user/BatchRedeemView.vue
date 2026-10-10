@@ -5,6 +5,7 @@
 
       <RedeemModeTabs />
       <p class="hint-line text-sm text-muted mb-3">{{ t('xPremium.batchHint') }}</p>
+      <p class="hint-line text-sm text-muted mb-3">{{ t('grok.batchHint') }}</p>
 
       <div class="card space-y-4">
         <div class="flex items-start gap-3 pb-3 border-b bd">
@@ -334,6 +335,7 @@ import { useI18n } from 'vue-i18n'
 import UserPageHeader from '../../components/UserPageHeader.vue'
 import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import ExcelImportBlock from '../../components/ExcelImportBlock.vue'
+import { isGrokCredential } from '../../lib/grok'
 import {
   AUTO_SUBMIT_CONCURRENCY,
   BATCH_MAX_KEYS,
@@ -896,7 +898,14 @@ async function runPreflightRedeem(
     }
     const body = data?.data && typeof data.data === 'object' ? data.data : data || {}
     const preflightToken = String(body.preflight_token || data?.preflight_token || '')
-    if (!preflightToken) {
+    // Grok 码：预检不产票，兑换直接带登录态；卡台给出的拦截原因（登录态失效/已有订阅）直接判失败。
+    const grok = credential.mode === 'session' && isGrokCredential(credential.session)
+    const blocking = grok ? String(body.blocking_reason || '') : ''
+    if (blocking) {
+      updateItem(item.id, { status: 'failed', progressMsg: blocking, error: blocking })
+      return 'fail'
+    }
+    if (!preflightToken && !grok) {
       updateItem(item.id, {
         status: 'failed',
         progressMsg: '未返回 preflight_token',
@@ -910,11 +919,9 @@ async function runPreflightRedeem(
     const client_request_id = `batch-${deviceId.slice(0, 8)}-${Date.now()}-${item.id}`
     const redeem = await api('/api/v1/public/cdk/redeem', {
       method: 'POST',
-      body: JSON.stringify({
-        redemption_token: redemptionToken,
-        preflight_token: preflightToken,
-        client_request_id,
-      }),
+      body: JSON.stringify(grok
+        ? { redemption_token: redemptionToken, credential, client_request_id }
+        : { redemption_token: redemptionToken, preflight_token: preflightToken, client_request_id }),
     })
     const order =
       redeem.data?.order || redeem.data?.data?.order || redeem.data?.data || redeem.data || {}

@@ -95,11 +95,28 @@ func CardPlatformBalance(c *gin.Context) {
 	c.JSON(http.StatusOK, bal)
 }
 
+// issueProduct 发码产品线：显式传入优先（只认 gpt / x / grok），否则按档位键推断。
+func issueProduct(explicit, plan string) string {
+	switch p := strings.ToLower(strings.TrimSpace(explicit)); p {
+	case "gpt", "x", "grok":
+		return p
+	}
+	if cardplatform.IsXPremiumPlan(plan) {
+		return "x"
+	}
+	if cardplatform.IsGrokPlan(plan) {
+		return "grok"
+	}
+	return "gpt"
+}
+
 // CardPlatformIssueCDKs POST /api/v1/admin/cardplatform/cdks
 // body: { plan, count, funding_confirmed }
 func CardPlatformIssueCDKs(c *gin.Context) {
 	var req struct {
-		Plan             string `json:"plan"`
+		Plan string `json:"plan"`
+		// Product gpt / x / grok。不传按档位键推断（老前端只传 plan）。
+		Product          string `json:"product"`
 		Count            int    `json:"count"`
 		FundingConfirmed bool   `json:"funding_confirmed"`
 		// PaymentCountry 这批码兑换时用哪个地区付款。空 = 菲律宾（存量行为）。
@@ -125,11 +142,11 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	// 里面有 claude_*（没有 CDK 兑换流程）也有 enabled=false 的档（兑换时被 ACC 挡）。
 	// 按 SellableKeys 校验，跟界面上能看到的是同一份，不会出现「看得见发不出」
 	// 或者「发得出兑不掉」。
+	product := issueProduct(req.Product, plan)
+	if product == "grok" {
+		plan = cardplatform.GrokBarePlan(plan)
+	}
 	if cli := cardplatform.NewFromSettings(); cli != nil {
-		product := "gpt"
-		if cardplatform.IsXPremiumPlan(plan) {
-			product = "x"
-		}
 		if plans, err := cli.GetPlans(c.Request.Context(), product); err == nil && plans != nil && len(plans.Plans) > 0 {
 			sellable := plans.SellableKeys()
 			if len(sellable) > 0 && !sellable[plan] {
@@ -172,7 +189,10 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	var issuePrefs []cardplatform.IssueCardPref
 	pref, hasSitePref := issuePrefFromSite()
 	payCountry := strings.ToUpper(strings.TrimSpace(req.PaymentCountry))
-	if cardplatform.IsXPremiumPlan(plan) {
+	if product == "grok" {
+		payCountry = "US"
+	}
+	if product == "x" {
 		var regionErr error
 		payCountry, regionErr = cardplatform.XPaymentCountry(payCountry)
 		if regionErr != nil {
@@ -190,10 +210,14 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	}
 	var res *cardplatform.IssueCDKResult
 	var err error
+	wirePlan := plan
+	if product == "grok" {
+		wirePlan = cardplatform.GrokIssuePlan(plan)
+	}
 	if len(issuePrefs) > 0 {
-		res, err = cli.IssueCDKs(c.Request.Context(), plan, req.Count, idem, issuePrefs[0])
+		res, err = cli.IssueCDKs(c.Request.Context(), wirePlan, req.Count, idem, issuePrefs[0])
 	} else {
-		res, err = cli.IssueCDKs(c.Request.Context(), plan, req.Count, idem)
+		res, err = cli.IssueCDKs(c.Request.Context(), wirePlan, req.Count, idem)
 	}
 	if err != nil {
 		// 超时/断线时卡台可能已经出码。立刻从卡台列表把完整码捞回本站。
@@ -1006,7 +1030,7 @@ func PublicCDKPreflight(c *gin.Context) {
 		}
 	}
 	sess := extractCredentialSession(body["credential"])
-	if sess != "" && !cardplatform.IsXPremiumCredential(sess) && (code != "" || tok != "") {
+	if sess != "" && !cardplatform.IsXPremiumCredential(sess) && !cardplatform.IsGrokCredential(sess) && (code != "" || tok != "") {
 		if err := db.BindCDKSession(code, tok, sess); err != nil {
 			log.Printf("[cdk-preflight] bind session failed code=%s tok=%s: %v", code, shortTok(tok), err)
 		}

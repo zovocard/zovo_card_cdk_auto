@@ -227,12 +227,12 @@ type PlansResponse struct {
 // 卡台返回 PaymentConfig：version + plans[key].serviceFeeUsdMinor
 func (c *Client) GetPlans(ctx context.Context, products ...string) (*PlansResponse, error) {
 	product := "gpt"
-	if len(products) > 0 && products[0] == "x" {
-		product = "x"
+	if len(products) > 0 && (products[0] == "x" || products[0] == "grok") {
+		product = products[0]
 	}
 	path := "/gpt-direct/plans"
-	if product == "x" {
-		path += "?product=x"
+	if product != "gpt" {
+		path += "?product=" + product
 	}
 	data, err := c.doOpenAPI(ctx, http.MethodGet, path, nil, "")
 	if err != nil {
@@ -320,6 +320,22 @@ func (c *Client) GetPlans(ctx context.Context, products ...string) (*PlansRespon
 			regions = []PaymentRegion{{Country: "JP", Currency: "JPY"}}
 		}
 		out.PaymentRegions = regions
+	}
+	if product == "grok" {
+		// 与 X 同构：定价表键是 grok_monthly，注册表键是裸 monthly。本站统一用裸键。
+		all := out.Plans
+		out.Plans = map[string]PlanInfo{}
+		registry := []PlanRegistryItem{}
+		for _, entry := range out.Registry {
+			if info, ok := all["grok_"+entry.Key]; ok && IsGrokPlan(entry.Key) {
+				info.Key = entry.Key
+				out.Plans[entry.Key] = info
+				registry = append(registry, entry)
+			}
+		}
+		out.Registry = registry
+		// Grok 美元固定价：卡台兑换时一律按 US/USD 收单，别的地区选了也不生效。
+		out.PaymentRegions = []PaymentRegion{{Country: "US", Currency: "USD"}}
 	}
 	return out, nil
 }

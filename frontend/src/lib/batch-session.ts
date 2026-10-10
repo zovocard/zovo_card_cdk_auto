@@ -1,4 +1,5 @@
 import { xPremiumCredential } from './x-premium'
+import { isGrokCredential } from './grok'
 // xlsx 约 430 kB（gzip 145 kB）：只在真正读/写 Excel 时才加载，不拖累首屏与其它页面。
 const loadXLSX = () => import('xlsx')
 
@@ -219,6 +220,8 @@ export function accessTokenFromSession(raw: string): string {
  */
 export function extractCdkSession(raw: string): string {
   if (xPremiumCredential(raw)) return raw.trim()
+  // Grok 登录态（sso= cookie）：Grok 码兑换直接带它，不走 GPT 的 sessionToken 规则
+  if (isGrokCredential(raw)) return raw.trim()
   const s = raw.trim()
   if (!s) return ''
   if (!s.startsWith('{') && s.split('.').length >= 5) return s
@@ -298,6 +301,7 @@ function normalizeSessionCell(raw: string): string {
 
 function looksLikeSessionJson(s: string): boolean {
   if (xPremiumCredential(s)) return true
+  if (isGrokCredential(s)) return true
   const t = normalizeSessionCell(s)
   if (!t.startsWith('{') || t.length < 80) return false
   if (!t.includes('accessToken') && !t.includes('access_token') && !t.includes('sessionToken')) {

@@ -37,7 +37,7 @@
 
     <label class="text-sm">{{ t('xPremium.product') }}
       <select v-model="directProduct" class="input !w-48" :disabled="issuing || loadingMeta" @change="loadMeta">
-        <option value="gpt">ChatGPT</option><option value="x">X Premium</option>
+        <option value="gpt">ChatGPT</option><option value="x">X Premium</option><option value="grok">Grok</option>
       </select>
     </label>
     <div v-if="metaError" class="alert alert-error">{{ metaError }}</div>
@@ -87,8 +87,8 @@
                placeholder「Select」——中文界面里突兀，更要命的是「不选就是菲律宾」
                这个信息在下拉展开前完全看不到，操作者会以为自己还没选地区。 -->
           <el-select v-model="form.payment_country" size="small" style="width: 150px"
-                     :placeholder="directProduct === 'x' ? '默认(日本)' : '默认(菲律宾)'">
-            <el-option v-if="directProduct !== 'x'" label="默认(菲律宾)" value="" />
+                     :placeholder="directProduct === 'x' ? '默认(日本)' : directProduct === 'grok' ? '美国(USD 固定价)' : '默认(菲律宾)'">
+            <el-option v-if="directProduct === 'gpt'" label="默认(菲律宾)" value="" />
             <el-option v-for="r in paymentRegions" :key="r.country"
                        :label="`${regionLabel(r.country)} (${r.currency})`" :value="r.country" />
           </el-select>
@@ -1206,9 +1206,11 @@ async function loadMeta() {
       // 卡台不再下发某个地区时，把已选中的收回到「默认」——
       // 否则表单会一直带着一个卡台已经不认的国家码，发码时才被拒。
       if (form.payment_country && !paymentRegions.value.some(r => r.country === form.payment_country)) {
-        form.payment_country = directProduct.value === 'x' ? 'JP' : ''
+        form.payment_country = directProduct.value === 'x' ? 'JP' : directProduct.value === 'grok' ? 'US' : ''
       }
       if (directProduct.value === 'x' && !form.payment_country) form.payment_country = 'JP'
+      // Grok 是美元固定价，卡台兑换时一律按 US/USD 收单；这里固定为 US，免得码上印着别的地区。
+      if (directProduct.value === 'grok') form.payment_country = 'US'
       pricingVersion.value = d.version ?? null
       priceSource.value = 'live'
     } else {
@@ -1248,6 +1250,7 @@ async function issue() {
       method: 'POST',
       body: JSON.stringify({
         plan: form.plan,
+        product: directProduct.value,
         count: form.count,
         funding_confirmed: true,
         // 只传国家，币种由卡台按它的唯一真相源补。本站猜币种猜错的话，
