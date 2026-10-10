@@ -65,3 +65,32 @@ func TestCDKRegionMigrationAndCache(t *testing.T) {
 		}
 	}
 }
+
+func TestLookupStoredCDKRegionDistinguishesUnknown(t *testing.T) {
+	conn, err := sql.Open("sqlite3", ":memory:")
+	if err != nil {
+		t.Fatal(err)
+	}
+	conn.SetMaxOpenConns(1)
+	old := DB
+	DB = conn
+	t.Cleanup(func() { DB = old; conn.Close() })
+	if _, err := conn.Exec(`CREATE TABLE cardplatform_cdk_codes(upstream_id INTEGER,code TEXT UNIQUE NOT NULL,code_prefix TEXT,plan TEXT,fee_amount_minor INTEGER,status TEXT,payment_country TEXT,created_at DATETIME)`); err != nil {
+		t.Fatal(err)
+	}
+	_, _ = conn.Exec(`INSERT INTO cardplatform_cdk_codes VALUES(1,'ZC-OLD','ZC','plus',15,'unused',NULL,CURRENT_TIMESTAMP)`)
+	_, _ = conn.Exec(`INSERT INTO cardplatform_cdk_codes VALUES(2,'ZC-CL','ZC','pro_5x',15,'unused','cl',CURRENT_TIMESTAMP)`)
+	_, _ = conn.Exec(`INSERT INTO cardplatform_cdk_codes VALUES(3,'ZC-PH','ZC','plus',15,'unused','',CURRENT_TIMESTAMP)`)
+	if c, ok := LookupStoredCDKRegion(1); ok || c != "" {
+		t.Fatal("NULL 地区必须是未知，不能当默认区")
+	}
+	if c, ok := LookupStoredCDKRegion(2); !ok || c != "CL" {
+		t.Fatalf("CL 地区读错: %q %v", c, ok)
+	}
+	if c, ok := LookupStoredCDKRegion(3); !ok || c != "" {
+		t.Fatal("空串是明确的默认区")
+	}
+	if _, ok := LookupStoredCDKRegion(99); ok {
+		t.Fatal("没有这行应为未知")
+	}
+}
