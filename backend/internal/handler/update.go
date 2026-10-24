@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -288,17 +289,10 @@ func runSeamlessUpdate(target, username string) {
 		failUpdate("写入 web.next 失败: " + err.Error())
 		return
 	}
-	// 轮转：web -> web.prev, web.next -> web
-	if _, err := os.Stat(wd); err == nil {
-		if err := os.Rename(wd, webPrev); err != nil {
-			failUpdate("切换 web 失败: " + err.Error())
-			return
-		}
-	}
-	if err := os.Rename(webNext, wd); err != nil {
-		// 尝试回滚
-		_ = os.Rename(webPrev, wd)
-		failUpdate("启用新 web 失败: " + err.Error())
+	// 轮转：优先原子 rename；Docker overlayfs 的镜像层目录不能跨层 rename，
+	// 遇到 EXDEV 时改为先复制带 hash 的静态资源、最后覆盖 index.html。
+	if err := activateWebDirectory(wd, webNext, webPrev, os.Rename); err != nil {
+		failUpdate("切换 web 失败: " + err.Error())
 		return
 	}
 	_ = os.RemoveAll(webPrev)
@@ -685,6 +679,115 @@ func copyDir(src, dst string) error {
 		}
 		return copyFile(path, target)
 	})
+}
+
+func activateWebDirectory(current, next, previous string, rename func(string, string) error) error {
+	if _, err := os.Stat(current); err == nil {
+		if err := rename(current, previous); err != nil {
+			if errors.Is(err, syscall.EXDEV) {
+				if err := copyDir(current, previous); err != nil {
+					return fmt.Errorf("创建 overlayfs 回滚副本失败: %w", err)
+				}
+				if err := copyWebDirectoryInPlace(next, current); err != nil {
+					if restoreErr := copyWebDirectoryInPlace(previous, current); restoreErr != nil {
+						return fmt.Errorf("overlayfs 兼容复制失败: %v；恢复旧 web 失败: %w", err, restoreErr)
+					}
+					return fmt.Errorf("overlayfs 兼容复制失败，已恢复旧 web: %w", err)
+				}
+				_ = os.RemoveAll(next)
+				return nil
+			}
+			return err
+		}
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
+	if err := rename(next, current); err != nil {
+		if rollbackErr := rename(previous, current); rollbackErr != nil {
+			if copyErr := copyDir(previous, current); copyErr != nil {
+				return fmt.Errorf("启用新 web 失败: %v；rename 回滚失败: %v；复制恢复失败: %w", err, rollbackErr, copyErr)
+			}
+			return fmt.Errorf("启用新 web 失败: %v；rename 回滚失败，已复制恢复旧 web: %w", err, rollbackErr)
+		}
+		return fmt.Errorf("启用新 web 失败: %w", err)
+	}
+	return nil
+}
+
+func copyWebDirectoryInPlace(src, dst string) error {
+	indexSrc := filepath.Join(src, "index.html")
+	if st, err := os.Stat(indexSrc); err != nil || st.IsDir() {
+		if err != nil {
+			return fmt.Errorf("读取 index.html: %w", err)
+		}
+		return fmt.Errorf("index.html 不是普通文件")
+	}
+
+	if err := filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+		if rel == "index.html" {
+			return nil
+		}
+		target := filepath.Join(dst, rel)
+		if info.IsDir() {
+			return os.MkdirAll(target, 0o755)
+		}
+		if !info.Mode().IsRegular() {
+			return nil
+		}
+		return copyFileAtomic(path, target)
+	}); err != nil {
+		return err
+	}
+
+	return copyFileAtomic(indexSrc, filepath.Join(dst, "index.html"))
+}
+
+func copyFileAtomic(src, dst string) (retErr error) {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+
+	if err := os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+		return err
+	}
+	tmp, err := os.CreateTemp(filepath.Dir(dst), ".web-update-*")
+	if err != nil {
+		return err
+	}
+	tmpPath := tmp.Name()
+	defer func() {
+		_ = tmp.Close()
+		if retErr != nil {
+			_ = os.Remove(tmpPath)
+		}
+	}()
+
+	if err := tmp.Chmod(0o755); err != nil {
+		return err
+	}
+	if _, err := io.Copy(tmp, in); err != nil {
+		return err
+	}
+	if err := tmp.Sync(); err != nil {
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+	if err := os.Rename(tmpPath, dst); err != nil {
+		return err
+	}
+	return nil
 }
 
 func humanBytes(n int64) string {
