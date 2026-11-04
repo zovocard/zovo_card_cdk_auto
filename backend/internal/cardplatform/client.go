@@ -397,6 +397,30 @@ func (c *Client) GetBalance(ctx context.Context) (*BalanceResponse, error) {
 	return &out, nil
 }
 
+// SubscriptionCheckResult 订阅摘要 + 账单链接（由卡台服务端代查）。
+type SubscriptionCheckResult struct {
+	Summary  map[string]any   `json:"summary"`
+	Invoices []map[string]any `json:"invoices"`
+}
+
+// CheckSubscription POST /gpt-direct/subscription-check — 代查 ChatGPT 订阅 + 账单。
+// ★为什么走卡台而不本机直查★：自托管服务器 IP 直连 chatgpt.com 会被 Cloudflare
+// 挡成 401/403，账单永远查不到；卡台用共享出口服务端代查可避开。
+// tokenInput 可为 session JSON（含 accessToken）或裸 accessToken。
+// token 失效时卡台返回 code=400，doOpenAPI 转成 *APIError（Msg 含「token 可能已失效」）。
+func (c *Client) CheckSubscription(ctx context.Context, tokenInput string) (*SubscriptionCheckResult, error) {
+	data, err := c.doOpenAPI(ctx, http.MethodPost, "/gpt-direct/subscription-check",
+		map[string]string{"token_input": tokenInput}, "")
+	if err != nil {
+		return nil, err
+	}
+	var out SubscriptionCheckResult
+	if err := json.Unmarshal(data, &out); err != nil {
+		return nil, fmt.Errorf("解析账单查询结果失败: %w", err)
+	}
+	return &out, nil
+}
+
 type IssueCDKRequest struct {
 	Plan             string `json:"plan"`
 	Count            int    `json:"count"`

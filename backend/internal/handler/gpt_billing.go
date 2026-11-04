@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -12,8 +12,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tuzi/cdk-recharge-system/internal/cardplatform"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
-	"github.com/tuzi/cdk-recharge-system/internal/gptcheck"
 )
 
 func accounthubBaseURL() string {
@@ -99,7 +99,6 @@ func SessionBillingCheck(c *gin.Context) {
 		cdk = strings.TrimSpace(req.Code)
 	}
 
-	source := "session"
 	if raw == "" && cdk != "" {
 		sess, err := db.GetSessionByCDK(cdk)
 		if err != nil {
@@ -113,7 +112,6 @@ func SessionBillingCheck(c *gin.Context) {
 			return
 		}
 		raw = sess
-		source = "cdk"
 	}
 
 	if raw == "" {
@@ -121,45 +119,32 @@ func SessionBillingCheck(c *gin.Context) {
 		return
 	}
 
-	// CDK 模式优先走 accounthub：用内部刷新过的 session 查账单
-	if source == "cdk" {
-		email := extractEmailFromSession(raw)
-		if email != "" {
-			if inv, err := queryAccounthubInvoices(email); err == nil {
-				summary := map[string]interface{}{
-					"email": email,
-				}
-				invoices := inv.Invoices
-				if invoices == nil && inv.InvoiceURL != "" {
-					invoices = []map[string]interface{}{
-						{"hosted_invoice_url": inv.InvoiceURL},
-					}
-				}
-				if invoices == nil {
-					invoices = []map[string]interface{}{}
-				}
-				c.JSON(http.StatusOK, gin.H{
-					"summary":     summary,
-					"invoices":    invoices,
-					"invoice_url": inv.InvoiceURL,
-					"auth_source": "accounthub",
-				})
-				return
-			} else {
-				log.Printf("[billing] accounthub fallback for %s: %v", email, err)
-			}
-		}
-	}
-
-	// 回退：直接用 session/accessToken 查
-	res, err := gptcheck.Check(raw)
+	// 统一走卡台开放 API 服务端代查账单。
+	// ★为什么不本机直查★：自托管发卡站的服务器 IP 直连 chatgpt.com 会被 Cloudflare
+	// 挡成 401/403，账单永远查不到（工单 #2174）；卡台用共享出口服务端代查可避开。
+	// raw 既可能是卡密绑定的 session，也可能是用户直接粘贴的 session/accessToken，
+	// 两者都交给卡台（其 parseGPTToken 同时吃 session JSON 与裸 accessToken）。
+	res, err := cardplatform.NewFromSettings().CheckSubscription(c.Request.Context(), raw)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadGateway, gin.H{"error": billingErrMessage(err), "auth_source": "cardplatform"})
 		return
+	}
+	invoices := res.Invoices
+	if invoices == nil {
+		invoices = []map[string]any{}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"summary":     res.Summary,
-		"invoices":    res.Invoices,
-		"auth_source": source,
+		"invoices":    invoices,
+		"auth_source": "cardplatform",
 	})
+}
+
+// billingErrMessage 把卡台返回的业务错误转成对用户友好的提示（token 失效等）。
+func billingErrMessage(err error) string {
+	var apiErr *cardplatform.APIError
+	if errors.As(err, &apiErr) && strings.TrimSpace(apiErr.Msg) != "" {
+		return apiErr.Msg
+	}
+	return "账单查询失败：" + err.Error()
 }
