@@ -225,6 +225,7 @@
 <script setup lang="ts">
 import { isXPremiumPlan, xPremiumCredential } from '../../lib/x-premium'
 import { grokCredential, isGrokPlan } from '../../lib/grok'
+import { parseSessionJsonLenient } from '../../lib/batch-session'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -724,15 +725,14 @@ function extractSession(raw: string): string {
   // 三段 JWT = 纯 AT → 拒绝
   if (!s.startsWith('{') && s.startsWith('eyJ') && s.split('.').length === 3) return ''
   if (s.startsWith('{')) {
-    try {
-      const o = JSON.parse(s)
-      const st = String(o.sessionToken || o.session_token || o.token?.sessionToken || '').trim()
-      if (!st) return ''
-      // 回传完整 JSON，便于预检绑定 session
-      return s
-    } catch {
-      return ''
-    }
+    // 容错:格式化/手改后的多行 JSON 常带尾逗号,严格 JSON.parse 会抛 → 返空误报「请粘贴完整 Session」。
+    // parseSessionJsonLenient 清洗后回传**严格合法**的 JSON(后端 Go 也能再 parse)。
+    const parsed = parseSessionJsonLenient(s)
+    if (!parsed) return ''
+    const o = parsed.obj as Record<string, any>
+    const st = String(o.sessionToken || o.session_token || o.token?.sessionToken || '').trim()
+    if (!st) return ''
+    return parsed.canonical
   }
   return s.length > 40 ? s : ''
 }

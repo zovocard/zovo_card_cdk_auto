@@ -227,14 +227,13 @@ export function extractCdkSession(raw: string): string {
   if (!s.startsWith('{') && s.split('.').length >= 5) return s
   if (!s.startsWith('{') && s.startsWith('eyJ') && s.split('.').length === 3) return ''
   if (s.startsWith('{')) {
-    try {
-      const o = JSON.parse(s)
-      const st = String(o.sessionToken || o.session_token || o.token?.sessionToken || '').trim()
-      if (!st) return ''
-      return s
-    } catch {
-      return ''
-    }
+    // 容错:格式化/手改后的多行 JSON 常带尾逗号,严格 parse 会抛;清洗后回传严格合法 JSON。
+    const parsed = parseSessionJsonLenient(s)
+    if (!parsed) return ''
+    const o = parsed.obj as Record<string, any>
+    const st = String(o.sessionToken || o.session_token || o.token?.sessionToken || '').trim()
+    if (!st) return ''
+    return parsed.canonical
   }
   return s.length > 40 ? s : ''
 }
@@ -299,6 +298,62 @@ function normalizeSessionCell(raw: string): string {
   return t
 }
 
+/**
+ * 去掉 JSON 里对象/数组的尾逗号（`,}` / `,]`）。**字符串感知**：只处理字符串字面量之外的逗号，
+ * 绝不碰字符串内部（如 sessionToken 值里的逗号）。格式化/手改后的 session JSON 常留尾逗号，
+ * 严格 JSON.parse 会直接抛 —— 清洗后得到严格合法 JSON（后端 Go 也能再 parse）。
+ */
+function stripJsonTrailingCommas(src: string): string {
+  let out = ''
+  let inStr = false
+  let esc = false
+  for (let i = 0; i < src.length; i++) {
+    const ch = src[i]
+    if (inStr) {
+      out += ch
+      if (esc) esc = false
+      else if (ch === '\\') esc = true
+      else if (ch === '"') inStr = false
+      continue
+    }
+    if (ch === '"') {
+      inStr = true
+      out += ch
+      continue
+    }
+    if (ch === ',') {
+      let j = i + 1
+      while (j < src.length && /\s/.test(src[j])) j++
+      if (src[j] === '}' || src[j] === ']') continue // 丢弃尾逗号
+    }
+    out += ch
+  }
+  return out
+}
+
+/**
+ * 容错解析 session JSON（以 `{` 开头）：严格 JSON.parse 优先（保持原串不变）；失败时字符串感知地
+ * 去尾逗号后再 parse。返回 { obj, canonical }，canonical 为**严格合法**的 JSON 串（供回传后端）；
+ * 非对象/两次都失败返回 null。只放行更多、绝不改变原本就能解析的行为。
+ */
+export function parseSessionJsonLenient(
+  raw: string,
+): { obj: Record<string, unknown>; canonical: string } | null {
+  const s = String(raw ?? '').trim()
+  if (!s.startsWith('{')) return null
+  try {
+    return { obj: JSON.parse(s) as Record<string, unknown>, canonical: s }
+  } catch {
+    /* 尝试容错 */
+  }
+  try {
+    const cleaned = stripJsonTrailingCommas(s)
+    return { obj: JSON.parse(cleaned) as Record<string, unknown>, canonical: cleaned }
+  } catch {
+    return null
+  }
+}
+
 function looksLikeSessionJson(s: string): boolean {
   if (xPremiumCredential(s)) return true
   if (isGrokCredential(s)) return true
@@ -307,18 +362,16 @@ function looksLikeSessionJson(s: string): boolean {
   if (!t.includes('accessToken') && !t.includes('access_token') && !t.includes('sessionToken')) {
     return false
   }
-  try {
-    const o = JSON.parse(t)
-    return !!(
-      o.accessToken ||
-      o.access_token ||
-      o.sessionToken ||
-      o.session_token ||
-      o.account?.accessToken
-    )
-  } catch {
-    return false
-  }
+  const parsed = parseSessionJsonLenient(t) // 容错:尾逗号等格式化瑕疵也认
+  if (!parsed) return false
+  const o = parsed.obj as Record<string, any>
+  return !!(
+    o.accessToken ||
+    o.access_token ||
+    o.sessionToken ||
+    o.session_token ||
+    o.account?.accessToken
+  )
 }
 
 function looksLikeSessionCredential(s: string): boolean {
