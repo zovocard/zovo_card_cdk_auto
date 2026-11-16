@@ -945,6 +945,33 @@ func (c *Client) Result(ctx context.Context, token, device string) (int, json.Ra
 	return c.doPublicCDK(ctx, http.MethodGet, "/result?"+q.Encode(), nil, device)
 }
 
+// NativeCaptchaParams 客户自过码（browser_native）所需的 Stripe 交接参数。
+// 卡台按 redemption_token 作用域返回；clientSecret 只流向该兑换者的浏览器，
+// ★本站永不落库、永不记日志★（与 sessionKey/卡号同级敏感）。
+// 这里保留结构定义只为标注上游响应形状，实际 BFF 透传走 doPublicCDK 原样转发，
+// 避免二次序列化丢掉上游将来新增的字段。
+type NativeCaptchaParams struct {
+	PaymentIntentId string `json:"paymentIntentId"`
+	PublishableKey  string `json:"publishableKey"`
+	ClientSecret    string `json:"clientSecret"`
+	Last4           string `json:"last4"`
+	ExpiresAt       int64  `json:"expiresAt"`
+}
+
+// NativeCaptchaParams GET /native-captcha/params?token= — 取客户自过码的 Stripe 交接参数。
+// 与 Result 同构：原样回传上游 JSON（含 clientSecret），由 BFF 透传给兑换者浏览器。
+func (c *Client) NativeCaptchaParams(ctx context.Context, token, device string) (int, json.RawMessage, error) {
+	q := url.Values{}
+	q.Set("token", token)
+	return c.doPublicCDK(ctx, http.MethodGet, "/native-captcha/params?"+q.Encode(), nil, device)
+}
+
+// CompleteNativeCaptcha POST /native-captcha/complete body {token} — 客户在自己浏览器过码后回传，
+// 卡台据此推进订单。返回更新后的订单状态，原样透回。
+func (c *Client) CompleteNativeCaptcha(ctx context.Context, token, device string) (int, json.RawMessage, error) {
+	return c.doPublicCDK(ctx, http.MethodPost, "/native-captcha/complete", map[string]string{"token": token}, device)
+}
+
 // MinorToUSD 美分 → 美元展示
 func MinorToUSD(minor int64) float64 {
 	return float64(minor) / 100.0

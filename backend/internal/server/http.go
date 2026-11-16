@@ -147,6 +147,9 @@ func setupRoutes(r *gin.Engine) {
 			pubCDK.GET("/result", handler.PublicCDKResult)
 			// 刷新进度 / 任务查询：凭卡密反查本站绑定的 redemption_token
 			pubCDK.GET("/result-by-code", handler.PublicCDKResultByCode)
+			// 客户自过码（browser_native）：取 Stripe 交接参数 + 过码后回传推进订单
+			pubCDK.GET("/native-captcha/params", handler.PublicCDKNativeCaptchaParams)
+			pubCDK.POST("/native-captcha/complete", handler.PublicCDKNativeCaptchaComplete)
 			// 代理隐藏换码：密码 + 失败未扣款 CDK → 新码
 			pubCDK.POST("/exchange", handler.PublicAgentCDKExchange)
 		}

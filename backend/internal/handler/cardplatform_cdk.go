@@ -1175,6 +1175,78 @@ func PublicCDKResultByCode(c *gin.Context) {
 	c.JSON(st, payload)
 }
 
+// resolveRedemptionToken 优先用显式 token；为空时用卡密反查本站绑定（与 result-by-code 同源）。
+func resolveRedemptionToken(token, code string) string {
+	token = strings.TrimSpace(token)
+	if token != "" {
+		return token
+	}
+	code = strings.TrimSpace(code)
+	if code == "" {
+		return ""
+	}
+	if bind, err := db.GetBindingByCDK(code); err == nil && bind != nil {
+		return strings.TrimSpace(bind.RedemptionToken)
+	}
+	return ""
+}
+
+// PublicCDKNativeCaptchaParams GET /api/v1/public/cdk/native-captcha/params?token=（或 ?code=）
+// 客户自过码（browser_native）：取回卡台按 redemption_token 下发的 Stripe 交接参数
+// （paymentIntentId / publishableKey / clientSecret / last4 / expiresAt）。
+// ★clientSecret 只透传给该兑换者浏览器，本站不落库、不记日志★。
+func PublicCDKNativeCaptchaParams(c *gin.Context) {
+	token := resolveRedemptionToken(c.Query("token"), nonEmptyQuery(c, "code", "cdk_code"))
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "token required"})
+		return
+	}
+	cli := cardplatform.NewFromSettings()
+	st, raw, err := cli.NativeCaptchaParams(c.Request.Context(), token, deviceFrom(c))
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+	proxyPublicJSON(c, st, raw)
+}
+
+// PublicCDKNativeCaptchaComplete POST /api/v1/public/cdk/native-captcha/complete body {token}（或 {code}）
+// 客户在自己浏览器完成 handleNextAction 后回传，卡台据此推进订单；原样透回更新后的订单状态。
+func PublicCDKNativeCaptchaComplete(c *gin.Context) {
+	var body map[string]any
+	_ = c.ShouldBindJSON(&body)
+	token := resolveRedemptionToken(str(body["token"]), firstNonEmpty(str(body["code"]), c.Query("code")))
+	if token == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "token required"})
+		return
+	}
+	cli := cardplatform.NewFromSettings()
+	st, raw, err := cli.CompleteNativeCaptcha(c.Request.Context(), token, deviceFrom(c))
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+	proxyPublicJSON(c, st, raw)
+}
+
+func nonEmptyQuery(c *gin.Context, keys ...string) string {
+	for _, k := range keys {
+		if v := strings.TrimSpace(c.Query(k)); v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+func firstNonEmpty(vals ...string) string {
+	for _, v := range vals {
+		if s := strings.TrimSpace(v); s != "" {
+			return s
+		}
+	}
+	return ""
+}
+
 func shortTok(tok string) string {
 	tok = strings.TrimSpace(tok)
 	if len(tok) <= 12 {

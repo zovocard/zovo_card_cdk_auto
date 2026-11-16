@@ -2,6 +2,8 @@ export default {
   grok: {"credential": "Grok 登录态", "hint": "登录 grok.com 后，在浏览器开发者工具 → Application → Cookies → grok.com 复制 sso 的值（或整段含 sso= 的 Cookie）。仅新订阅，美元固定价。", "placeholder": "sso=… 或 sso 的值", "invalid": "请填写有效的 Grok 登录态（grok.com 的 sso cookie）", "batchHint": "Grok 卡密请配对 Grok 登录态，格式为 sso=…（整段 Cookie），不要使用 ChatGPT Session。"},
   xPremium: {"placeholder": "JSON：auth_token、ct0、billing_email", "product": "产品", "credential": "X 登录凭据", "hint": "粘贴 JSON：auth_token、ct0、billing_email。仅新订阅，按日元实时报价；自动续费请在 X 管理。", "invalid": "请填写包含 auth_token、ct0、billing_email 的有效 X Cookie JSON", "batchHint": "X 卡密请配对 X Cookie JSON（auth_token、ct0、billing_email），不要使用 ChatGPT Session。"},
 
+  nativeCaptcha: {"button": "点此完成人机验证", "processing": "验证中…", "prompt": "本次支付需要你在当前浏览器完成一次人机验证 / 3D 验证。点击下方按钮即可安全完成，完成后会自动继续处理。", "countdown": "请在 {s} 秒内完成验证", "timeout": "验证已超时失效", "retry": "本次未通过，还可再试 {n} 次", "exhausted": "两次验证都未通过，本单已失效（未扣款，可重新下单）", "expiredResult": "验证已超时失效（未扣款，可重新下单）", "loadFailed": "无法加载验证参数，请稍后重试。", "mismatch": "验证信息不匹配，请刷新后重试。", "failed": "验证未完成，请重试。"},
+
   grace: {"title": "原订阅续费异常", "hint": "原订阅处于宽限期或欠费续费状态。请先取消原订阅，刷新状态后再充值。", "action": "取消原订阅并重新检测", "confirm": "确认取消这个账号宽限期内的原订阅？可能立即结束宽限期权益。处理后只刷新状态，需要再次点击兑换，不会自动消耗 CDK 或扣款。", "pending": "原订阅尚未确认解除，请重新检测账号。不要连续重复取消或兑换。", "done": "原订阅已解除，状态已刷新。核对套餐后可再次点击兑换。", "refreshFailed": "暂时无法确认处理结果，请重新检测账号，不要重复取消。", "processing": "正在处理并刷新…", "recheck": "重新检测账号", "dismiss": "暂不处理", "confirmAction": "确认取消"},
 
   hero: {
