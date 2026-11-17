@@ -3,7 +3,7 @@
     <!-- 侧栏 / 细轨（cyber、slate 等） -->
     <aside v-if="layout === 'sidebar' || layout === 'rail'" class="sidenav">
       <div class="side-brand" @click="router.push('/ops')">
-        <span class="brand-icon">{{ layout === 'cyber' || skin === 'cyber' ? '◈' : '🚀' }}</span>
+        <span class="brand-icon">{{ skin === 'cyber' ? '◈' : '🚀' }}</span>
         <span v-if="layout !== 'rail'" class="brand-text">{{ brand.name || '运营控制台' }}</span>
       </div>
       <nav class="side-pills">

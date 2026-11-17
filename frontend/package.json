@@ -1,6 +1,6 @@
 {
   "name": "cdk-recharge-system",
-  "version": "1.4.27",
+  "version": "1.4.36",
   "type": "module",
   "scripts": {
     "dev": "vite",

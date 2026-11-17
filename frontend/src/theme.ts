@@ -18,6 +18,8 @@ export type SkinId =
 const MODE_KEY = 'theme-mode'
 const SKIN_KEY = 'site-skin'
 const BRAND_KEY = 'site-brand'
+/** 首屏脚本(index.html)用的皮肤摘要：是否默认暗色 + 后台布局。由这里写，index.html 只读，皮肤清单只维护 SKINS 一处 */
+const BOOT_KEY = 'site-skin-boot'
 
 export interface SiteBrand {
   name: string
@@ -336,6 +338,9 @@ function applySkin() {
   const primaryOn = !dark && meta.primaryOnLight ? meta.primaryOnLight : (meta.primaryOn || '#ffffff')
   syncElementPlus(primary, primaryOn, dark)
   root.style.colorScheme = dark ? 'dark' : 'light'
+  try {
+    localStorage.setItem(BOOT_KEY, JSON.stringify({ skin: meta.id, preferDark: !!meta.preferDark, layout: meta.layout }))
+  } catch { /* 隐私模式等写不进去：首屏退回默认，样式表到达后照常 */ }
   ensureSkinFonts(meta)
 }
 

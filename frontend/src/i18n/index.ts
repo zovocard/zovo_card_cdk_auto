@@ -9,8 +9,11 @@ const STORAGE_KEY = 'locale'
 function detectLocale(): AppLocale {
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved === 'zh' || saved === 'en') return saved
-  // 跟随浏览器：非中文默认英文
-  return navigator.language && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'zh'
+  // 没手动选过：跟随浏览器首选语言——中文(zh / zh-CN / zh-TW / zh-HK…)用中文，其它一律英文
+  const prefs = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language])
+    .filter(Boolean)
+    .map((l) => String(l).toLowerCase())
+  return prefs.length && prefs[0].startsWith('zh') ? 'zh' : 'en'
 }
 
 const locale = detectLocale()
