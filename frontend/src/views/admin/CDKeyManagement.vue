@@ -209,7 +209,7 @@
           </div>
         </el-popover>
         <el-button :loading="loadingList" aria-label="刷新列表" title="刷新列表" @click="loadList">
-          <span v-if="!loadingList" aria-hidden="true">↻</span>
+          <span aria-hidden="true">↻</span>
         </el-button>
       </div>
 
@@ -261,10 +261,10 @@
           @selection-change="onSelectionChange"
         >
           <el-table-column type="selection" width="44" fixed="left" :selectable="rowSelectable" reserve-selection />
-          <el-table-column prop="id" label="ID" width="92" fixed="left" sortable :sort-method="sortById">
+          <el-table-column prop="id" label="ID" width="84" fixed="left" sortable :sort-method="sortById">
             <template #default="{ row }"><span class="mono">{{ row.id ?? '—' }}</span></template>
           </el-table-column>
-          <el-table-column label="卡密" min-width="300">
+          <el-table-column label="卡密" min-width="230">
             <template #default="{ row }">
               <button
                 type="button"
@@ -283,10 +283,10 @@
               <span class="badge" :class="`badge--${statusType(row.status)}`">{{ statusLabel(row.status) }}</span>
             </template>
           </el-table-column>
-          <el-table-column v-if="colVisible.plan" prop="plan" label="套餐" min-width="110">
+          <el-table-column v-if="colVisible.plan" prop="plan" label="套餐" min-width="100">
             <template #default="{ row }"><span class="cell-ellipsis">{{ planLabel(row.plan) }}</span></template>
           </el-table-column>
-          <el-table-column v-if="colVisible.region" label="区域" min-width="130">
+          <el-table-column v-if="colVisible.region" label="区域" min-width="110">
             <template #default="{ row }">
               <span class="cell-ellipsis" :class="row.payment_country == null ? 'text-muted' : ''">{{ cdkRegionLabel(row.payment_country) }}</span>
             </template>
@@ -296,7 +296,7 @@
               <span class="mono">${{ ((row.fee_amount_minor || 0) / 100).toFixed(2) }}</span>
             </template>
           </el-table-column>
-          <el-table-column v-if="colVisible.note" label="备注" min-width="150">
+          <el-table-column v-if="colVisible.note" label="备注" min-width="100">
             <template #default="{ row }">
               <button type="button" class="note-cell" :title="row.note ? `${row.note}（点击编辑）` : '点击添加备注'" @click="editNoteOne(row)">
                 <span v-if="row.note" class="note-cell__text">{{ row.note }}</span>
@@ -304,10 +304,10 @@
               </button>
             </template>
           </el-table-column>
-          <el-table-column v-if="colVisible.created" prop="created_at" label="创建时间" width="186" sortable>
+          <el-table-column v-if="colVisible.created" prop="created_at" label="创建时间" width="184" sortable>
             <template #default="{ row }"><span class="mono text-muted nowrap">{{ row.created_at || '—' }}</span></template>
           </el-table-column>
-          <el-table-column label="操作" width="156" fixed="right" align="right">
+          <el-table-column label="操作" width="140" fixed="right" align="right">
             <!-- 行内操作最多 3 个，直接平铺成文字按钮：原来每行一个 el-dropdown，
                  每个都常驻一个弹层 DOM（200 行 = 200 个 popper），切到每页 200 条要卡 1 秒多。 -->
             <template #default="{ row }">
@@ -445,7 +445,8 @@ const recentCodes = ref<string[]>([])
 // 「刚买的这 200 张到底是哪个区的」——码文本身看不出地区。
 const recentMeta = ref<{ plan: string; atLabel: string; region: string } | null>(null)
 
-const rows = ref<any[]>([])
+// shallowRef：每页最多 200 行 × 20 来个字段，没必要给每个字段建响应式代理；只整体替换
+const rows = shallowRef<any[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
@@ -973,9 +974,7 @@ async function editNoteOne(row: any) {
     const note = String(d.note || '').trim()
     // 本地立刻反映
     row.note = note
-    for (const it of rows.value) {
-      if (Number(it?.id) === id) it.note = note
-    }
+    rows.value = rows.value.map((it) => (Number(it?.id) === id ? { ...it, note } : it))
     dialog.toast(note ? '备注已保存' : '备注已清空', 'ok')
   } finally {
     noting.value = false

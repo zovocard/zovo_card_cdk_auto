@@ -424,6 +424,7 @@ kbd {
   .nav-inner { height: auto; flex-wrap: wrap; row-gap: 8px; padding: 10px 14px; }
   .nav-actions { margin-left: auto; gap: 8px; }
   .nav-actions .admin-name { display: none; }
+  .kbd-btn kbd { display: none; }
   .nav-pills {
     order: 3;
     flex: 1 0 100%;

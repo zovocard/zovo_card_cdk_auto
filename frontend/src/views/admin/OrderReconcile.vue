@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { authFetch } from '../../lib/api'
 import { dialog } from '../../lib/dialog'
@@ -188,7 +188,7 @@ import AdminPageHeader from '../../components/admin/AdminPageHeader.vue'
 import TableSkeleton from '../../components/admin/TableSkeleton.vue'
 import { tableDensity as density } from '../../lib/admin-prefs'
 
-const rows = ref<any[]>([])
+const rows = shallowRef<any[]>([])
 const total = ref(0)
 const page = ref(1)
 const pageSize = ref(20)
