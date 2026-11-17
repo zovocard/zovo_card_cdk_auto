@@ -1,0 +1,30 @@
+/* M1.8 colour-bearing nights and shallow-relief finishes, scoped to public shell. */
+.atelier[data-tone-system=hue-kept-m18] [data-v4-environment]{filter:none!important;opacity:1;transition:none}
+.atelier[data-stage][data-visitor-light=night]{--a-ink:var(--night-ink,#eee6d5)!important;--w-ink:var(--night-ink,#eee6d5)!important;--a-muted:var(--night-muted,#bfb198)!important;--w-muted:var(--night-muted,#bfb198)!important;--w-line:color-mix(in srgb,var(--night-accent) 22%,transparent)!important;--w-on:var(--night-bg)!important;background:var(--night-bg)!important}
+.atelier[data-stage][data-visitor-light=night] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select){background:color-mix(in srgb,var(--night-bg) 91%,var(--night-accent) 9%)!important;color:var(--night-ink)!important;border-color:color-mix(in srgb,var(--night-accent) 28%,transparent)!important}
+.atelier[data-stage][data-visitor-light=night] :is(.work-input,.work-textarea)::placeholder{color:var(--night-muted)!important;opacity:.82}
+.atelier[data-stage][data-visitor-light=night] :is(.work-primary,.primary,.query-submit){color:var(--night-bg)!important;background:var(--night-accent)!important;box-shadow:inset 0 1px 0 #ffffff30}
+.atelier[data-stage][data-visitor-light=night] :is(.modal,.query-form,.query-result,.query-controls,.guide-content,.video-main,.chapter-index,.query-challenge,.query-card){border-color:color-mix(in srgb,var(--night-accent) 21%,transparent)!important;background:var(--night-surface)!important}
+.atelier[data-stage][data-visitor-light=night] .shade{background:linear-gradient(90deg,transparent 50%,color-mix(in srgb,var(--night-bg) 12%,transparent))!important}
+.atelier .couture-motif{isolation:isolate}
+.atelier .couture-motif .relief18{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;filter:drop-shadow(0 1.4px 1px color-mix(in srgb,var(--card-deep) 84%,#000 16%))}
+.atelier .couture-motif .emblem45{position:relative;z-index:2}
+.atelier .couture-motif[data-relief-ready=true] .emblem45-body{opacity:.07}
+.atelier .couture-motif[data-relief-ready=true] :is(.emblem45-relief,.emblem17-recess){opacity:.12}
+.atelier .couture-motif[data-relief-ready=true] .emblem17-lip{stroke-width:.40;opacity:.52;transform:translate(-.15px,-.28px)}
+.atelier .couture-motif[data-relief-ready=true] .emblem45-detail{stroke-width:.56;opacity:.60}
+.atelier .identity-zone .couture-grain{opacity:.21!important;mix-blend-mode:soft-light}
+.atelier .identity-zone .card-stage[data-craft-finish=titanium] .couture-grain{background:repeating-linear-gradient(92deg,#fff3 0 .4px,transparent .5px 2px);opacity:.13!important}
+.atelier .identity-zone .card-stage[data-craft-finish=nacre] .couture-lacquer{background:radial-gradient(ellipse at 72% 35%,#ffffff0d,transparent 60%),linear-gradient(110deg,transparent 36%,#fff1 47%,transparent 64%);opacity:.5}
+.atelier .identity-zone .card-stage[data-craft-finish=obsidian] .couture-bezel,.atelier .identity-zone .card-stage[data-craft-finish=platinum] .couture-bezel{box-shadow:inset 0 1px .5px color-mix(in srgb,var(--card-edge) 55%,transparent),inset 0 -1.3px 1.2px color-mix(in srgb,var(--card-deep) 90%,#000),0 0 0 2px color-mix(in srgb,var(--card-deep) 90%,transparent),0 0 0 2.8px color-mix(in srgb,var(--card-edge) 25%,transparent)}
+.atelier .identity-zone .couture-chamfer{border-radius:inherit;box-shadow:inset 0 1.2px .7px color-mix(in srgb,var(--card-edge) 45%,transparent),inset 1.2px 0 1px #ffffff10,inset 0 -2px 1.5px #0007!important}
+.atelier .identity-zone .engraving17-turns{stroke-width:.48;opacity:.31}
+.atelier .identity-zone .engraving17 .major{stroke-width:.8;opacity:.66}
+.atelier .identity-zone .engraving17 .minor{stroke-width:.43;opacity:.24}
+.atelier .identity-zone .finery17 .major{opacity:.58;stroke-width:.6px}
+.atelier .identity-zone .finery17 .minor{opacity:.20}
+.atelier .identity-zone .finery17 .corner{stroke-width:.55px;opacity:.46}
+.atelier .identity-zone .card-stage[data-craft-level="5"] .finery17{opacity:.68}
+.atelier .identity-zone .face .card-brandrow{border-bottom-color:color-mix(in srgb,var(--c-ink) 13%,transparent)}
+.atelier .identity-zone .elapsed-row{border-top:1px solid color-mix(in srgb,var(--card-edge) 19%,transparent);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--card-edge) 3%,transparent),transparent)}
+@media(max-width:700px){.atelier .couture-motif .relief18{filter:drop-shadow(0 1px .6px #0005)}.atelier .identity-zone .engraving17-turns{opacity:.23}.atelier .identity-zone .engraving17 .minor{display:none}}

@@ -1,0 +1,73 @@
+/* 本站移植：原文件的 :root / html[...] 全局规则已加 [data-family=mythic] 限定，只在东方意象主题下生效。 */
+/* Original visual hierarchy is preserved. No rules target the admin shell. */
+html[data-family=mythic]{--r-display:'Cormorant Garamond','EB Garamond',Baskerville,Georgia,'AR PL KaitiM GB','Kaiti SC','STKaiti','Noto Serif CJK SC','Songti SC',serif;--r-ui:'Manrope',Cabin,'Avenir Next','Noto Sans CJK SC','PingFang SC',sans-serif;--r-code:'IBM Plex Mono','Cousine','SFMono-Regular',monospace}
+html[data-family=mythic][data-visitor-light=night],html[data-family=mythic][data-visitor-light=night] body{background:#111519!important;color:#ddd}
+.atelier{font-family:var(--r-ui);--night:0;--env-light:1;--env-saturation:1;--fx-light:1;--night-bg:#111519;--night-accent:#b8c4c4}
+.atelier [data-v4-environment]{filter:brightness(var(--env-light)) saturate(var(--env-saturation));transition:filter 1.2s ease}
+.atelier [data-v4-stars]{opacity:var(--fx-light);transition:opacity 1.2s ease}
+.atelier[data-visitor-light=night]{--a-bg:var(--night-bg)!important;--w-bg:var(--night-bg)!important;--a-ink:#dedfd9!important;--w-ink:#dedfd9!important;--a-muted:#a4b1b0!important;--w-muted:#a4b1b0!important;--a-accent:var(--night-accent)!important;--w-accent:var(--night-accent)!important;--w-input:#ffffff07!important;--w-line:#b6c3c52f!important;--w-on:#152025!important;--q-bg:var(--night-bg);background:var(--night-bg)!important;color:var(--a-ink)!important}
+.atelier[data-visitor-light=night] .front{background:linear-gradient(127deg,#273138,#111a21 60%,#283538)!important;color:#d7e0dc!important;--c-ink:#d7e0dc;--c-dim:#adb7b3}
+.atelier[data-visitor-light=night] :is(.modal,.query-ledger,.query-identity,.query-form,.query-result,.query-controls,.guide-content,.video-main,.chapter-index,.query-challenge,.query-card){background:var(--night-bg)!important;color:var(--a-ink)!important;border-color:#b6c3c52f!important}
+.atelier[data-visitor-light=night] :is(.query-panel,.query-summary,.query-result dl,.query-result table,.week-day){background:#ffffff06!important;color:var(--a-ink)!important}
+.atelier[data-visitor-light=night] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select){background:#111b22!important;color:#dce4df!important;border-color:#9cb5ad44!important}
+.atelier[data-visitor-light=night] :is(.work-primary,.primary,.query-submit){background:var(--night-accent)!important;color:#121d20!important}
+.atelier[data-visitor-light=night] .editor-modal{background:#161e25!important;color:#d6e3dc}.atelier[data-visitor-light=night] .editor-modal *{color:inherit}.atelier[data-visitor-light=night] .ed-row{background:#ffffff06!important}
+.atelier .brand{font-family:var(--r-ui)!important;font-weight:500!important;letter-spacing:-.9px!important}
+.atelier .identity-zone .card-stage[data-craft] .digest-product,.atelier .query-page .digest-product,.atelier .card-stage .digest-product{font-family:var(--r-display)!important;font-weight:500!important;font-size:clamp(34px,4.4vw,60px)!important;line-height:1.1!important;letter-spacing:-.5px!important;max-width:63%}
+.atelier .card-stage[data-family=codex] .digest-product{font-family:var(--r-code)!important;font-size:clamp(30px,3.7vw,47px)!important;letter-spacing:-1px!important}
+.atelier .card-stage[data-product=unidentified] .digest-product{font-family:var(--r-display)!important;font-size:clamp(29px,3vw,41px)!important;letter-spacing:.15px!important}
+.atelier .identity-zone .card-stage[data-craft] .digest-edition{font-family:var(--r-ui);font-size:10px;line-height:1.8;max-width:64%;letter-spacing:.12px}
+.atelier .card-stage .key-engraving{display:flex;align-items:center;gap:11px;margin-top:19px;color:var(--card-muted,var(--c-dim));min-width:0;max-width:64%;white-space:nowrap}
+.atelier .key-engraving .key-label{font:8px/1 var(--r-ui);letter-spacing:1.8px;opacity:.72}
+.atelier .key-engraving .key-value{font:12px/1.5 var(--r-code);font-variant-numeric:tabular-nums;letter-spacing:1.45px;white-space:pre;color:var(--card-ink,var(--c-ink));opacity:.84}
+.atelier .key-engraving .key-symbol{width:12px;height:12px;opacity:.58;flex-shrink:0;stroke:currentColor;fill:none}
+.atelier .card-stage .digest-status{font-family:var(--r-ui);margin-top:13px}
+.atelier .card-stage :is(time,.foot-value.mono){font-family:var(--r-code)!important;font-variant-numeric:tabular-nums}
+.atelier[data-stage] .headcopy h1,.atelier .companion-intro h1,.atelier .query-intro h1{font-family:var(--r-display)!important;font-size:clamp(29px,3.35vw,46px)!important;font-weight:500!important;letter-spacing:-.5px!important;line-height:1.35!important}
+.atelier :is(.work-header h2,.modal h2,.formtitle){font-family:var(--r-display)!important;font-weight:500}
+.atelier :is(button,input,textarea,select){font-family:var(--r-ui)}
+.atelier :is(.toplinks a,.m11-menu-links a,.work-primary,.work-secondary){font-weight:500;letter-spacing:.12px}
+.atelier .visitor-entry{min-height:40px;min-width:40px;padding:0 10px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--w-line,#ffffff25);background:transparent;color:var(--a-ink);border-radius:50%;font-size:13px}
+.atelier .visitor-entry svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.2}
+.atelier .visitor-dialog{width:min(540px,calc(100vw - 28px));padding:29px;border-radius:18px}
+.atelier .visitor-dialog h2{font-size:31px}.atelier .visitor-dialog p{font-size:12px;color:var(--a-muted);line-height:1.8}
+.atelier .visitor-group{padding:17px 0;border-bottom:1px solid color-mix(in srgb,var(--a-ink) 12%,transparent)}
+.atelier .visitor-field{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:11px 0;font-size:12px}
+.atelier .visitor-field select{min-width:130px;max-width:63%;font-size:12px}
+.atelier .visitor-field input[type=range]{width:150px;accent-color:var(--a-accent)}
+.atelier .visitor-eyebrow{font:9px var(--r-code);letter-spacing:2px;opacity:.6}
+.atelier .visitor-note{display:block;font-size:11px;line-height:1.65;color:var(--a-muted)}
+.atelier .visitor-play{border:1px solid color-mix(in srgb,var(--a-accent) 32%,transparent);background:transparent;color:var(--a-ink);border-radius:30px;min-height:38px;padding:8px 17px;font-size:12px;cursor:pointer}
+.atelier .visitor-audio-row{display:flex;gap:9px;align-items:center;margin-top:13px;flex-wrap:wrap}
+.atelier .visitor-record{display:flex;align-items:center;gap:16px;margin-bottom:13px}.atelier .visitor-disc{width:54px;height:54px;flex-shrink:0;border-radius:50%;background:repeating-radial-gradient(circle,#a6b1ba0f 0 1px,transparent 1px 3px),radial-gradient(circle at 30% 30%,#acbdce50,#111927);border:1px solid #a0b8d333;position:relative}.atelier .visitor-disc::after{content:'';position:absolute;inset:22px;border-radius:50%;background:#b9c9d0}
+.atelier .visitor-record b{display:block;font:24px var(--r-display);font-weight:500;margin-bottom:4px}
+.atelier .visitor-storage{font-size:10px;line-height:1.5;margin-top:12px;color:var(--a-muted)}
+.atelier .m14-music-toggle{border:0;background:transparent;color:var(--a-muted);font-size:11px;min-height:40px;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.atelier :is(.work-primary,.query-submit,.m11-nav-modal a){white-space:normal;overflow-wrap:anywhere}
+:lang(en) .atelier .headcopy h1,:lang(ru) .atelier .headcopy h1{font-size:43px!important;letter-spacing:-1px!important}
+:lang(ja) .atelier{--r-ui:'Manrope',Cabin,'Noto Sans CJK JP','Hiragino Kaku Gothic ProN',sans-serif;--r-display:'Cormorant Garamond','EB Garamond','Noto Serif CJK JP',serif}
+:lang(ko) .atelier{--r-ui:'Manrope',Cabin,'Noto Sans CJK KR','Malgun Gothic',sans-serif;--r-display:'Cormorant Garamond','EB Garamond','Noto Serif CJK KR',serif}
+:lang(zh-TW) .atelier{--r-ui:'Manrope',Cabin,'Noto Sans CJK TC','PingFang TC',sans-serif;--r-display:'Cormorant Garamond','EB Garamond','Noto Serif CJK TC',serif}
+@media(max-width:700px){.atelier .identity-zone .card-stage[data-craft] .digest-product,.atelier .card-stage .digest-product{font-size:39px!important}.atelier .card-stage[data-product=unidentified] .digest-product{font-size:28px!important}.atelier .card-stage .key-engraving{gap:7px;margin-top:10px;max-width:68%}.atelier .key-engraving .key-value{font-size:9px;letter-spacing:.55px}.atelier .key-engraving .key-label{font-size:6px;letter-spacing:1px}.atelier .key-engraving .key-symbol{width:9px;height:9px}.atelier .identity-zone .card-stage[data-craft] .digest-edition{font-size:8px;line-height:1.6}.atelier .card-stage .digest-status{font-size:8px!important;margin-top:8px}.atelier .visitor-entry{margin-left:auto}.atelier .topbar{gap:10px!important}.atelier .visitor-dialog{padding:23px}.atelier .visitor-field{gap:8px}.atelier :is(.work-input,input[type=text],textarea,select){font-size:16px!important}.atelier .visitor-field select{font-size:14px!important}.atelier .footer{flex-wrap:wrap}.atelier .footer-links{gap:12px;flex-wrap:wrap}}
+@media(max-width:360px){.atelier .identity-zone .card-stage[data-craft] .digest-product{font-size:34px!important}.atelier .card-stage .key-engraving{margin-top:7px}.atelier .key-engraving .key-value{font-size:8px}.atelier .key-engraving .key-label{display:none}.atelier .card-stage[data-product=unidentified] .digest-product{font-size:26px!important}}
+@media(prefers-reduced-motion:reduce){.atelier [data-v4-environment],.atelier [data-v4-stars]{transition:none}}
+
+.atelier.query-page[data-page=subscription] .key-engraving{display:none}
+.atelier.query-page .digest-product{max-width:65%;font-size:52px!important}
+@media(max-width:700px){.atelier.query-page .digest-product{font-size:36px!important}}
+/* Night is a material variant, not a gray veil on top of the content. */
+.atelier[data-visitor-light=night] .shade{background:linear-gradient(90deg,#07141119,#0b181124)!important}
+.atelier[data-visitor-light=night] .query-identity{background:none!important}
+.atelier[data-visitor-light=night] :is(.query-heading,.query-result h2,.companion h1,.guide-content h2){color:var(--a-ink)!important}
+.atelier .identity-zone .card-stage[data-craft=unidentified] .digest-product{font-size:41px!important;letter-spacing:.1px!important;line-height:1.2!important}
+.atelier .identity-zone .card-stage[data-craft] .digest-product[data-long=true]{font-size:44px!important;letter-spacing:-.4px!important}
+.atelier.query-page .query-heading{font-family:var(--r-display)!important;line-height:1.23}
+.atelier :is(.work-input,.work-textarea)::placeholder{font-family:var(--r-ui)!important;letter-spacing:.2px}
+@media(max-width:700px){.atelier .identity-zone .card-stage[data-craft=unidentified] .digest-product{font-size:27px!important;line-height:1.17!important}.atelier .identity-zone .card-stage[data-craft] .digest-product[data-long=true]{font-size:28px!important}}
+@media(max-width:360px){.atelier .identity-zone .card-stage[data-craft=unidentified] .digest-product{font-size:24px!important}}
+html[data-visitor-fonts=false] .atelier{--r-display:'EB Garamond',Baskerville,Georgia,'AR PL KaitiM GB','Kaiti SC','Noto Serif CJK SC',serif;--r-ui:Cabin,'Avenir Next','Noto Sans CJK SC',sans-serif;--r-code:Cousine,'SFMono-Regular',monospace}
+.atelier[data-visitor-light=night] .front{background:linear-gradient(127deg,var(--card-base,#273138),var(--card-deep,#111a21) 60%,var(--card-base,#283538))!important;--c-ink:var(--card-ink,#d7e0dc);--c-dim:var(--card-muted,#adb7b3);color:var(--c-ink)!important}
+.atelier[data-visitor-light=night] #guide-picture{filter:brightness(.88)}
+.atelier :is(.visitor-field select,.visitor-play){touch-action:manipulation}
+.atelier[data-stage] .headcopy h1 span{display:block!important;margin-left:0!important}
+@media(max-width:700px){:lang(en) .atelier .headcopy h1,:lang(ru) .atelier .headcopy h1{font-size:32px!important;line-height:1.32!important}}

@@ -1,0 +1,34 @@
+/* Two new complete palettes and framing rules. Existing five scenes stay intact. */
+.atelier[data-stage=verdant]{--a-bg:#071e1a;--a-ink:#e4efdf;--a-muted:#acc4b5;--a-accent:#c4d5a2;background:var(--a-bg)}
+.atelier[data-stage=dawn]{--a-bg:#ead9d3;--a-ink:#433142;--a-muted:#75616d;--a-accent:#895664;background:var(--a-bg)}
+.atelier[data-stage=verdant] .shade,.atelier[data-stage=dawn] .shade{background:none}
+.atelier[data-stage=verdant] .front{--c-ink:#e5efdc;--c-dim:#b1c9b9;background:linear-gradient(118deg,#284f43,#092b25 54%,#2c5346);border-color:#abc49e80}
+.atelier[data-stage=dawn] .front{--c-ink:#493744;--c-dim:#795c6b;background:linear-gradient(119deg,#ecd6cb,#d0ada8 52%,#f6e3d4);border-color:#fff0e1;box-shadow:inset 0 1px #fff8,0 30px 60px -28px #75465370}
+.atelier[data-stage=dawn] .front .card-eyebrow,.atelier[data-stage=dawn] .front .credential-code{color:#593e50}
+.atelier[data-stage=dawn] .card-stage:after{background:#6c3d5350}
+.atelier[data-stage=dawn] .work-input,.atelier[data-stage=dawn] .work-textarea{background:#fff8;color:var(--a-ink)}
+.atelier[data-stage=dawn] .work-primary{background:#664153;color:#fff0e6;border-color:#664153}
+.atelier[data-stage=verdant] .work-primary{background:#d5dfba;color:#193a2c;border-color:#d5dfba}
+.atelier[data-stage=dawn] .m11-nav-item:hover{color:#452a3a}
+.atelier .stage-art[data-s=verdant]{background:radial-gradient(ellipse at 15% 25%,#6b9367,transparent 55%),repeating-linear-gradient(125deg,#06281f,#234f3b 21%,#8b9d6555 24%,#092d28 40%)}
+.atelier .stage-art[data-s=dawn]{background:linear-gradient(115deg,#ba9297,#f6e0ca 36%,#c498aa 61%,#f2dbcf)}
+.atelier .week-ribbon{display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:11px;color:var(--a-muted);border-top:1px solid color-mix(in srgb,var(--a-ink) 15%,transparent);padding-top:14px;margin-top:16px}
+.atelier .week-ribbon button{color:var(--a-ink);background:none;border:0;text-decoration:underline;text-underline-offset:5px;min-height:36px}
+.atelier .week-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin:20px 0}
+.atelier .week-day{border:1px solid color-mix(in srgb,var(--a-ink) 15%,transparent);padding:12px 5px;border-radius:10px;text-align:center;min-width:0}
+.atelier .week-day.is-today{border-color:var(--a-accent);background:color-mix(in srgb,var(--a-accent) 12%,transparent)}
+.atelier .week-day small{font-size:10px;color:var(--a-muted);display:block}.atelier .week-day b{font-size:12px;font-weight:500;display:block;margin:8px 0}
+.atelier .week-title{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:18px 0 5px;font-size:14px}
+.atelier .rotation-note{font-size:12px;line-height:1.8;color:var(--a-muted)}
+.atelier #schedule-dialog{width:min(780px,calc(100vw - 28px))}
+.atelier .guide-real-image{display:block;width:100%;max-height:260px;object-fit:contain;object-position:center;border:1px solid color-mix(in srgb,var(--a-ink) 16%,transparent);border-radius:10px;margin:16px 0}
+.atelier .guide-screenshot-note{font-size:10px;color:var(--a-muted);margin-bottom:12px}
+.atelier .guide-next-row{display:flex;justify-content:space-between;margin-top:20px;gap:10px}
+.atelier .guide-next-row button{padding:10px 16px;background:transparent;border:1px solid color-mix(in srgb,var(--a-ink) 25%,transparent);border-radius:7px;color:var(--a-ink);font-size:12px}
+@media(max-width:600px){.atelier .week-calendar{gap:4px}.atelier .week-day{padding:10px 2px}.atelier .week-day b{font-size:10px}.atelier .week-day small{font-size:9px}.atelier #schedule-dialog{padding:21px}.atelier .guide-real-image{max-height:220px}}
+.atelier[data-stage=verdant]{--w-bg:#0a2821;--w-input:#ffffff07;--w-ink:#e4efdc;--w-muted:#a7c1b0;--w-line:#c4d5a238;--w-accent:#d2dfb9;--w-on:#143b2b;--w-warn:#dec189}
+.atelier[data-stage=dawn]{--w-bg:#f3e6dc;--w-input:#ffffff55;--w-ink:#473545;--w-muted:#76606e;--w-line:#66405333;--w-accent:#865668;--w-on:#fff5ed;--w-warn:#925735}
+/* Theme tokens are authoritative; text must not inherit a delayed pale color. */
+.atelier .brand{color:var(--a-ink)}
+.atelier[data-motion=static]{transition:none!important}
+@media(prefers-reduced-motion:reduce){.atelier{transition:none!important}}

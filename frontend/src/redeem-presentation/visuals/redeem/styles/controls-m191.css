@@ -1,0 +1,131 @@
+/* M1.9.1 — same controls / actions / geometry, with quiet material boundaries.
+   Scoped to the public .atelier host. No extra canvas, blur, cursor loop or glow.
+   The card artwork and its deliberate engraved edges are NOT changed here. */
+:is(.atelier[data-stage],[data-redeem-portal=public]){
+ --control-accent:var(--w-accent,var(--a-accent));
+ --control-ink:var(--w-ink,var(--a-ink));
+ --control-on:var(--w-on,#142019);
+ --control-radius:11px;
+ --control-fill:color-mix(in srgb,var(--control-accent) 94%,var(--a-bg,#161a20) 6%);
+ --control-wash:color-mix(in srgb,var(--control-ink) 5%,transparent);
+ --control-wash-hover:color-mix(in srgb,var(--control-accent) 12%,transparent);
+ --control-hairline:color-mix(in srgb,var(--control-ink) 15%,transparent);
+}
+:is(.atelier[data-stage],[data-redeem-portal=public])[data-visitor-light=night]{
+ --control-accent:var(--night-accent);
+ --control-ink:var(--night-ink);
+ --control-on:var(--night-bg);
+ --control-fill:color-mix(in srgb,var(--night-accent) 94%,var(--night-bg) 6%);
+}
+/* Primary: a tonal surface, not a box outlined against the environment.
+   Keep the existing 1px layout space; only its painted stroke is removed. */
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.work-primary,.primary,.query-submit,.btn-primary,.ru-primary),
+:is(.atelier[data-stage],[data-redeem-portal=public])[data-visitor-light] :is(.work-primary,.primary,.query-submit,.btn-primary,.ru-primary){
+ border-color:transparent!important;border-radius:var(--control-radius)!important;
+ color:var(--control-on)!important;
+ background:linear-gradient(145deg,color-mix(in srgb,var(--control-fill) 96%,white 4%),var(--control-fill) 58%,color-mix(in srgb,var(--control-fill) 97%,var(--control-on) 3%))!important;
+ box-shadow:inset 0 1px 0 #ffffff1f,0 3px 10px -7px color-mix(in srgb,var(--control-accent) 20%,transparent)!important;
+ transition:background-color .18s ease,box-shadow .18s ease,filter .18s ease,opacity .18s ease!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.work-primary,.primary,.query-submit,.btn-primary,.ru-primary):hover:not(:disabled){
+ filter:brightness(1.035);transform:none!important;
+ box-shadow:inset 0 1px 0 #ffffff36,0 4px 13px -8px color-mix(in srgb,var(--control-accent) 24%,transparent)!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.work-primary,.primary,.query-submit,.btn-primary,.ru-primary):active:not(:disabled){
+ filter:brightness(.96);box-shadow:inset 0 1px 3px #00000012!important;transform:none!important;
+}
+/* Secondary actions sit in the scene; no competing all-around keyline. */
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.sub-button,.work-secondary,.btn-secondary,.ru-secondary,.soft-button,.receipt-link-m19,.visitor-play,.m11-player-controls button){
+ border-color:transparent!important;border-radius:var(--control-radius)!important;
+ background:var(--control-wash)!important;color:var(--control-ink)!important;
+ box-shadow:inset 0 1px 0 color-mix(in srgb,var(--control-ink) 6%,transparent)!important;
+ transition:background-color .18s ease,box-shadow .18s ease,color .18s ease!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.sub-button,.work-secondary,.btn-secondary,.ru-secondary,.soft-button,.receipt-link-m19,.visitor-play,.m11-player-controls button):hover:not(:disabled){
+ background:var(--control-wash-hover)!important;
+ box-shadow:inset 0 1px 0 color-mix(in srgb,var(--control-accent) 13%,transparent)!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .receipt-link-m19[data-receipt-action=portal]{background:transparent!important;box-shadow:none!important;}
+/* Icon buttons lose the visible ring, retain their full pointer target. */
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.visitor-entry,.tool-button,.modal-close,.theme-toggle-control,.language-toggle-control){
+ border-color:transparent!important;background:transparent!important;box-shadow:none!important;
+ transition:background-color .18s ease,color .18s ease!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.visitor-entry,.tool-button,.modal-close,.theme-toggle-control,.language-toggle-control):hover{
+ background:var(--control-wash-hover)!important;
+}
+/* Inputs remain recognizable through a quiet resting baseline and surface.
+   An invalid field and keyboard focus are not decorative and remain explicit. */
+:is(.redeem-presentation.atelier[data-stage][data-visitor-light] .workbench .work-input,.atelier[data-stage] .work-input,[data-redeem-portal=public] :is(.input,.work-input,.ru-input)):not([aria-invalid=true]):not(.input-error){
+ border-color:transparent!important;border-radius:var(--control-radius)!important;
+ background:color-mix(in srgb,var(--control-ink) 3.5%,transparent)!important;
+ box-shadow:inset 0 -1px 0 var(--control-hairline)!important;
+}
+:is(.redeem-presentation.atelier[data-stage][data-visitor-light] .workbench .work-input,.atelier[data-stage] .work-input,[data-redeem-portal=public] :is(.input,.work-input,.ru-input)):not([aria-invalid=true]):not(.input-error):hover{
+ background:color-mix(in srgb,var(--control-ink) 5.5%,transparent)!important;
+ box-shadow:inset 0 -1px 0 color-mix(in srgb,var(--control-ink) 25%,transparent)!important;
+}
+:is(.redeem-presentation.atelier[data-stage][data-visitor-light] .workbench .work-input,.atelier[data-stage] .work-input,[data-redeem-portal=public] :is(.input,.work-input,.ru-input)):not([aria-invalid=true]):not(.input-error):focus{
+ background:color-mix(in srgb,var(--control-ink) 5%,transparent)!important;
+ box-shadow:inset 0 -1.5px 0 var(--control-accent)!important;
+}
+:is(.redeem-presentation.atelier[data-stage][data-visitor-light] .workbench .work-input,.atelier[data-stage] .work-input,[data-redeem-portal=public] :is(.input,.work-input,.ru-input))[aria-invalid=true]{border-radius:var(--control-radius)!important;}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(button,a,input,textarea,select):focus-visible{
+ outline:2px solid var(--control-ink)!important;outline-offset:3px!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.work-primary,.primary,.query-submit,.btn-primary,.ru-primary,.soft-button,.visitor-play):disabled{cursor:not-allowed;}
+@media(forced-colors:active){
+ :is(.atelier[data-stage],[data-redeem-portal=public]) :is(.work-primary,.primary,.query-submit,.btn-primary,.ru-primary,.sub-button,.soft-button,.receipt-link-m19,.visitor-entry,.work-input){border:1px solid ButtonText!important;forced-color-adjust:auto;}
+}
+@media(prefers-reduced-motion:reduce){
+ :is(.atelier[data-stage],[data-redeem-portal=public]) :is(button,a,input,textarea,select){transition:none!important;}
+}
+
+/* Teleport 沿用公共主题桥，管理界面的弹层没有此标记。 */
+:is(.atelier[data-stage],[data-redeem-portal=public])[data-redeem-portal=public]{
+ --control-accent:var(--ru-accent);--control-ink:var(--ru-ink);--control-on:var(--ru-on-accent);
+ --control-fill:color-mix(in srgb,var(--ru-accent) 94%,var(--ru-panel) 6%);
+}
+/* Notices read as a tinted rule in the scene, not a blurred rectangle over the photo plate.
+   Tone (warning/error/success) still comes from the element's own colour. */
+.atelier[data-stage] .workbench .alert{
+ backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none!important;
+ background:linear-gradient(90deg,color-mix(in srgb,currentColor 9%,transparent),transparent 82%)!important;
+ border:0!important;border-left:2px solid color-mix(in srgb,currentColor 55%,transparent)!important;border-radius:0 8px 8px 0!important;padding:10px 12px!important;
+}
+/* Quiet scrollbars and borderless field micro-actions aligned with M1.9.1 material boundaries. */
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(textarea,.query-table-wrap){
+ scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--control-ink) 22%,transparent) transparent;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-has-tools{position:relative}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-has-tools>label{display:block;margin-bottom:10px!important;padding-inline-end:156px}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-has-tools>.ru-micro-actions{
+ position:absolute;top:-4px;inset-inline-end:0;display:inline-flex;align-items:center;gap:2px;z-index:1;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.ru-micro-btn,.ru-copy-chip){
+ border:0!important;background:transparent!important;box-shadow:none!important;
+ color:var(--control-accent)!important;font:500 11px/1.4 var(--r-ui,system-ui,sans-serif);
+ padding:2px 7px;min-height:24px;border-radius:6px;cursor:pointer;opacity:.86;
+ transition:background-color .16s ease,opacity .16s ease!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) :is(.ru-micro-btn,.ru-copy-chip):hover:not(:disabled){
+ opacity:1;background:var(--control-wash-hover)!important;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-copy-chip{
+ display:inline-flex;align-items:center;margin-inline-start:6px;font-size:10px;padding:1px 6px;min-height:22px;vertical-align:baseline;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-quick-steps{
+ margin:8px 0 4px;font-size:11px;line-height:1.8;color:var(--w-muted,var(--a-muted));
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-quick-steps>summary{
+ cursor:pointer;color:var(--control-accent);font-size:11px;min-height:28px;display:inline-flex;align-items:center;gap:5px;user-select:none;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-quick-steps ol{margin:6px 0 4px;padding-inline-start:18px;list-style:decimal}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-batch-bar{
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-top:7px;font-size:11px;color:var(--w-muted,var(--a-muted));font-variant-numeric:tabular-nums;
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-uuid-tip{
+ margin-top:8px;padding:2px 0 2px 10px;border-inline-start:2px solid color-mix(in srgb,var(--control-accent) 45%,transparent);font-size:11px;line-height:1.75;color:var(--w-muted,var(--a-muted));
+}
+:is(.atelier[data-stage],[data-redeem-portal=public]) .ru-uuid-tip a{color:var(--control-accent);text-decoration:underline;text-underline-offset:3px}
+@media(forced-colors:active){.atelier[data-stage] .workbench .alert{border:1px solid CanvasText!important}}

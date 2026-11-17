@@ -1,0 +1,35 @@
+/* M1.7: material refinement only. Geometry of the approved 650 / 330 layout stays. */
+.atelier[data-tone-system=mineral-neutral-m17] [data-v4-environment]{filter:none!important;opacity:1;transition:none}
+html[data-family=mythic][data-visitor-light=night],html[data-family=mythic][data-visitor-light=night] body{background:#24272b!important;color:#e2e1dc}
+.atelier[data-stage][data-visitor-light=night]{--a-ink:#e4e3de!important;--w-ink:#e4e3de!important;--a-muted:#b2b5b5!important;--w-muted:#b2b5b5!important;--w-line:#c6c8c62b!important;--w-input:#ffffff04!important;--w-on:#202327!important}
+.atelier[data-stage][data-visitor-light=night] .shade{background:linear-gradient(90deg,#1d212209,transparent 60%,#23272a10)!important}
+.atelier[data-stage][data-visitor-light=night] :is(.modal,.query-form,.query-result,.query-controls,.guide-content,.video-main,.chapter-index,.query-challenge,.query-card){background:var(--night-surface,#2d3134)!important;border-color:#d0d1cb29!important}
+.atelier[data-stage][data-visitor-light=night] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),textarea,select){background:#20272b!important;color:#e6e5df!important;border-color:#bcc4c137!important}
+.atelier[data-stage][data-visitor-light=night] :is(.work-primary,.primary,.query-submit){color:#24282a!important;box-shadow:0 1px 0 #eee6 inset}
+.atelier[data-stage][data-visitor-light=night] :is(.work-input,.work-textarea)::placeholder{color:#99a2a1!important}
+.atelier[data-stage][data-visitor-light=night] .back{box-shadow:inset 0 1px .8px color-mix(in srgb,var(--card-edge) 42%,transparent),inset 0 -1.4px 1px #151819ad,0 27px 65px -31px #101316c4!important}
+.atelier .identity-zone .card-stage[data-craft] .couture-motif{filter:drop-shadow(.25px 1.3px .45px color-mix(in srgb,var(--card-deep) 78%,transparent));opacity:var(--crest-opacity,.9)}
+.atelier .identity-zone .emblem17-recess{fill:var(--emblem-shadow);stroke:var(--emblem-shadow);stroke-width:3.2;opacity:.62;transform:translate(0,1.65px)}
+.atelier .identity-zone .emblem45-relief{fill:var(--emblem-shadow);stroke:var(--emblem-shadow);stroke-width:1.7;opacity:.65;transform:translate(.5px,.9px)}
+.atelier .identity-zone .emblem17-lip{fill:none;stroke:var(--emblem-highlight);stroke-width:.64;stroke-linejoin:round;opacity:.45;transform:translate(-.33px,-.6px)}
+.atelier .identity-zone .emblem45-body{stroke:color-mix(in srgb,var(--emblem-metal) 74%,var(--emblem-highlight));stroke-width:.5;stroke-linejoin:bevel}
+.atelier .identity-zone .emblem45-body .low-facet{fill-opacity:.83}
+.atelier .identity-zone .emblem45-detail{stroke-width:.6;opacity:.82}
+.engraving17{fill:none;stroke:var(--emblem-metal,currentColor);stroke-width:.52;stroke-linecap:round}
+.engraving17 .major{stroke-width:.86;opacity:.70}.engraving17 .minor{opacity:.33}.engraving17-turns{opacity:.21;stroke-width:.35}
+.engraving17[data-engraving-level="5"] .engraving17-turns{opacity:.32}.engraving17[data-engraving-level="4"] .engraving17-turns{opacity:.26}
+.atelier .identity-zone .emblem45-field{opacity:.065}.atelier .identity-zone .emblem45-register{opacity:.19}
+.atelier .identity-zone .card-stage[data-craft=unidentified] .emblem17-recess,.atelier .identity-zone .card-stage[data-craft=unidentified] .emblem17-lip{display:none}
+.atelier .identity-zone .card-stage[data-craft-level="1"] .emblem17-lip{opacity:.30}
+.atelier .identity-zone .card-stage[data-craft-level="5"] .emblem17-lip{opacity:.61;stroke-width:.76}
+.atelier .finery17{position:absolute;inset:0;pointer-events:none;color:var(--card-edge);opacity:.57}
+.atelier .finery17 svg{width:100%;height:100%;overflow:visible}.atelier .finery17 path{fill:none;stroke:currentColor;stroke-width:.38px;vector-effect:non-scaling-stroke}
+.atelier .finery17 .major{stroke-width:.62px;opacity:.65}.atelier .finery17 .minor{opacity:.24}.atelier .finery17 .corner{stroke-width:.55px;opacity:.45}
+.atelier .identity-zone .card-stage[data-craft] .couture-chamfer{box-shadow:inset 0 1.5px 1px color-mix(in srgb,var(--card-reflector) 31%,transparent),inset 1px 0 .5px #ffffff11,inset 0 -2px 1.5px #0005,inset -1px 0 1px #0003}
+.atelier .identity-zone .card-stage[data-craft-level="4"] .couture-bezel,.atelier .identity-zone .card-stage[data-craft-level="5"] .couture-bezel{border-color:color-mix(in srgb,var(--card-edge) 32%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--card-deep) 64%,transparent),0 0 0 2.6px color-mix(in srgb,var(--card-edge) 12%,transparent)}
+.atelier .identity-zone .card-stage[data-craft-level="5"] .couture-lacquer{background:linear-gradient(115deg,transparent 0 40%,#ffffff03 40.1% 48%,#00000007 48.1% 72%,transparent 72.1%);opacity:.9}
+.atelier .identity-zone .digest-edition{letter-spacing:1.5px!important;font-size:11px!important;line-height:1.55!important;margin-top:13px!important;font-weight:500!important;opacity:.87}
+.atelier .identity-zone .digest-product{font-kerning:normal;font-variant-ligatures:common-ligatures;letter-spacing:-1px!important}
+.atelier .m11-tier-row{padding:17px 0}.atelier .m11-tier-row b{font-weight:400;letter-spacing:1px}.atelier #m11-tier-notice[hidden]{display:none!important}
+.atelier .m1-surface-light{mix-blend-mode:normal}
+@media(max-width:700px){.atelier .identity-zone .digest-edition{font-size:8px!important;letter-spacing:.9px!important;margin-top:9px!important}.atelier .finery17{opacity:.40}.engraving17 .minor{display:none}.engraving17-turns{opacity:.12}.atelier .identity-zone .emblem17-lip{stroke-width:.75;opacity:.45}}

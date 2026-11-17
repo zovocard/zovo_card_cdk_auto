@@ -1,0 +1,9 @@
+/* 本站移植专用（非原项目文件）：本站皮肤的全局组件样式（style.css / styles/skins.css /
+   styles/mythic-personality.css）对 .btn-primary / .card / .input 等通用类名有额外效果，
+   原项目没有这些效果。这里只在展示外壳内把它们抵消，让外壳内的观感与原项目一致。 */
+
+/* 本站 .btn-primary:disabled 额外去饱和；原项目没有 */
+.redeem-presentation.atelier .btn-primary:disabled { filter: none; }
+
+/* 外壳比视口矮时，原项目页面底色是 body 的 #080b11；本站 html 自带皮肤底色会挡住 body 底色 */
+html:has(.redeem-presentation.atelier) { background: #080b11; }

@@ -1,0 +1,1 @@
+export const neutral={id:'unidentified',family:'redeemai',displayLabel:'待识别',kind:'unknown',rank:'—',edition:'DIGITAL REDEMPTION',pattern:'contour',palette:{base:'#29333f',deep:'#0d1520',ink:'#eae8e1',muted:'#a6b0bd',edge:'#c5d9ec'}};

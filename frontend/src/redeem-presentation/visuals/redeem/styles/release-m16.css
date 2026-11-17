@@ -1,0 +1,17 @@
+/* M1.6: public controls and restrained vessel motion; no admin selectors. */
+.atelier .topbar { gap:14px; }
+.atelier .visitor-entry { margin-left:0; width:40px; height:40px; min-width:40px; padding:10px; border-color:color-mix(in srgb,var(--a-ink) 15%,transparent); background:color-mix(in srgb,var(--a-bg) 35%,transparent); }
+.atelier .light-toggle svg {width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;}
+.atelier .light-toggle[data-light=day] .moon-glyph,.atelier .light-toggle[data-light=night] .sun-glyph {display:none}
+.atelier .visitor-entry:active{transform:scale(.95)}
+.atelier .visitor-entry:focus-visible{outline:2px solid var(--a-accent);outline-offset:4px}
+.atelier .visitor-dialog {width:min(430px,calc(100vw - 30px));padding:26px;max-height:86svh}
+.atelier .visitor-dialog .visitor-group{padding-top:16px;margin-top:16px}
+.atelier .visitor-dialog h2{font-size:23px}
+.atelier .today-theme,[data-calendar-label]{font-size:10px;letter-spacing:.15px;color:var(--a-muted)}
+.atelier .card-stage{--m16-shadow-scale:1}
+.atelier .card-stage:after{transform:scale(var(--m16-shadow-scale));}
+.atelier .card-tilt {will-change:transform}
+.atelier .m1-surface-light {contain:strict}
+@media(max-width:540px){.atelier .topbar{gap:9px}.atelier .visitor-entry{width:38px;height:38px;min-width:38px;padding:9px}.atelier .visitor-dialog{padding:23px}.atelier .topbar .m11-nav-trigger{margin-left:auto}}
+@media(prefers-reduced-motion:reduce){.atelier .visitor-entry:active{transform:none}.atelier .card-tilt{will-change:auto}}

@@ -1,0 +1,19 @@
+/* Only decorative optics. The approved V4.5 geometry, lettering and interaction rail stay intact. */
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .face{isolation:isolate;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .m1-surface-light{position:absolute;inset:0;width:100%;height:100%;border-radius:inherit;z-index:1;pointer-events:none;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .m1-edge-light{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none;border-radius:inherit;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .couture-craft{z-index:2;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] :is(.card-brandrow,.card-body,.elapsed-row,.card-footer){z-index:3;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .reflection-sheet,
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .face::before,
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .face .edge-track .jewel-runner{display:none!important;animation:none!important;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .couture-lacquer{opacity:.5;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .couture-grain{opacity:.13;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .couture-chamfer{box-shadow:inset 0 1px 0 color-mix(in srgb,var(--card-reflector) 84%,transparent),inset 0 3px 2px color-mix(in srgb,var(--card-edge) 24%,transparent),inset 1px 0 1px #ffffff20,inset 0 -2px 2px #0007,inset -1px 0 1px #0005;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .couture-motif{filter:drop-shadow(0 1px .5px color-mix(in srgb,var(--card-deep) 80%,transparent));}
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .card-tilt{will-change:translate,rotate;}
+.atelier[data-motion=static] .identity-zone .card-stage[data-optics=studio-m1] .card-tilt{translate:none!important;rotate:none!important;}
+@media(prefers-reduced-motion:reduce){.atelier .identity-zone .card-stage[data-optics=studio-m1] .card-tilt{translate:none!important;rotate:none!important;}}
+
+.atelier .identity-zone .card-stage[data-optics=studio-m1] .face .edge-track .edge-settle{display:none!important;animation:none!important;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1]:after{opacity:var(--m1-shadow-strength,.48);}

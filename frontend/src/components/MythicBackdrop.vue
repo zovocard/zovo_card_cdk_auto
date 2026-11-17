@@ -9,9 +9,11 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { currentSkinMeta, isDark, themeMode } from '../theme'
 import { mythicArt } from '../skins/mythic/atmosphere.js'
+import { presentationShells } from '../redeem-presentation/shell-state'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
-const active = computed(() => currentSkinMeta.value.family === 'mythic')
+// 兑换页展示外壳（RedeemPresentation）自带环境画布与底板照片：外壳在时这里让位，避免双背景。
+const active = computed(() => currentSkinMeta.value.family === 'mythic' && presentationShells.value === 0)
 
 const FRAME_MS = 1000 / 24
 const reduceMotion = typeof window !== 'undefined' && window.matchMedia

@@ -1,0 +1,41 @@
+/* M1.3: stable typography and a co-lit information rail. No global layout rules. */
+.atelier[data-scene-rig=m13]{--scene-light-x:50%;--scene-light-y:35%;}
+.atelier[data-scene-rig=m13] :is(.topbar,.footer,.operation-zone,.query-rail,.query-result,.workbench){transform:none;}
+.atelier .identity-zone .card-stage[data-optics=studio-m1]::after{translate:var(--m13-shadow-x,0px) var(--m13-shadow-y,0px);transition:opacity .6s ease;}
+.atelier .identity-zone .card-stage[data-craft] .couture-motif{filter:drop-shadow(.4px 1px .35px color-mix(in srgb,var(--card-deep) 75%,transparent));opacity:.88;}
+.atelier .identity-zone .emblem45-relief{transform:translate(.55px,1px);fill:var(--emblem-shadow);stroke:var(--emblem-shadow);stroke-width:1.5;opacity:.8;}
+.atelier .identity-zone .emblem45-body{stroke-width:.45;stroke:color-mix(in srgb,var(--emblem-highlight) 60%,var(--emblem-metal));stroke-linejoin:round;}
+.atelier .identity-zone .emblem45-detail{stroke-width:.52;opacity:.68;}
+.atelier .identity-zone .emblem45-field{opacity:.095;}
+.atelier .identity-zone .emblem45-register{opacity:.24;}
+.atelier .identity-zone .card-stage[data-craft] .couture-grain{opacity:.105;}
+.atelier .identity-zone .card-stage[data-craft-finish=alloy] .couture-grain{opacity:.20;}
+.atelier .identity-zone .card-stage[data-craft-finish=nacre] .couture-grain{opacity:.035;}
+.atelier .identity-zone .card-stage[data-craft-finish=carbon] .couture-grain{opacity:.18;}
+.atelier .identity-zone .card-stage[data-craft] .couture-signature{letter-spacing:2px;opacity:.46;}
+.atelier .identity-zone .card-stage[data-craft] .card-tag{font-size:6.5px;letter-spacing:1.9px;opacity:.65;}
+.atelier .identity-zone .card-stage[data-craft] .card-brand{font-weight:450;letter-spacing:-.22px;}
+.atelier .identity-zone .card-stage[data-craft] .digest-product{font-kerning:normal;font-variant-numeric:lining-nums;letter-spacing:-1.8px;text-shadow:0 1px .3px color-mix(in srgb,var(--card-deep) 24%,transparent);}
+.atelier .identity-zone .card-stage[data-craft] .digest-family{font-size:8px;letter-spacing:2.4px;color:var(--card-muted);opacity:.82;}
+.atelier .identity-zone .card-stage[data-craft] .digest-edition{font-size:10.2px;letter-spacing:.32px;line-height:1.75;max-width:65%;color:var(--card-muted);}
+/* The timer is engraved into the existing status rail, not a floating capsule.
+   Same time element, host timestamps, no replacement node, no progress ring. */
+.atelier .identity-zone .card-stage .elapsed-row{border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important;padding:0 0 0 11px;gap:9px;isolation:isolate;}
+.atelier .identity-zone .card-stage .elapsed-row::before{content:'';position:absolute;left:0;top:2px;bottom:2px;width:1px;background:linear-gradient(transparent,color-mix(in srgb,var(--card-edge) 47%,transparent),transparent);}
+.atelier .identity-zone .card-stage .elapsed-row time{font-family:ui-monospace,'SFMono-Regular',monospace;font-variant-numeric:tabular-nums;font-weight:450;font-size:12px;letter-spacing:1.15px;color:var(--card-ink);text-shadow:0 1px .4px color-mix(in srgb,var(--card-reflector) 13%,transparent);}
+.atelier .identity-zone .card-stage .elapsed-caption{font-size:8.1px;letter-spacing:.22px;color:var(--card-muted);opacity:.92;}
+.atelier .identity-zone .card-stage .card-footer{border-top-color:color-mix(in srgb,var(--card-edge) 22%,transparent);}
+.atelier .identity-zone .card-stage .foot-label{color:var(--card-muted);letter-spacing:1.8px;opacity:.79;}
+.atelier .identity-zone .card-stage .foot-value{font-variant-numeric:tabular-nums;color:var(--card-ink);}
+.atelier .identity-zone .card-stage[data-card-stage=orbit] .elapsed-row::before{background:repeating-linear-gradient(0deg,transparent 0 3px,var(--card-edge) 3px 4px);opacity:.48;}
+.atelier .identity-zone .card-stage[data-card-stage=astral] .elapsed-row::before{width:3px;height:3px;top:50%;bottom:auto;border-radius:50%;background:var(--card-edge);opacity:.6;}
+.atelier .identity-zone .card-stage:is([data-card-stage=porcelain],[data-card-stage=dawn]) .elapsed-row::before{opacity:.52;}
+.atelier .identity-zone .card-stage[data-phase=success] .digest-seal{border-color:color-mix(in srgb,var(--card-edge) 40%,transparent);color:var(--card-ink);background:color-mix(in srgb,var(--card-base) 8%,transparent);border-radius:2px;}
+.atelier :is(.w-primary,.primary,.tool-button,.query-submit){background-position:var(--scene-light-x) 50%;}
+.atelier :is(input,textarea,select):focus-visible{box-shadow:0 0 0 3px color-mix(in srgb,var(--a-accent) 9%,transparent);outline:1px solid color-mix(in srgb,var(--a-accent) 62%,transparent);outline-offset:1px;}
+.atelier :is(.w-primary,.main-action,.primary):focus-visible{outline:2px solid var(--a-accent);outline-offset:4px;}
+.atelier .query-stage :is(.query-identity,.query-ledger){border-color:color-mix(in srgb,var(--a-accent) 20%,transparent);}
+@media(max-width:1100px){.atelier .identity-zone .card-stage[data-craft] .digest-edition{font-size:9px;}.atelier .identity-zone .card-stage .elapsed-row{padding-left:8px;}.atelier .identity-zone .card-stage .elapsed-row time{font-size:11px;}.atelier .identity-zone .card-stage[data-craft] .couture-signature{letter-spacing:1px;}}
+@media(max-width:700px){.atelier .identity-zone .card-stage[data-craft] .digest-family{font-size:6.7px;letter-spacing:1.35px;}.atelier .identity-zone .card-stage[data-craft] .card-tag{font-size:5.8px;letter-spacing:1px;}.atelier .identity-zone .card-stage[data-craft] .digest-edition{font-size:8px;line-height:1.65;letter-spacing:.1px;}.atelier .identity-zone .card-stage .elapsed-row time{font-size:10px;letter-spacing:.7px;}.atelier .identity-zone .card-stage[data-craft] .couture-signature{letter-spacing:.7px;}.atelier .identity-zone .card-stage::after{translate:none!important;}}
+@media(max-width:360px){.atelier .identity-zone .card-stage[data-craft] .digest-edition{font-size:7px;}.atelier .identity-zone .card-stage[data-craft] .card-tag{font-size:5px;}.atelier .identity-zone .card-stage .elapsed-row time{font-size:9.5px;}}
+@media(prefers-reduced-motion:reduce){.atelier .identity-zone .card-stage::after{translate:none!important;}}

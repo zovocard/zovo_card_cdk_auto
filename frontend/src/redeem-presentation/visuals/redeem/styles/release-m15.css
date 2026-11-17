@@ -1,0 +1,13 @@
+/* M1.5: visitor controls only; no scene selector and no admin-shell changes. */
+.atelier[data-font-style=modern]{--r-display:'Manrope',Cabin,'Avenir Next','Noto Sans CJK SC',sans-serif!important;--r-ui:'Manrope',Cabin,'Avenir Next','Noto Sans CJK SC',sans-serif!important;--r-code:'IBM Plex Mono',Cousine,monospace!important}
+.atelier[data-font-style=system]{--r-display:system-ui,'PingFang SC','Noto Sans CJK SC',sans-serif!important;--r-ui:system-ui,'PingFang SC','Noto Sans CJK SC',sans-serif!important;--r-code:ui-monospace,'SFMono-Regular',Consolas,monospace!important}
+.atelier .m14-music-toggle{gap:7px;white-space:nowrap;font-size:11px;letter-spacing:.15px;transition:color .2s}
+.atelier .m14-music-toggle[aria-pressed=true]{color:var(--a-accent)}
+.atelier .companion-foot{flex-wrap:wrap;align-items:center;gap:18px}
+.atelier .visitor-dialog .visitor-eyebrow{font-size:8px;letter-spacing:2px}
+.atelier .video-narration,.atelier #m11-active-copy{font-size:16px;line-height:1.9;font-weight:500}
+.atelier .video-note{font-size:12px;line-height:1.8}
+.atelier .m11-video-description{max-width:60ch}
+.atelier .visitor-field select{min-height:40px}
+.atelier #appearance-trigger{font-size:11px}
+@media(max-width:540px){.atelier #appearance-trigger{padding:7px 10px;min-height:40px;font-size:10px}.atelier .visitor-dialog{max-height:85svh;overflow:auto}.atelier .companion-foot{padding-inline:22px;gap:12px}.atelier .video-narration,.atelier #m11-active-copy{font-size:14px}}

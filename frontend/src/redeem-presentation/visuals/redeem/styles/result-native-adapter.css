@@ -1,0 +1,144 @@
+/* 本包无框结果区的 Vue 类名适配，仅作用于显式标记的前台结果。
+   保留原控件、条件、无障碍区域和数据归属。 */
+.redeem-presentation.atelier .workbench [data-result-flow].result-flow {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  color: var(--rf-ink);
+  padding: 24px 0 0;
+  margin: 26px 0 0;
+  min-width: 0;
+  text-align: left;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] :is(.history-task-summary, .rf-facts, .rf-facts > div, .billing-result-card, .billing-stat-box, .billing-empty-card, .rf-section) {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] > h2,
+.redeem-presentation.atelier .workbench [data-result-flow] > .task-feedback-title {
+  display: block;
+  font-size: 21px;
+  font-weight: 500 !important;
+  line-height: 1.35;
+  color: var(--rf-ink);
+  margin: 8px 0 18px !important;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .history-task-summary {
+  display: block;
+  padding: 0;
+  margin-bottom: 24px;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .rf-facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px 28px;
+  padding: 0;
+  margin: 24px 0;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .rf-facts > div {
+  display: block;
+  min-width: 0;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .rf-facts dt {
+  font-size: 11px;
+  color: var(--rf-muted);
+  margin-bottom: 4px;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .rf-facts dd {
+  font-size: 13px;
+  text-align: left;
+  margin: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] :is(.rf-note, .query-alert) {
+  background: transparent !important;
+  border: 0 !important;
+  border-left: 2px solid var(--w-warn, var(--warn)) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 0 14px 14px;
+  margin: 23px 0;
+  color: var(--rf-ink);
+  line-height: 1.8;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] :is(.rf-section, .billing-stat-box) { padding: 0; }
+.redeem-presentation.atelier .workbench [data-result-flow] .billing-card-header {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  padding: 12px 0 !important;
+  color: var(--rf-ink) !important;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .billing-card-header .text-white { color: inherit !important; }
+.redeem-presentation.atelier .workbench [data-result-flow] .billing-result-card > div:not(.billing-card-header) { padding: 10px 0; }
+.redeem-presentation.atelier .workbench [data-result-flow] .billing-result-card .border-t { border: 0; }
+.redeem-presentation.atelier .workbench [data-result-flow] .billing-result-card .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.redeem-presentation.atelier .workbench [data-result-flow] .rf-more {
+  background: transparent !important;
+  border: 0;
+  border-top: 1px solid var(--rf-line);
+  border-radius: 0;
+  box-shadow: none;
+  margin: 18px 0;
+  padding: 16px 0;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] :is(dd, code, .billing-result-meta, .billing-card-header, .billing-stat-box, .billing-result-card) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .truncate { white-space: normal; overflow: visible; text-overflow: clip; }
+.redeem-presentation.atelier .workbench [data-result-flow].task-observation > .task-facts {
+  display: grid;
+  gap: 4px;
+  border: 0;
+  padding: 0;
+  margin: 24px 0;
+  font-size: 12px;
+}
+.redeem-presentation.atelier .workbench [data-result-flow].task-observation > .task-facts > span { color: var(--rf-muted); font-size: 11px; }
+/* 验证布局中仍显示原有等待、未知结果和只读刷新错误提示。 */
+.redeem-presentation.atelier .workbench [data-result-flow].task-observation > p:not([hidden]) { display: block; }
+.redeem-presentation.atelier .workbench [data-result-flow] .challenge-host {
+  background: transparent !important;
+  border: 0;
+  border-left: 2px solid var(--w-warn, var(--warn));
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0 0 0 14px;
+  margin: 23px 0;
+}
+.redeem-presentation.atelier .workbench [data-result-flow] .challenge-host > .challenge-policy { display: block; }
+.redeem-presentation.atelier .workbench [data-result-flow] :is(a, button, summary):focus-visible {
+  outline: 2px solid var(--w-accent, var(--rf-ink));
+  outline-offset: 4px;
+}
+@media (max-width: 480px) {
+  .redeem-presentation.atelier .workbench [data-result-flow] .rf-facts { gap: 16px 18px; }
+  .redeem-presentation.atelier .workbench [data-result-flow] > h2,
+  .redeem-presentation.atelier .workbench [data-result-flow] > .task-feedback-title { font-size: 20px; }
+}
+
+.redeem-presentation.atelier .workbench [data-result-flow] :is(.rf-note-good, .rf-note.alert-success) { border-left-color: var(--good) !important; }
+.redeem-presentation.atelier .workbench [data-result-flow] :is(.rf-note-error, .rf-note.alert-error) { border-left-color: var(--err) !important; }
+.redeem-presentation.atelier .workbench [data-result-flow] .rf-actions > :is(button, a) {
+  background: transparent !important;
+  color: var(--rf-ink) !important;
+  border: 1px solid var(--rf-line) !important;
+  border-radius: 8px;
+  box-shadow: none !important;
+  min-height: 42px;
+  padding: 10px 14px;
+}

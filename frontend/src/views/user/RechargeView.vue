@@ -1,5 +1,173 @@
 <template>
-  <div class="u-page">
+  <!-- 东方意象七主题：兑换页渲染进展示外壳（移植自 autocard，原作者授权开源使用）。
+       外壳提供顶栏、标题区、卡片舞台与工作台标题；这里只放本站的业务表单，状态与函数与下方经典版共用。 -->
+  <RedeemPresentation
+    v-if="mythicPresentation"
+    ref="publicShell"
+    surface="recharge"
+    mode="single"
+    :phase="appearancePhase"
+    :card="appearanceCard"
+    :busy="busy"
+    :work-phase="appearanceWorkPhase"
+  >
+    <!-- 1 验证卡密 -->
+    <div v-show="step === 1" class="cdk-entry card space-y-4">
+      <div class="cdk-input-row">
+        <div class="form-group">
+          <label for="recharge-cdk-code">{{ presentationCopy.inputLabel }}</label>
+          <input
+            id="recharge-cdk-code"
+            v-model="code"
+            name="recharge-cdk-code"
+            type="text"
+            autocomplete="one-time-code"
+            maxlength="120"
+            :placeholder="presentationCopy.placeholder"
+            class="work-input input mono"
+            @keydown.enter.prevent="doPreview"
+          />
+        </div>
+        <button type="button" class="cdk-verify btn-primary work-primary" :disabled="busy || !code.trim()" @click="doPreview"><span>{{ presentationCopy.verifyLabel }}</span></button>
+      </div>
+      <p class="field-hint">{{ t('m19.inputMirrorHint') }}</p>
+      <div v-if="busy" class="flex items-center gap-2 text-muted" role="status" aria-live="polite"><span class="spinner"></span>{{ t('m19.workHeading.identifyingTitle') }}</div>
+      <div v-if="error" class="alert alert-error">{{ error }}</div>
+    </div>
+
+    <!-- 2 凭证 -->
+    <div v-show="step === 2" class="account-entry card space-y-5">
+      <div class="session-help flex flex-col gap-3 rounded-xl bg-soft p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <div><p class="font-medium text-ink"><span aria-hidden="true">✓</span>{{ appearanceCard.productData.cardCaption || planLabel(targetPlan) }}</p></div>
+        <a :href="credentialPage.url" target="_blank" rel="noopener noreferrer" class="btn-secondary shrink-0 text-center">{{ credentialPage.label }}</a>
+      </div>
+      <div v-if="!isXPremiumPlan(targetPlan) && !isGrok" class="recharge-mode-switch flex">
+        <button type="button" class="recharge-mode-btn" :class="{ 'recharge-mode-btn--active': credMode === 'session' }" :aria-pressed="credMode === 'session'" @click="credMode = 'session'">{{ t('rp.modeSession') }}</button>
+        <button type="button" class="recharge-mode-btn" :class="{ 'recharge-mode-btn--active': credMode === 'mailbox' }" :aria-pressed="credMode === 'mailbox'" @click="credMode = 'mailbox'">{{ t('rp.modeMailbox') }}</button>
+      </div>
+      <div v-if="credMode === 'session'" class="form-group">
+        <label for="recharge-session-json">{{ isGrok ? t('rp.grokLabel') : isXPremiumPlan(targetPlan) ? t('rp.xLabel') : t('rp.sessionLabel') }}</label>
+        <textarea
+          id="recharge-session-json"
+          v-model="sessionRaw"
+          rows="4"
+          class="work-input input h-32 font-mono"
+          :placeholder="isGrok ? t('grok.placeholder') : isXPremiumPlan(targetPlan) ? t('xPremium.placeholder') : 'Session JSON (sessionToken)'"
+          @keydown.meta.enter.prevent="doPreflight"
+          @keydown.ctrl.enter.prevent="doPreflight"
+        ></textarea>
+        <p class="session-input-hint text-xs text-subtle">{{ isGrok ? t('grok.hint') : isXPremiumPlan(targetPlan) ? t('xPremium.hint') : t('rp.sessionHint') }}</p>
+      </div>
+      <div v-else class="form-group">
+        <label for="recharge-mailbox-email">{{ t('rp.emailLabel') }}</label>
+        <input id="recharge-mailbox-email" v-model="email" class="work-input input" autocomplete="username" placeholder="email@outlook.com" />
+        <label for="recharge-mailbox-password" class="rp-second-label">{{ t('rp.passwordLabel') }}</label>
+        <input id="recharge-mailbox-password" v-model="password" class="work-input input" type="password" autocomplete="current-password" :placeholder="t('rp.passwordLabel')" />
+      </div>
+      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div class="account-cta cta-row flex gap-4">
+        <button type="button" class="work-primary btn-primary flex-1" :disabled="busy" @click="doPreflight">
+          <span v-if="!busy">{{ t('rp.precheckContinue') }}</span>
+          <span v-else class="flex items-center justify-center gap-2"><span class="spinner"></span>{{ t('rp.prechecking') }}</span>
+          <span aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="work-guide" @click="publicShell?.openGuide()">{{ t('m19.guide') }} ↗</button>
+      </div>
+      <button type="button" class="inline-text account-return account-change-code" :disabled="busy" @click="step = 1">{{ t('m19.changeCode') }}</button>
+    </div>
+
+    <!-- 3 确认兑换 -->
+    <div v-show="step === 3" class="review-entry card space-y-5">
+      <p v-if="!account.checked" class="review-intro text-sm text-subtle">{{ t('rp.noSummary') }}</p>
+      <div class="review-list rounded-xl bg-soft p-6 space-y-3">
+        <div class="flex justify-between"><span class="text-muted">{{ t('m19.reviewPlan') }}</span><span class="font-bold text-ink">{{ planLabel(targetPlan) }}</span></div>
+        <div class="flex justify-between"><span class="text-muted">{{ t('m19.reviewAccount') }}</span><span class="font-mono text-ink">{{ account.email || '—' }}</span></div>
+        <template v-if="account.checked">
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.currentPlan') }}</span><span class="text-ink">{{ planLabel(isGrok && account.currentPlan ? 'grok_' + String(account.currentPlan).replace(/^grok_/i, '') : account.currentPlan) }}</span></div>
+          <div v-if="isGrok && account.xSubscriptionType" class="flex justify-between"><span class="text-muted">{{ t('rp.xTier') }}</span><span class="text-ink">{{ account.xSubscriptionType }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.subscription') }}</span><span class="text-ink">{{ subscriptionStatusText }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.expiry') }}</span><span class="text-ink">{{ account.subscriptionActiveUntil ? fmtTime(account.subscriptionActiveUntil) : t('rp.upstreamMissing') }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.remaining') }}</span><span class="text-ink">{{ account.subscriptionActiveUntil ? subscriptionRemaining : t('rp.upstreamMissing') }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.autoRenew') }}</span><span :class="account.subscriptionWillRenew === true ? 'text-warn' : account.subscriptionWillRenew === false ? 'text-good' : 'text-ink'">{{ renewalStatusText }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.lastPaymentAt') }}</span><span class="text-ink">{{ lastPaymentAtText }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.lastPayment') }}</span><span class="text-ink">{{ lastPaymentText }}</span></div>
+          <div class="flex justify-between"><span class="text-muted">{{ t('rp.paymentMethod') }}</span><span class="text-ink">{{ paymentMethodText }}</span></div>
+        </template>
+      </div>
+      <div v-if="grokBlockingReason" class="alert rp-warn">{{ grokBlockingReason }}</div>
+      <div v-if="alreadySatisfied && !grokBlockingReason && !needsSubscriptionRecovery && !recoveryPending" class="alert rp-warn">{{ alreadySatisfiedHint }}</div>
+      <div v-if="needsSubscriptionRecovery || recoveryPending" class="alert rp-warn">
+        <p>{{ t(recoveryPending ? 'grace.pending' : 'grace.hint') }}</p>
+        <button v-if="needsSubscriptionRecovery && !recoveryPending" type="button" class="btn-secondary mt-3" :disabled="busy || recoveringSubscription || !preflightToken" @click="recoverGraceSubscription">{{ t(recoveringSubscription ? 'grace.processing' : 'grace.action') }}</button>
+        <button v-else type="button" class="btn-secondary mt-3" :disabled="busy || recoveringSubscription" @click="doPreflight">{{ t('grace.recheck') }}</button>
+      </div>
+      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div class="review-cta cta-row flex gap-4">
+        <button type="button" class="work-primary btn-primary flex-1" :disabled="busy || recoveringSubscription || recoveryPending || needsSubscriptionRecovery || alreadySatisfied || !canRedeem" @click="doRedeem">
+          <span v-if="busy" class="flex items-center justify-center gap-2"><span class="spinner"></span>{{ t('rp.submitting') }}</span>
+          <span v-else>{{ alreadySatisfied ? t('rp.satisfied') : presentationCopy.confirmLabel }}</span>
+          <span aria-hidden="true">→</span>
+        </button>
+        <button type="button" class="work-guide" @click="publicShell?.openGuide()">{{ t('m19.guide') }} ↗</button>
+      </div>
+      <button type="button" class="inline-text account-return" :disabled="busy" @click="step = 2">{{ t('rp.prev') }}</button>
+    </div>
+
+    <!-- 4 兑换进度 -->
+    <section v-show="step === 4" class="task-observation result-flow rounded-xl border bd bg-soft p-4 space-y-3" data-result-flow="">
+      <p v-if="resultMessage" class="text-sm text-ink">{{ resultMessage }}</p>
+      <div class="task-facts"><span>{{ t('rp.status') }}</span><code>{{ resultStatus || '—' }}<template v-if="resultStage"> · {{ t('rp.stage', { stage: resultStage }) }}</template></code></div>
+      <div class="task-facts"><span>{{ t('rp.account') }}</span><code>{{ displayResultEmail || '—' }}</code></div>
+      <div class="task-facts"><span>{{ t('rp.card') }}</span><code>{{ resultCardLastFour ? '•••• ' + resultCardLastFour : t('rp.cardPending') }}</code></div>
+      <p class="last-observation">{{ polling ? t('rp.polling') : isTerminal(resultStatus) ? t('rp.ended') : '' }}</p>
+
+      <!-- 客户自过码（browser_native）：与经典版同一套状态与函数 -->
+      <div v-if="isNativeCaptcha" class="challenge-host">
+        <p class="challenge-description">{{ t('nativeCaptcha.prompt') }}</p>
+        <div v-if="captchaExpiresAt && !captchaTerminal" class="challenge-timer">
+          <span>{{ captchaTimedOut ? t('nativeCaptcha.timeout') : t('nativeCaptcha.countdown', { s: captchaRemainSec }) }}</span>
+          <time>{{ String(Math.floor(captchaRemainSec / 60)).padStart(2, '0') }}:{{ String(captchaRemainSec % 60).padStart(2, '0') }}</time>
+        </div>
+        <div class="challenge-actions">
+          <button type="button" class="btn-primary" :disabled="captchaDisabled" @click="startNativeCaptcha">
+            <span>{{ captchaBusy ? t('nativeCaptcha.processing') : t('nativeCaptcha.button') }}</span><span aria-hidden="true">↗</span>
+          </button>
+        </div>
+        <div v-if="captchaError" class="alert alert-error">{{ captchaError }}</div>
+      </div>
+
+      <div v-if="timeline.length" class="rp-timeline">
+        <p class="rp-timeline-title">{{ t('rp.timeline') }}</p>
+        <ol>
+          <li v-for="(ev, idx) in timeline" :key="ev.id || idx">
+            <span class="rp-dot" :style="{ background: eventDot(ev.category) }" aria-hidden="true" />
+            <div><b>{{ stepLabel(ev.step) }}</b><small>{{ fmtTime(ev.created_at) }}</small></div>
+            <p>{{ ev.public_message || ev.to_status || '—' }}</p>
+          </li>
+        </ol>
+      </div>
+      <p v-else-if="polling" class="rp-timeline-wait">{{ t('rp.waitingTimeline') }}</p>
+
+      <div v-if="error" class="alert alert-error">{{ error }}</div>
+      <div v-if="isTerminal(resultStatus) && resultStatus !== 'completed'" class="alert alert-error">{{ t('rp.failedNote') }}</div>
+      <div v-if="resultStatus === 'completed'" class="alert alert-success">{{ t('rp.successNote') }}</div>
+
+      <details class="rp-debug">
+        <summary>{{ t('rp.debug') }}</summary>
+        <pre>{{ resultPretty }}</pre>
+      </details>
+
+      <div class="task-controls">
+        <button type="button" class="work-guide" @click="publicShell?.openGuide()">{{ t('m19.guide') }} ↗</button>
+        <button type="button" class="work-primary btn-primary" @click="resetAll"><span>{{ t('rp.another') }}</span></button>
+      </div>
+    </section>
+
+    <template #workbench-footer>
+      <div v-if="step === 1" class="work-bottom"><button type="button" @click="router.push('/batch')">{{ t('rp.batch') }} ↗</button></div>
+    </template>
+  </RedeemPresentation>
+  <div v-else class="u-page">
     <UserPageHeader :eyebrow="t('hero.redeemEyebrow')" :title="t('hero.redeemTitle')" :subtitle="t('hero.redeemSub')" badges />
     <div class="u-main max-w-3xl">
       <RedeemModeTabs />
@@ -242,14 +410,20 @@ import { grokCredential, isGrokPlan } from '../../lib/grok'
 import { parseSessionJsonLenient } from '../../lib/batch-session'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import UserPageHeader from '../../components/UserPageHeader.vue'
 import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import { dialog } from '../../lib/dialog'
 import { planLabel, planSatisfied as isSatisfied } from '../../lib/plan'
+// 东方意象七主题的展示外壳（移植自 autocard，原作者授权开源使用，2026-11-17）
+import RedeemPresentation from '../../redeem-presentation/components/RedeemPresentation.vue'
+import { mythicPresentation, rechargeCard, rechargePhase, type RechargeAppearanceInput } from '../../redeem-presentation/adapter'
+import { publicContent } from '../../redeem-presentation/utils/publicPresentation'
 
 const { t } = useI18n({ useScope: 'global' })
 const route = useRoute()
+const router = useRouter()
+const publicShell = ref<InstanceType<typeof RedeemPresentation> | null>(null)
 const steps = computed(() => [t('hero.steps.preview'), t('hero.steps.cred'), t('hero.steps.redeem'), t('hero.steps.result')])
 const step = ref(1)
 const busy = ref(false)
@@ -1224,6 +1398,41 @@ function resetAll() {
   polling.value = false
   resetCaptchaState()
 }
+
+// ── 东方意象展示外壳的状态映射（只读本页现有状态，不改业务流程） ──
+const presentationCopy = computed(() => publicContent.value!.copy)
+const credentialPage = computed(() => isGrok.value
+  ? { url: 'https://grok.com/', label: t('rp.openGrok') }
+  : isXPremiumPlan(targetPlan.value)
+    ? { url: 'https://x.com/', label: t('rp.openX') }
+    : { url: 'https://chatgpt.com/api/auth/session', label: t('rp.openSession') })
+const appearanceVerifyStart = ref<number | null>(null)
+watch(busy, (on) => { if (on && step.value === 1) appearanceVerifyStart.value = Date.now() })
+function parseTime(v: unknown): number | null {
+  const ms = Date.parse(String(v || ''))
+  return Number.isFinite(ms) ? ms : null
+}
+const appearanceInput = computed<RechargeAppearanceInput>(() => {
+  const order = resultBody.value?.order || resultBody.value?.data?.order || resultBody.value?.data || resultBody.value || {}
+  return {
+    step: step.value,
+    busy: busy.value,
+    code: code.value,
+    plan: targetPlan.value,
+    identified: !!previewInfo.value,
+    resultStatus: resultStatus.value,
+    terminal: isTerminal(resultStatus.value),
+    needsAction: isNativeCaptcha.value && !captchaTerminal.value && !captchaTimedOut.value,
+    email: account.value.email || resultEmail.value,
+    orderId: String(order.order_no || order.order_id || order.id || ''),
+    createdAt: parseTime(order.created_at),
+    completedAt: isTerminal(resultStatus.value) ? parseTime(order.completed_at || order.finished_at || order.updated_at) : null,
+    verificationStartedAt: appearanceVerifyStart.value,
+  }
+})
+const appearancePhase = computed(() => rechargePhase(appearanceInput.value))
+const appearanceCard = computed(() => rechargeCard(appearanceInput.value, appearancePhase.value))
+const appearanceWorkPhase = computed(() => step.value === 1 ? 'entry' : step.value === 2 ? 'credentials' : step.value === 3 ? 'review' : isNativeCaptcha.value ? 'challenge' : 'task')
 </script>
 
 <style scoped>
@@ -1256,4 +1465,22 @@ function resetAll() {
 @media (max-width: 640px) {
   .account-facts { grid-template-columns: 1fr; }
 }
+</style>
+
+<style scoped>
+/* 东方意象展示外壳里本站独有的块（原项目没有对应结构）：沿用外壳工作台的 --w-* 色板与细线风格 */
+.rp-second-label { display: block; margin-top: 14px !important; }
+.rp-warn { border-left-color: color-mix(in srgb, var(--w-warn, #d8c59b) 70%, transparent) !important; color: var(--w-ink); }
+.rp-timeline { margin-top: 18px; border-top: 1px solid var(--w-line); padding-top: 12px; }
+.rp-timeline-title, .rp-timeline-wait { font-size: 11px; color: var(--w-muted); margin: 0 0 10px; }
+.rp-timeline ol { list-style: none; margin: 0; padding: 0 0 0 14px; border-left: 1px solid var(--w-line); }
+.rp-timeline li { position: relative; padding: 0 0 12px; }
+.rp-timeline .rp-dot { position: absolute; left: -18px; top: 6px; width: 7px; height: 7px; border-radius: 50%; }
+.rp-timeline li > div { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+.rp-timeline b { font-size: 12px; font-weight: 500; color: var(--w-ink); }
+.rp-timeline small { font-size: 10px; color: var(--w-muted); font-family: ui-monospace, monospace; }
+.rp-timeline li > p { margin: 2px 0 0; font-size: 11px; line-height: 1.7; color: var(--w-muted); }
+.rp-debug { margin-top: 14px; font-size: 10px; color: var(--w-muted); }
+.rp-debug summary { cursor: pointer; user-select: none; }
+.rp-debug pre { margin-top: 8px; max-height: 12rem; overflow: auto; padding: 10px; border: 1px solid var(--w-line); border-radius: 7px; background: var(--w-input); color: var(--w-ink); font-size: 10px; }
 </style>

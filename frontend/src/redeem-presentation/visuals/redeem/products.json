@@ -1,0 +1,184 @@
+[
+  {
+    "id": "go",
+    "overview": {
+      "name": "GO",
+      "caption": "ChatGPT GO"
+    },
+    "family": "openai",
+    "displayLabel": "Go",
+    "officialLabel": "ChatGPT Go",
+    "rank": "I",
+    "edition": "FROSTED ALLOY",
+    "pattern": "mist",
+    "palette": {
+      "base": "#c3d5df",
+      "deep": "#779cae",
+      "ink": "#142f3f",
+      "muted": "#355567",
+      "edge": "#edfaff"
+    },
+    "kind": "subscription",
+    "cardCaption": "ChatGPT Go",
+    "description": "ChatGPT Go"
+  },
+  {
+    "id": "plus",
+    "overview": {
+      "name": "Plus",
+      "caption": "ChatGPT Plus"
+    },
+    "family": "openai",
+    "displayLabel": "Plus",
+    "officialLabel": "ChatGPT Plus",
+    "rank": "II",
+    "edition": "PEARL CHAMPAGNE",
+    "pattern": "pearl",
+    "palette": {
+      "base": "#ecdfbf",
+      "deep": "#bfa67b",
+      "ink": "#32281a",
+      "muted": "#67583c",
+      "edge": "#fff2c9"
+    },
+    "kind": "subscription",
+    "cardCaption": "ChatGPT Plus",
+    "description": "ChatGPT Plus"
+  },
+  {
+    "id": "pro-standard",
+    "family": "openai",
+    "displayLabel": "Standard",
+    "officialLabel": "ChatGPT Pro 100",
+    "rank": "III",
+    "edition": "GRAPHITE CHAMPAGNE",
+    "pattern": "brush",
+    "palette": {
+      "base": "#383c3e",
+      "deep": "#121820",
+      "ink": "#e9d3a6",
+      "muted": "#b3aa95",
+      "edge": "#ffe2a5"
+    },
+    "kind": "subscription",
+    "cardCaption": "Pro 100",
+    "description": "Pro 100",
+    "legacyLabel": "Pro 5X (Pro Standard)"
+  },
+  {
+    "id": "pro-more",
+    "family": "openai",
+    "displayLabel": "More",
+    "officialLabel": "ChatGPT Pro 200",
+    "rank": "IV",
+    "edition": "OBSIDIAN AURUM",
+    "pattern": "contour",
+    "palette": {
+      "base": "#242326",
+      "deep": "#070b11",
+      "ink": "#dec08a",
+      "muted": "#aba08a",
+      "edge": "#ffe4a9"
+    },
+    "kind": "subscription",
+    "cardCaption": "Pro 200",
+    "description": "Pro 200",
+    "legacyLabel": "Pro 20X (Pro More)"
+  },
+  {
+    "id": "pro-500",
+    "family": "openai",
+    "displayLabel": "Max",
+    "officialLabel": "ChatGPT Pro 500",
+    "rank": "V",
+    "edition": "NOIR PLATINUM",
+    "pattern": "prism",
+    "palette": {
+      "base": "#212634",
+      "deep": "#080e18",
+      "ink": "#e0e8f4",
+      "muted": "#a2b3c6",
+      "edge": "#e9f5ff"
+    },
+    "kind": "subscription",
+    "cardCaption": "Pro 500",
+    "description": "Pro 500",
+    "legacyLabel": "Pro 50X (Pro Max)"
+  },
+  {
+    "id": "claude-pro",
+    "family": "claude",
+    "displayLabel": "Pro",
+    "officialLabel": "Claude Pro",
+    "rank": "I",
+    "edition": "SAND & COPPER",
+    "pattern": "sun",
+    "palette": {
+      "base": "#dbc5ae",
+      "deep": "#ae8875",
+      "ink": "#39271f",
+      "muted": "#665042",
+      "edge": "#fff0d6"
+    },
+    "kind": "subscription",
+    "cardCaption": "Claude Pro · 日常订阅",
+    "description": "Claude 系列独立于 ChatGPT 档位比较。"
+  },
+  {
+    "id": "claude-5x",
+    "family": "claude",
+    "displayLabel": "Max 5×",
+    "officialLabel": "Claude Max 5x",
+    "rank": "II",
+    "edition": "SMOKED COPPER",
+    "pattern": "petal",
+    "palette": {
+      "base": "#5e495a",
+      "deep": "#251f30",
+      "ink": "#ead2c0",
+      "muted": "#bca7b5",
+      "edge": "#f7d3b5"
+    },
+    "kind": "subscription",
+    "cardCaption": "Claude Max · 5× 档",
+    "description": "Claude 系列使用 Claude 自身的比较口径，不与 ChatGPT Plus 混用基准。"
+  },
+  {
+    "id": "claude-20x",
+    "family": "claude",
+    "displayLabel": "Max 20×",
+    "officialLabel": "Claude Max 20x",
+    "rank": "III",
+    "edition": "VIOLET TITANIUM",
+    "pattern": "facets",
+    "palette": {
+      "base": "#39324e",
+      "deep": "#100e1c",
+      "ink": "#e3d3b5",
+      "muted": "#afa5bd",
+      "edge": "#e5d8ff"
+    },
+    "kind": "subscription",
+    "cardCaption": "Claude Max · 20× 档",
+    "description": "Claude 系列使用 Claude 自身的比较口径，不与 ChatGPT Plus 混用基准。"
+  },
+  {
+    "id": "codex-credits",
+    "family": "codex",
+    "displayLabel": "Credits",
+    "officialLabel": "Codex 用量点数",
+    "rank": "C",
+    "edition": "CARBON CYAN",
+    "pattern": "circuit",
+    "palette": {
+      "base": "#18484c",
+      "deep": "#061c25",
+      "ink": "#bfece9",
+      "muted": "#81b3bb",
+      "edge": "#7bf6df"
+    },
+    "kind": "credits",
+    "cardCaption": "Codex 用量点数 · 非订阅",
+    "description": "具体数量来自校验与报价，不等同于 OpenAI API 余额。"
+  }
+]

@@ -1,0 +1,110 @@
+/* V4.1: a product is a stable identity, the stage supplies its incident light.
+   All drawing layers are inert. The card/form DOM and task are never remounted. */
+.atelier .card-stage{--card-base:#29333f;--card-deep:#0d1520;--card-ink:#eeeae2;--card-muted:#abb3bc;--card-edge:#e4d2ad;--card-reflector:#fff2d9;--card-shadow:#000;--edge-period:3.8s;--edge-intensity:.85;isolation:isolate}
+.atelier .card-stage .face{--c-ink:var(--card-ink);--c-dim:var(--card-muted);color:var(--card-ink);background:linear-gradient(122deg,var(--card-deep) 0%,var(--card-base) 30%,var(--card-deep) 62%,var(--card-base) 100%);border-color:color-mix(in srgb,var(--card-edge) 34%,transparent);box-shadow:inset 0 1px 1px color-mix(in srgb,var(--card-reflector) 65%,transparent),inset 0 -1px 1px #0006,0 3px 0 color-mix(in srgb,var(--card-edge) 36%,#0b1017),0 6px 0 color-mix(in srgb,var(--card-shadow) 90%,var(--card-edge)),0 36px 74px -24px color-mix(in srgb,var(--card-shadow) 80%,transparent);transition:color .7s,box-shadow .65s,border-color .65s;overflow:hidden}
+.atelier .card-stage .face:before{content:none}
+.atelier .card-stage .face:after{opacity:.15;z-index:-2}
+.atelier .face .card-brandrow,.atelier .face .card-body,.atelier .face .card-footer{position:relative;z-index:2}
+.atelier .face .card-body{min-height:0}
+.atelier .face .card-brandrow,.atelier .face .card-footer,.atelier .face .summary-row{border-color:color-mix(in srgb,var(--card-ink) 15%,transparent)}
+.atelier .card-stage .code-input{color:var(--card-ink);background:color-mix(in srgb,var(--card-deep) 35%,transparent);border-color:color-mix(in srgb,var(--card-ink) 25%,transparent);font-size:16px}
+.atelier .card-stage .code-input::placeholder{color:var(--card-muted)}
+.atelier .card-stage .code-input:focus{border-color:var(--card-edge);box-shadow:0 0 0 3px color-mix(in srgb,var(--card-edge) 13%,transparent)}
+.atelier .card-stage .main-action{border-color:color-mix(in srgb,var(--card-ink) 32%,transparent)}
+.atelier .card-stage .emboss{z-index:0;opacity:.075;transition:opacity .7s}
+.atelier .card-stage .card-tag{max-width:45%;white-space:normal;line-height:1.7}
+.atelier .card-stage[data-stage-label=false] .card-tag{visibility:hidden}
+.atelier .card-stage .product-line h2{letter-spacing:-2px}
+.atelier .card-environment{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.atelier .card-environment i{display:block;position:absolute;pointer-events:none}
+.atelier .reflection-sheet{inset:-100%;background:linear-gradient(113deg,transparent 38%,color-mix(in srgb,var(--card-reflector) 6%,transparent) 42%,color-mix(in srgb,var(--card-reflector) 30%,transparent) 47%,color-mix(in srgb,var(--card-reflector) 3%,transparent) 51%,transparent 56%);mix-blend-mode:screen;animation:v41-reflect 13s cubic-bezier(.45,0,.55,1) infinite alternate;will-change:transform;opacity:.75}
+.atelier .material-grain{inset:0;opacity:.12;background:repeating-linear-gradient(95deg,transparent 0 2px,#fff2 3px,transparent 4px 7px)}
+.atelier .theme-etch{width:100%;height:100%;position:absolute;inset:0;opacity:.095;fill:none;stroke:var(--card-edge);stroke-width:.8;transition:opacity .6s}
+.atelier .etch-stars circle{fill:var(--card-edge);stroke:none}
+.atelier .read-sweep{position:absolute;inset:-80%;opacity:0;transform:translateX(-45%) rotate(-21deg);background:linear-gradient(90deg,transparent 41%,color-mix(in srgb,var(--card-reflector) 5%,transparent) 45%,color-mix(in srgb,var(--card-reflector) 48%,transparent) 50%,transparent 50.3%);pointer-events:none}
+.atelier .recognition-pulse{position:absolute;width:50px;height:50px;left:7.8%;top:4.3%;border:1px solid var(--card-edge);border-radius:50%;opacity:0;transform:scale(.35);pointer-events:none}
+/* True perimeter geometry: soft trail, a compact bright head and a second inner edge. */
+.atelier .card-stage .face .edge-track{z-index:4;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.atelier .card-stage .face .edge-track rect{fill:none;stroke:var(--card-edge);stroke-width:.8;opacity:0;stroke-dasharray:100 0;filter:none;animation:none;vector-effect:non-scaling-stroke}
+.atelier .card-stage .face .edge-track .edge-base{opacity:.20}
+.atelier .card-stage .face .edge-track .edge-trail{stroke-width:2.6;stroke-dasharray:13 87;stroke-dashoffset:0;opacity:0;filter:drop-shadow(0 0 4px var(--card-edge))}
+.atelier .card-stage .face .edge-track .edge-comet{stroke:var(--card-reflector);stroke-width:1.6;stroke-dasharray:.9 99.1;stroke-dashoffset:0}
+.atelier .card-stage .face .edge-track .edge-counter{stroke-width:.85;stroke-dasharray:5 95;stroke-dashoffset:50}
+.atelier .card-stage:is([data-phase=idle],[data-phase=specimen]) .face .edge-comet{opacity:calc(.35 * var(--edge-intensity));animation:v41-perimeter 16s linear infinite}
+.atelier .card-stage:is([data-phase=verifying],[data-phase=submitting],[data-phase=processing]) .face .edge-trail{opacity:calc(.70 * var(--edge-intensity));animation:v41-perimeter var(--edge-period) linear infinite}
+.atelier .card-stage:is([data-phase=verifying],[data-phase=submitting],[data-phase=processing]) .face .edge-comet{opacity:var(--edge-intensity);animation:v41-perimeter var(--edge-period) linear infinite}
+.atelier .card-stage:is([data-phase=submitting],[data-phase=processing]) .face .edge-counter{opacity:calc(.52 * var(--edge-intensity));animation:v41-counter calc(var(--edge-period) * 1.27) linear infinite}
+.atelier .card-stage[data-phase=verifying] .face .edge-trail,.atelier .card-stage[data-phase=verifying] .face .edge-comet{animation-duration:1.85s}
+.atelier .card-stage:is([data-phase=verifying],[data-phase=submitting]) .read-sweep{opacity:.72;animation:v41-read 1.65s cubic-bezier(.36,.03,.41,1) infinite}
+.atelier .card-stage[data-phase=verifying] .recognition-pulse{animation:v41-recognition 1.65s ease-out infinite}
+.atelier .card-stage[data-phase=processing] .reflection-sheet{animation-duration:5.8s;opacity:.94}
+.atelier .card-stage[data-phase=processing] .theme-etch{opacity:.18}
+.atelier .card-stage[data-phase=processing] .card-brand svg{filter:drop-shadow(0 0 7px color-mix(in srgb,var(--card-edge) 28%,transparent));animation:v41-mark 3s ease-in-out infinite}
+.atelier .card-stage[data-phase=review] .reflection-sheet{animation-duration:24s;opacity:.38}
+.atelier .card-stage[data-phase=review] .summary-row{animation:v41-row .5s cubic-bezier(.22,1,.36,1) both}
+.atelier .card-stage[data-phase=review] .summary-row:nth-child(2){animation-delay:.09s}
+.atelier .card-stage[data-phase=success] .face .edge-base{opacity:.42}
+.atelier .card-stage[data-phase=success][data-settle=yes] .face .edge-settle{opacity:.42;stroke-width:1.4;animation:v41-settle 1.65s cubic-bezier(.22,1,.36,1) both}
+.atelier .card-stage[data-phase=success] .reflection-sheet{opacity:.42;animation-duration:24s}
+.atelier .card-stage[data-phase=success] .seal{color:var(--card-ink);border-color:color-mix(in srgb,var(--card-edge) 75%,var(--card-ink));background:color-mix(in srgb,var(--card-base) 22%,transparent);box-shadow:inset 0 1px color-mix(in srgb,var(--card-reflector) 22%,transparent);font-family:'Noto Serif CJK SC','Songti SC',serif;border-radius:1px}
+.atelier .card-stage[data-phase=unknown] .face .edge-base{stroke:#c59f60;stroke-dasharray:4 3;opacity:.6}
+.atelier .card-stage[data-phase=unknown] .reflection-sheet{opacity:.25;animation-duration:30s}
+.atelier .card-stage[data-phase=action] .face .edge-base{stroke:#98b5d1;stroke-dasharray:7 4;opacity:.58}
+.atelier .card-stage[data-phase=action] .reflection-sheet{opacity:.25;animation-duration:24s}
+.atelier .card-stage[data-phase=failed] .face .edge-base{stroke:#bf7869;opacity:.65}
+.atelier .card-stage[data-phase=failed] .reflection-sheet{opacity:.12;animation:none}
+.atelier .card-stage:is([data-phase=failed],[data-phase=unknown],[data-phase=action]) .seal{visibility:hidden}
+/* One short semantic time row, not another status card or fabricated percentage. */
+.atelier .elapsed-row{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 0 12px;font-size:10px;color:var(--card-muted);flex-shrink:0;min-height:37px}
+.atelier .elapsed-caption{display:flex;align-items:center;gap:8px;min-width:0}
+.atelier .elapsed-row time{font:500 19px/1 'SFMono-Regular',Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:2px;color:var(--card-ink);white-space:nowrap}
+.atelier .clock-live{display:block;width:5px;height:5px;border-radius:50%;background:var(--card-edge);box-shadow:0 0 7px color-mix(in srgb,var(--card-edge) 40%,transparent);flex-shrink:0}
+.atelier .elapsed-row[data-frozen=true] .clock-live{box-shadow:none;opacity:.6}
+.atelier .elapsed-row[data-pending=true] time{font-size:13px;letter-spacing:0}
+.atelier .card-stage[data-phase=unknown] .clock-live{background:#c69f61;box-shadow:none}
+.atelier .card-stage[data-phase=failed] .clock-live{background:#c77c6e;box-shadow:none}
+/* Stage-specific optical finishes. No SKU or semantic state ever changes here. */
+.atelier .card-stage[data-finish=engraved] .face{border-radius:21px}
+.atelier .card-stage[data-finish=engraved] .theme-etch{opacity:.2}
+.atelier .card-stage[data-finish=engraved] .reflection-sheet{background:linear-gradient(108deg,transparent 38%,#fff2 45%,color-mix(in srgb,var(--card-reflector) 43%,transparent) 48%,#fff1 49%,transparent 51%);opacity:.6}
+.atelier .card-stage[data-finish=satin] .face{border-radius:26px}
+.atelier .card-stage[data-finish=satin] .reflection-sheet{background:linear-gradient(123deg,transparent 28%,color-mix(in srgb,var(--card-reflector) 12%,transparent) 41%,color-mix(in srgb,var(--card-reflector) 27%,transparent) 48%,#fff1 58%,transparent 69%);animation-duration:17s}
+.atelier .card-stage[data-finish=satin] .material-grain{background:repeating-linear-gradient(120deg,transparent 0 2px,#ffdb9216 3px,transparent 4px 7px);opacity:.2}
+.atelier .card-stage[data-finish=satin] .theme-etch{stroke-width:1.8;opacity:.10}
+.atelier .card-stage[data-finish=satin] .face .edge-trail{stroke-width:3.4;filter:drop-shadow(0 0 7px var(--card-edge))}
+.atelier .card-stage[data-finish=ceramic] .face{border-radius:24px;box-shadow:inset 0 1px 2px #fffd,0 2px 1px color-mix(in srgb,var(--card-edge) 45%,#b9c6be),0 5px 1px #8b9d9460,0 32px 65px -28px #43675870}
+.atelier .card-stage[data-finish=ceramic] .reflection-sheet{mix-blend-mode:soft-light;opacity:.95;background:linear-gradient(120deg,transparent 25%,#fff9 43%,#fff3 54%,transparent 65%)}
+.atelier .card-stage[data-finish=ceramic] .material-grain{opacity:.025}
+.atelier .card-stage[data-finish=ceramic] .theme-etch{stroke-width:1.1;stroke:var(--card-reflector);opacity:.24}
+.atelier .card-stage[data-finish=ceramic] .face .edge-trail{stroke-width:2.8;filter:drop-shadow(0 0 3px var(--card-edge))}
+.atelier .card-stage[data-finish=calibrated] .face{border-radius:16px}
+.atelier .card-stage[data-finish=calibrated] .material-grain{background:linear-gradient(#afb5ef0d 1px,transparent 1px),linear-gradient(90deg,#afb5ef0d 1px,transparent 1px);background-size:22px 22px;opacity:.45}
+.atelier .card-stage[data-finish=calibrated] .theme-etch{opacity:.18;stroke-width:.9}
+.atelier .card-stage[data-finish=calibrated] .face .edge-trail{stroke-dasharray:3 2 3 2 3 87;stroke-width:2}
+.atelier .card-stage[data-finish=calibrated] .recognition-pulse{border-radius:4px}
+.atelier .card-stage[data-finish=stardust] .reflection-sheet{background:linear-gradient(111deg,transparent 34%,#76bcff10 42%,#b0d6ff38 48%,#b0b4ff08 56%,transparent 66%);animation-duration:14s}
+.atelier .card-stage[data-finish=stardust] .material-grain{background-image:radial-gradient(circle at 21% 14%,#e6f3ff99 0 .7px,transparent 1.3px),radial-gradient(circle at 64% 73%,#c8dbff8c 0 .6px,transparent 1.2px);background-size:78px 91px,117px 83px;opacity:.3;animation:v41-stargrain 19s linear infinite}
+.atelier .card-stage[data-finish=stardust] .theme-etch{opacity:.19}
+.atelier .card-stage[data-finish=stardust] .face .edge-counter{stroke-dasharray:1 3 1 3 1 91}
+.atelier .card-stage[data-fx=light] .reflection-sheet{animation-duration:24s;opacity:.4}
+.atelier .card-stage[data-fx=light] .read-sweep{opacity:.32}
+.atelier .card-stage[data-fx=light] .face .edge-counter{display:none}
+.atelier .card-stage[data-fx=static] *,.atelier .card-stage[data-fx=static] *:before,.atelier .card-stage[data-fx=static] *:after{animation:none!important;transition:none!important;will-change:auto!important}
+.atelier .card-stage[data-fx=static] .read-sweep,.atelier .card-stage[data-fx=static] .recognition-pulse{display:none}
+.atelier .card-stage[data-fx=static] .face .edge-trail{stroke-dashoffset:12}
+.atelier .card-stage[data-fx=static] .face .edge-comet{stroke-dashoffset:12}
+.atelier .card-stage[data-fx=static] .seal{opacity:1;transform:translateY(-20%) rotate(-8deg)}
+.atelier .card-stage[data-fx=static] .seal svg{stroke-dashoffset:0}
+.atelier .card-stage[data-hidden=true] *{animation-play-state:paused!important}
+@keyframes v41-reflect{from{transform:translateX(-17%) rotate(-3deg)}to{transform:translateX(16%) rotate(3deg)}}
+@keyframes v41-perimeter{to{stroke-dashoffset:-100}}
+@keyframes v41-counter{to{stroke-dashoffset:150}}
+@keyframes v41-read{0%{transform:translateX(-45%) rotate(-21deg)}100%{transform:translateX(45%) rotate(-21deg)}}
+@keyframes v41-recognition{0%{transform:scale(.35);opacity:.45}80%,100%{transform:scale(3);opacity:0}}
+@keyframes v41-settle{0%{stroke-dasharray:5 95;opacity:1;filter:drop-shadow(0 0 7px var(--card-edge))}75%{stroke-dasharray:100 0;opacity:.8}100%{stroke-dasharray:100 0;opacity:.42;filter:none}}
+@keyframes v41-row{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes v41-mark{0%,100%{opacity:.7}50%{opacity:1}}
+@keyframes v41-stargrain{from{background-position:0 0,0 0}to{background-position:20px -9px,-15px 6px}}
+@media(max-width:1150px) and (min-width:701px){.atelier .card-stage .face{padding:27px}.atelier .card-stage .product-line h2[data-long=true]{font-size:42px}.atelier .card-stage .product-line span{font-size:15px}.atelier .card-stage .elapsed-row{padding:5px 0 8px;min-height:30px}.atelier .card-stage .elapsed-row time{font-size:17px}}
+@media(max-width:700px){.atelier .card-stage .face{padding:24px 23px 21px}.atelier .card-stage .card-orbit{min-height:440px}.atelier .card-stage .elapsed-row{padding:11px 0;font-size:10px}.atelier .card-stage .elapsed-row time{font-size:20px}.atelier .card-stage .product-line h2[data-long=true]{font-size:44px}.atelier .card-stage .product-line h2{font-size:65px}.atelier .card-stage .card-brand{font-size:17px}.atelier .card-stage .card-tag{font-size:6px}.atelier .card-stage .seal{top:44%;right:1px;font-size:14px}.atelier .card-stage[data-phase=success] .product-line{padding-bottom:20px}.atelier .card-stage[data-phase=success] .seal{top:52%}.atelier .card-stage .summary-row{font-size:11px}.atelier .card-stage .main-action{min-width:0}.atelier .card-stage .card-environment{will-change:auto}}
+@media(max-width:360px){.atelier .card-stage .face{padding:22px 19px 18px}.atelier .card-stage .card-brand{font-size:16px}.atelier .card-stage .product-line h2[data-long=true]{font-size:39px}.atelier .card-stage .elapsed-row{gap:8px}.atelier .card-stage .elapsed-caption{font-size:9px}.atelier .card-stage .card-orbit{min-height:432px}}

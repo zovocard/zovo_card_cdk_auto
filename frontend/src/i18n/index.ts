@@ -1,6 +1,8 @@
 import { createI18n } from 'vue-i18n'
 import zh from './locales/zh'
 import en from './locales/en'
+// 东方意象兑换页展示层（移植自 autocard，原作者授权开源使用）的文案：m19 / learn / feedback.clock / rp
+import { presentationMessages } from '../redeem-presentation/i18n/messages'
 
 export type AppLocale = 'zh' | 'en'
 
@@ -24,7 +26,7 @@ export const i18n = createI18n({
   globalInjection: true,
   locale,
   fallbackLocale: 'zh',
-  messages: { zh, en },
+  messages: { zh: { ...zh, ...presentationMessages.zh }, en: { ...en, ...presentationMessages.en } },
 })
 
 export function setLocale(next: AppLocale) {

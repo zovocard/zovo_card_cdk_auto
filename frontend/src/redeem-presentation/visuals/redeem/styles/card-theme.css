@@ -1,0 +1,37 @@
+/* 卡面主题层：刻线主题景（正面左下、卡背镜像右下）与页脚立雕印章。颜色取主题印记色，按卡面明暗切换。 */
+.atelier .identity-zone .card-stage{--theme-mark:#d2bd8f}
+.atelier .identity-zone .card-stage[data-theme-mark=silk]{--theme-mark:#d6af95}
+.atelier .identity-zone .card-stage[data-theme-mark=porcelain]{--theme-mark:#afc9c6}
+.atelier .identity-zone .card-stage[data-theme-mark=orbit]{--theme-mark:#c4b7e6}
+.atelier .identity-zone .card-stage[data-theme-mark=astral]{--theme-mark:#a9c8e8}
+.atelier .identity-zone .card-stage[data-theme-mark=verdant]{--theme-mark:#aac6b0}
+.atelier .identity-zone .card-stage[data-theme-mark=dawn]{--theme-mark:#d7b5b3}
+.atelier .identity-zone .card-stage[data-projected-tone=light]{--theme-mark:#806332}
+.atelier .identity-zone .card-stage[data-projected-tone=light][data-theme-mark=silk]{--theme-mark:#925b47}
+.atelier .identity-zone .card-stage[data-projected-tone=light][data-theme-mark=porcelain]{--theme-mark:#436c68}
+.atelier .identity-zone .card-stage[data-projected-tone=light][data-theme-mark=orbit]{--theme-mark:#665587}
+.atelier .identity-zone .card-stage[data-projected-tone=light][data-theme-mark=astral]{--theme-mark:#416b92}
+.atelier .identity-zone .card-stage[data-projected-tone=light][data-theme-mark=verdant]{--theme-mark:#477157}
+.atelier .identity-zone .card-stage[data-projected-tone=light][data-theme-mark=dawn]{--theme-mark:#8d595c}
+
+.atelier .card-theme-scene{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none;z-index:1;color:color-mix(in srgb,var(--theme-mark) 78%,var(--card-ink,#fff));opacity:.17;-webkit-mask-image:radial-gradient(120% 95% at 18% 100%,#000 28%,#0008 52%,transparent 78%);mask-image:radial-gradient(120% 95% at 18% 100%,#000 28%,#0008 52%,transparent 78%)}
+.atelier .card-theme-scene svg{position:absolute;left:-6%;bottom:-9%;width:82%;height:auto;overflow:visible}
+/* 卡背：同一主题景镜像到右下，压在产品徽记之下，与正面构图区分。 */
+.atelier .back .card-theme-scene{opacity:.2;-webkit-mask-image:radial-gradient(110% 100% at 84% 100%,#000 30%,#0008 55%,transparent 80%);mask-image:radial-gradient(110% 100% at 84% 100%,#000 30%,#0008 55%,transparent 80%)}
+.atelier .back .card-theme-scene svg{left:auto;right:-8%;bottom:-12%;width:88%;transform:scaleX(-1)}
+.atelier .card-stage[data-projected-tone=light] .card-theme-scene{opacity:.22}
+
+/* 页脚立雕印章：浮雕高光在上沿、阴影在下沿，读作压印金属而非贴图。 */
+.atelier .card-theme-hallmark{display:flex;align-items:center;gap:8px;align-self:center;min-width:0;color:var(--theme-mark)}
+.atelier .hallmark-seal{position:relative;flex:none;width:24px;height:24px;padding:3px;border-radius:50%;background:radial-gradient(circle at 34% 28%,color-mix(in srgb,var(--theme-mark) 30%,transparent),transparent 72%);box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 22%,transparent),inset 0 -1px 1px color-mix(in srgb,#000 38%,transparent),0 0 0 1px color-mix(in srgb,var(--theme-mark) 38%,transparent)}
+.atelier .hallmark-seal svg{display:block;width:100%;height:100%;filter:drop-shadow(0 .6px 0 color-mix(in srgb,#fff 30%,transparent)) drop-shadow(0 -.6px 0 color-mix(in srgb,#000 55%,transparent))}
+.atelier .hallmark-text{display:flex;flex-direction:column;gap:2px;line-height:1.15;white-space:nowrap}
+.atelier .hallmark-text b{font:500 9px/1.15 'Noto Serif CJK SC','Songti SC',serif;letter-spacing:.24em}
+.atelier .hallmark-text small{font-size:6.5px;letter-spacing:.18em;opacity:.7}
+.atelier .card-stage[data-phase=success] .hallmark-seal{box-shadow:inset 0 1px 0 color-mix(in srgb,#fff 30%,transparent),inset 0 -1px 1px color-mix(in srgb,#000 38%,transparent),0 0 0 1px color-mix(in srgb,var(--theme-mark) 60%,transparent),0 0 12px color-mix(in srgb,var(--theme-mark) 30%,transparent)}
+@media(max-width:700px){
+ .atelier .card-theme-hallmark{gap:0}.atelier .hallmark-text{display:none}
+ .atelier .hallmark-seal{width:18px;height:18px;padding:2px}
+ .atelier .card-theme-scene{opacity:.14}
+}
+@media(forced-colors:active){.atelier .card-theme-scene{display:none}.atelier .hallmark-seal{box-shadow:none;border:1px solid CanvasText}}

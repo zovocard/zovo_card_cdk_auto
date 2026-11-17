@@ -27,6 +27,7 @@ export default {
     submitting: 'Submitting...',
     querying: 'Querying...',
     retry: 'Search Again',
+    closeDialog: 'Close dialog',
   },
   home: {
     brand: 'Recharge Portal',

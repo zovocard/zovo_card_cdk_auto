@@ -1,0 +1,34 @@
+/* 卡面平台身份：右上角平台＋档位签，背景一枚压印的平台标志。只显示已识别套餐，不改变卡片尺寸和排版。 */
+.atelier .card-stage{--platform-accent:var(--card-edge)}
+.atelier .card-stage[data-platform=openai]{--platform-accent:#74d6b4}
+.atelier .card-stage[data-platform=claude]{--platform-accent:#e39a76}
+.atelier .card-stage[data-platform=grok]{--platform-accent:#c3d4ff}
+.atelier .card-stage[data-platform=x]{--platform-accent:#e9edf3}
+.atelier .card-stage[data-card-tone=light][data-platform=openai],.atelier .card-stage[data-projected-tone=light][data-platform=openai]{--platform-accent:#0f7a5a}
+.atelier .card-stage[data-card-tone=light][data-platform=claude],.atelier .card-stage[data-projected-tone=light][data-platform=claude]{--platform-accent:#b0532f}
+.atelier .card-stage[data-projected-tone=light][data-platform=grok],.atelier .card-stage[data-projected-tone=light][data-platform=x]{--platform-accent:#1c2230}
+
+.atelier .card-stage .card-platform{display:none}
+.atelier .card-stage:not([data-platform=""]) .card-platform:not(:empty){display:inline-flex;align-items:center;gap:7px;min-width:0;max-width:62%;color:var(--card-ink);font:600 9px/1 var(--r-ui,system-ui);letter-spacing:1.2px;white-space:nowrap}
+.atelier .card-stage:not([data-platform=""]) .card-brandrow:has(.card-platform:not(:empty)) .card-tag{display:none}
+.atelier .card-platform .platform-glyph{display:inline-flex;width:17px;height:17px;flex:0 0 17px;color:var(--platform-accent);filter:drop-shadow(0 0 6px color-mix(in srgb,var(--platform-accent) 32%,transparent))}
+.atelier .card-platform .platform-glyph svg{width:100%;height:100%;display:block}
+.atelier .card-platform .platform-name{opacity:.86}
+.atelier .card-platform .platform-tier{display:inline-flex;align-items:center;gap:4px;padding:4px 7px 4px 6px;border-radius:999px;border:1px solid color-mix(in srgb,var(--platform-accent) 42%,transparent);background:color-mix(in srgb,var(--platform-accent) 12%,transparent);color:color-mix(in srgb,var(--card-ink) 82%,var(--platform-accent));letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis}
+.atelier .card-platform .platform-tier .tier-mark{width:10px;height:10px;flex:0 0 10px}
+.atelier .card-platform .platform-tier[data-tint=gold]{border-color:color-mix(in srgb,#e6c46f 58%,transparent);background:color-mix(in srgb,#e6c46f 16%,transparent)}
+.atelier .card-platform .platform-pips{display:inline-flex;gap:3px;align-items:center}
+.atelier .card-platform .platform-pips i{display:block;width:4px;height:4px;border-radius:50%;border:1px solid color-mix(in srgb,var(--card-ink) 45%,transparent)}
+.atelier .card-platform .platform-pips i[data-on]{background:var(--platform-accent);border-color:var(--platform-accent);box-shadow:0 0 5px color-mix(in srgb,var(--platform-accent) 55%,transparent)}
+
+.atelier .card-stage .card-platform-mark{position:absolute;right:-7%;top:50%;height:96%;aspect-ratio:1;transform:translateY(-50%) rotate(-9deg);color:var(--platform-accent);opacity:0;pointer-events:none;-webkit-mask-image:radial-gradient(closest-side,#000 52%,transparent 100%);mask-image:radial-gradient(closest-side,#000 52%,transparent 100%);transition:opacity .6s ease}
+.atelier .card-stage .card-platform-mark svg{width:100%;height:100%;display:block}
+.atelier .card-stage:not([data-platform=""]) .card-platform-mark:not(:empty){opacity:.075}
+.atelier .card-stage[data-projected-tone=light]:not([data-platform=""]) .card-platform-mark:not(:empty){opacity:.09}
+.atelier .card-stage[data-tier-level="4"] .card-platform-mark,.atelier .card-stage[data-tier-level="5"] .card-platform-mark{filter:drop-shadow(0 0 18px color-mix(in srgb,var(--platform-accent) 40%,transparent))}
+.atelier .card-stage[data-platform]:not([data-platform=""]) .digest-family{color:color-mix(in srgb,var(--card-muted,currentColor) 70%,var(--platform-accent))}
+.atelier[data-motion=static] .card-stage .card-platform-mark,.atelier .card-stage[data-fx=static] .card-platform-mark{transition:none}
+
+@media(max-width:700px){.atelier .card-stage:not([data-platform=""]) .card-platform:not(:empty){gap:5px;font-size:7.5px;letter-spacing:.8px}.atelier .card-platform .platform-glyph{width:14px;height:14px;flex-basis:14px}.atelier .card-platform .platform-tier{padding:3px 6px 3px 5px}.atelier .card-platform .platform-pips{display:none}}
+@media(max-width:360px){.atelier .card-platform .platform-name{display:none}}
+@media(forced-colors:active){.atelier .card-platform .platform-tier{border-color:CanvasText;background:Canvas;color:CanvasText}.atelier .card-stage .card-platform-mark{display:none}}

@@ -27,6 +27,7 @@ export default {
     submitting: '提交中...',
     querying: '查询中...',
     retry: '重新查询',
+    closeDialog: '关闭弹窗',
   },
   home: {
     brand: 'Recharge Portal',

@@ -1,0 +1,172 @@
+/* V4.3 — Card first, supporting actions second.
+   This file supersedes only presentation, not task/challenge semantics. */
+.atelier{--w-bg:#101419;--w-input:#ffffff04;--w-ink:#eeeae3;--w-muted:#a9aaa9;--w-line:#d7c8aa29;--w-accent:#d5c3a1;--w-on:#201b14;--card-ease:cubic-bezier(.22,.61,.36,1);display:flex;flex-direction:column;min-height:100svh;}
+.atelier[data-stage=silk]{--w-bg:#19181a;--w-input:#ffffff05;--w-accent:#ddc5aa;--w-muted:#b4aaa1}
+.atelier[data-stage=porcelain]{--w-bg:#edf0e9;--w-input:#fff7;--w-ink:#253a34;--w-muted:#5c7065;--w-line:#344d4033;--w-accent:#415d50;--w-on:#fff;}
+.atelier[data-stage=orbit]{--w-bg:#10121d;--w-input:#c6caff05;--w-ink:#eeeef7;--w-muted:#a7abc0;--w-accent:#b8badd}
+.atelier[data-stage=astral]{--w-bg:#0d1623;--w-input:#bad7ff05;--w-ink:#ebf0f9;--w-muted:#a4b7cf;--w-accent:#bad1ee}
+.atelier .topbar{width:100%;max-width:1400px;height:86px;padding:0 54px;flex-shrink:0;}
+.atelier .brand{font-size:22px;font-weight:500;letter-spacing:-.7px;gap:12px;}.atelier .brand svg{width:26px;}
+.atelier .toplinks{gap:27px;}.atelier .toplinks a{color:var(--w-muted);font-size:11px;min-height:44px;display:flex;align-items:center;}
+.atelier .tool-button{min-height:40px;font-size:10px;padding:0 14px;border-color:var(--w-line);background:transparent;}
+.atelier[data-stage] .main-stage.journey-grid{display:grid!important;grid-template-columns:minmax(0,650px) minmax(0,330px);grid-template-areas:none;gap:90px;width:100%;max-width:1190px;margin:0 auto;min-height:calc(100svh - 170px);align-content:center;align-items:center;padding:70px 40px 96px;flex:1;}
+.atelier .identity-zone{position:relative;min-width:0;align-self:center;padding:30px 0 0;}
+.atelier .operation-zone{min-width:0;align-self:center;}
+.atelier[data-stage] .headcopy{padding:0;margin:0 0 26px;grid-area:auto;max-width:none;text-align:left;}
+.atelier .headcopy .eyebrow{font:8px/1.5 ui-monospace,monospace;letter-spacing:2.2px;color:var(--w-muted);margin:0 0 18px;}
+.atelier[data-stage] .headcopy h1{font:400 45px/1.32 'Noto Serif CJK SC','Songti SC',Georgia,serif;letter-spacing:-1.9px;}
+.atelier[data-stage] .headcopy h1 span{display:block;margin:0;}.atelier .headcopy h1 span:last-child{color:var(--w-accent);}
+.atelier .headcopy .deck{font-size:12px;line-height:1.95;color:var(--w-muted);margin:17px 0 0;max-width:330px;}
+/* Nothing around the actions competes with the card's silhouette. */
+.atelier .workbench,.atelier[data-stage] .workbench{padding:0;border:0;background:none;box-shadow:none;border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;isolation:auto;min-width:0;}
+.atelier .work-header{margin-bottom:19px;}.atelier .work-eyebrow{font-size:8px;letter-spacing:1.6px;color:var(--w-muted);margin:0 0 10px;}
+.atelier .work-header h2{font:400 27px/1.4 'Noto Serif CJK SC','Songti SC',Georgia,serif;letter-spacing:-.5px;margin:0;outline:0;}
+.atelier .work-header>p{font-size:12px;line-height:1.85;margin:10px 0 0;color:var(--w-muted);}
+.atelier[data-work-phase=entry] .work-header,.atelier[data-work-phase=verifying] .work-header,.atelier .work-step-track,.atelier .work-safety{display:none!important;}
+.atelier .work-view>form>label,.atelier .work-view>label,.atelier #gpt-fields>label,.atelier #claude-fields>label{font-size:11px;line-height:1.6;margin:0 0 9px;display:block;color:var(--w-muted);}
+.atelier .work-input{border:1px solid var(--w-line);background:var(--w-input);box-shadow:inset 0 1px #ffffff03;border-radius:7px;color:var(--w-ink);font-size:13px;min-height:49px;line-height:1.65;padding:12px 13px;width:100%;transition:border-color .22s,box-shadow .22s;}
+.atelier .work-input:focus{outline:0;border-color:color-mix(in srgb,var(--w-accent) 75%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--w-accent) 6%,transparent);}
+.atelier .work-input::placeholder{color:var(--w-muted);opacity:.72;font-size:12px;}
+.atelier textarea.work-input{resize:vertical;min-height:98px;max-height:none;}.atelier .privacy-note{font-size:10px;line-height:1.85;color:var(--w-muted);margin:10px 0 7px;}
+.atelier .code-line{display:flex;gap:9px;align-items:stretch;}.atelier .code-line .work-input{flex:1;min-width:0;}
+.atelier .code-line .work-primary{width:72px;min-width:72px;flex:none;justify-content:center;gap:0;font-size:12px;border-radius:7px;margin:0;padding:0 8px;}
+.atelier .code-line .work-primary span:last-child{display:none;}.atelier .code-line .work-primary span:first-child{font-size:12px;white-space:normal;line-height:1.4;}
+
+
+.atelier .field-hint{font-size:10px;line-height:1.85;color:var(--w-muted);margin:9px 0 0;}
+.atelier .work-primary{background:color-mix(in srgb,var(--w-accent) 91%,#fff 9%);color:var(--w-on);border:1px solid color-mix(in srgb,var(--w-accent) 50%,transparent);font-size:12px;min-height:45px;box-shadow:inset 0 1px #ffffff16;transition:filter .2s,border-color .2s;}
+.atelier .work-primary:hover:not(:disabled){filter:brightness(1.05);box-shadow:inset 0 1px #ffffff26;transform:none;}.atelier .work-primary:disabled{opacity:.58;cursor:not-allowed;}
+.atelier .guide-line{margin:16px 0 0;display:flex;align-items:center;gap:20px;}
+.atelier .work-guide{font-size:11px;min-height:36px;padding:4px 0;color:var(--w-accent);border:0;background:none;}
+.atelier .work-bottom{padding-top:10px;margin-top:4px;border:0;display:flex;justify-content:space-between;gap:14px;}
+.atelier .work-bottom button,.atelier .inline-text{font-size:10px;color:var(--w-muted);min-height:36px;border:0;background:none;}
+.atelier .work-bottom button:hover,.atelier .inline-text:hover{color:var(--w-ink);}
+.atelier .cta-row{gap:15px;align-items:center;margin-top:17px;}
+.atelier .identified-tag{padding:0 0 15px;margin-bottom:15px;border-bottom:1px solid var(--w-line);font-size:11px;border-radius:0;background:none;}
+.atelier .tiny-mark{font-size:11px;}.atelier .review-list>div{font-size:11px;padding:10px 0;border-color:var(--w-line);gap:12px;}.atelier .review-list dd{overflow-wrap:anywhere;}
+.atelier .agreement{font-size:11px;line-height:1.9;margin:15px 0;gap:8px;}.atelier .agreement input{flex-shrink:0;}
+.atelier .task-status{gap:0;margin:0 0 16px;padding:0;}.atelier .task-status h3,.atelier #status-emblem{display:none;}.atelier .task-status p{font-size:12px;line-height:1.9;color:var(--w-muted);}
+.atelier .task-facts{padding:9px 0;font-size:10px;gap:12px;line-height:1.8;color:var(--w-muted);border-color:var(--w-line);}
+.atelier .task-facts code{font-size:10px;overflow-wrap:anywhere;}.atelier #work-clock{display:none!important;}.atelier .last-observation{font-size:9px;line-height:1.7;color:var(--w-muted);margin:9px 0;}
+.atelier .task-controls{margin-top:20px;gap:16px;}
+.atelier .challenge-host{margin:20px 0 0;border:0;border-top:1px solid color-mix(in srgb,var(--w-warn) 45%,transparent);border-radius:0;background:none;padding:18px 0 0;box-shadow:none;}
+.atelier .challenge-caption{margin-bottom:8px;font-size:10px;}.atelier .challenge-label{border:0;padding:0;color:var(--w-warn);background:none;}
+.atelier .challenge-host h3{font-size:18px;font-weight:500;margin:8px 0 10px;}.atelier .challenge-host p{font-size:11px;line-height:1.9;color:var(--w-muted);}
+.atelier .origin-note{background:none;padding:10px 0;border:0;font-size:10px;}.atelier .challenge-timer{font-size:10px;padding:10px 0;}.atelier .challenge-footnote{font-size:10px!important;}
+.atelier .widget-surface{padding:0;border:1px solid var(--w-line);border-radius:7px;overflow:hidden;}.atelier iframe{max-width:100%;}
+.atelier .challenge-next{gap:15px;}.atelier .challenge-next button{font-size:10px;}
+.atelier .context-line{position:relative;font-size:9px;text-align:center;color:var(--w-muted);opacity:.75;line-height:1.8;margin:17px 0 0;max-width:none;}
+.atelier .card-caption{text-align:center;font:8px/1.7 ui-monospace,monospace;letter-spacing:2.3px;margin-top:32px;color:var(--w-muted);opacity:.64;}
+.atelier .footer{max-width:1292px;width:calc(100% - 108px);margin:0 auto;min-height:75px;padding:20px 0;border-top:1px solid var(--w-line);font-size:9px;align-items:center;letter-spacing:.4px;flex-shrink:0;}
+.atelier .footer button,.atelier .footer a{font-size:9px;}.atelier .studio-entry{display:block;font-size:12px;min-height:43px;margin-top:10px;color:var(--w-muted);}
+/* A single continuous metal object: two faces, one readable hierarchy. */
+.atelier[data-stage] .identity-zone .card-stage{width:100%;max-width:none;margin:0;perspective:1700px;isolation:isolate;}
+.atelier .identity-zone .card-orbit{height:auto;min-height:0;aspect-ratio:1.586;transition:transform 1.08s cubic-bezier(.65,.04,.28,1);will-change:auto;}
+.atelier .identity-zone .card-tilt{transition:transform .35s var(--card-ease);transform-style:preserve-3d;}
+.atelier .identity-zone .face{padding:29px 32px 24px;border-radius:18px!important;outline:0!important;border:1px solid color-mix(in srgb,var(--card-edge) 30%,var(--card-deep));color:var(--card-ink);background:linear-gradient(122deg,var(--card-deep) -12%,var(--card-base) 25%,color-mix(in srgb,var(--card-base) 77%,var(--card-deep)) 53%,var(--card-deep) 102%);box-shadow:inset 0 1px 1px color-mix(in srgb,var(--card-reflector) 42%,transparent),inset 0 -1px 1px #0004,0 2px 0 color-mix(in srgb,var(--card-edge) 23%,var(--card-deep)),0 22px 50px -23px color-mix(in srgb,var(--card-shadow) 65%,transparent);}
+.atelier .identity-zone .card-stage:after{bottom:-20px;left:15%;right:15%;height:15px;filter:blur(16px);opacity:.48;background:var(--card-shadow);}
+.atelier .identity-zone .card-brandrow{border:0;padding:0;min-height:20px;}.atelier .identity-zone .card-brand{font-size:15px;letter-spacing:-.3px;font-weight:450;gap:10px;}.atelier .identity-zone .card-brand svg{width:23px;height:23px;opacity:.65;}
+.atelier .identity-zone .card-tag{font-size:8px;letter-spacing:1.5px;color:var(--card-muted);max-width:47%;}
+.atelier .identity-zone .card-body{min-height:0;flex:1;}.atelier .identity-zone .card-digest{padding:18px 0 29px;gap:0;justify-content:center;}
+.atelier .identity-zone .digest-family{font:8px/1.5 ui-monospace,monospace;letter-spacing:2.25px;margin-bottom:13px;opacity:.85;}
+.atelier .identity-zone .digest-product{font:400 clamp(44px,4.8vw,72px)/1.07 Georgia,'Liberation Serif','Noto Serif CJK SC','Songti SC',serif!important;letter-spacing:-1.6px;overflow-wrap:normal;}
+.atelier .identity-zone .digest-product[data-long=true]{font-size:clamp(39px,3.8vw,57px)!important;letter-spacing:-1.5px;}
+.atelier .identity-zone .digest-edition{font-size:10px;letter-spacing:.35px;color:var(--card-muted);margin-top:13px;line-height:1.7;}
+.atelier .identity-zone .digest-status{position:absolute;bottom:0;left:0;font-size:10px;line-height:1.7;margin:0;gap:7px;}
+.atelier .identity-zone .digest-status i{width:3px;height:3px;box-shadow:none;}
+.atelier .identity-zone .card-footer{margin-top:18px;padding:14px 0 0;border-color:color-mix(in srgb,var(--card-ink) 12%,transparent);gap:20px;}
+.atelier .identity-zone .foot-label{font:7px/1.4 ui-monospace,monospace;letter-spacing:1.8px;margin-bottom:4px;color:var(--card-muted);}.atelier .identity-zone .foot-value,.atelier .identity-zone .foot-value.mono{font:10px/1.5 ui-monospace,monospace;letter-spacing:.25px;color:var(--card-ink);}
+.atelier .identity-zone .elapsed-row{position:absolute;right:32px;bottom:84px;padding:0;min-height:0;gap:8px;font-size:9px;background:none;}
+.atelier .identity-zone .elapsed-row time{font:400 13px/1 ui-monospace,monospace;letter-spacing:.8px;}.atelier .elapsed-caption{gap:0;}.atelier .clock-live{display:none;}
+.atelier .identity-zone [data-product=unidentified] .digest-product{font:400 clamp(20px,2.65vw,39px)/1.4 ui-monospace,monospace!important;letter-spacing:2.6px;color:var(--card-ink);opacity:.88;}
+.atelier .identity-zone [data-product=unidentified] .digest-family{display:none;}.atelier .identity-zone [data-product=unidentified] .digest-edition{font:7px/1.5 ui-monospace,monospace;letter-spacing:2.1px;margin-top:16px;}
+.atelier .identity-zone .digest-seal{display:none;position:absolute;right:0;bottom:43px;width:auto;height:auto;padding:7px 12px;line-height:1.4;border:1px solid color-mix(in srgb,var(--card-ink) 48%,transparent);border-radius:3px;color:var(--card-ink);font:12px 'Noto Serif CJK SC','Songti SC',serif;gap:7px;align-items:center;opacity:.8;transform:rotate(-6deg);}
+.atelier .identity-zone [data-phase=success] .digest-seal{display:flex;animation:v43-seal .8s var(--card-ease) both;}
+.atelier .digest-seal svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;}
+.atelier .identity-zone [data-phase=success] .digest-seal path{stroke-dasharray:28;stroke-dashoffset:28;animation:v43-check .65s .12s var(--card-ease) both;}
+/* Remove the noisy effects rather than layering new ones over them. */
+.atelier .identity-zone .face:after{opacity:.035;}.atelier .identity-zone .emboss{opacity:.024;stroke-width:.8;}.atelier .identity-zone .theme-etch{opacity:.032!important;stroke-width:.65!important;}
+.atelier .identity-zone .recognition-pulse,.atelier .identity-zone .read-sweep,.atelier .identity-zone .edge-counter{display:none!important;}
+.atelier .identity-zone .material-grain{opacity:.045!important;background:repeating-linear-gradient(91deg,transparent 0 1px,#fff2 1.3px,transparent 2px 4px)!important;}
+.atelier .identity-zone .reflection-sheet{inset:-80%;mix-blend-mode:screen;background:linear-gradient(118deg,transparent 29%,color-mix(in srgb,var(--card-reflector) 2%,transparent) 38%,color-mix(in srgb,var(--card-reflector) 25%,transparent) 46.7%,color-mix(in srgb,var(--card-reflector) 3%,transparent) 53%,transparent 64%)!important;opacity:.63!important;animation:v43-metal 16s ease-in-out infinite alternate!important;}
+.atelier .identity-zone .card-environment:after{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at var(--spot-x,25%) var(--spot-y,5%),color-mix(in srgb,var(--card-reflector) 7%,transparent),transparent 62%);opacity:.7;}
+.atelier .identity-zone .card-stage[data-phase=verifying] .reflection-sheet{animation:v43-read 1.05s var(--card-ease) 1!important;}
+.atelier .identity-zone .card-stage[data-phase=processing] .reflection-sheet{animation-duration:8.5s!important;}
+.atelier .identity-zone .card-stage[data-phase=review] .reflection-sheet{animation-duration:22s!important;opacity:.38!important;}
+.atelier .identity-zone .card-stage[data-phase=failed] .reflection-sheet{animation:none!important;opacity:.18!important;}
+.atelier .identity-zone .card-stage .card-brand svg{animation:none!important;filter:none!important;}
+.atelier .identity-zone .card-stage .face .edge-track .edge-base{stroke-width:.55;opacity:.17;}
+.atelier .identity-zone .card-stage .face .edge-track .edge-trail{stroke-width:1.35;stroke-dasharray:7 93;opacity:0;filter:none;animation:none;}
+.atelier .identity-zone .card-stage .face .edge-track .edge-comet{stroke-width:1.55;stroke-dasharray:.65 99.35;opacity:0;filter:drop-shadow(0 0 1.2px var(--card-reflector));animation:none;}
+.atelier .identity-zone .card-stage:is([data-phase=verifying],[data-phase=submitting],[data-phase=processing]) .face .edge-track .edge-trail{opacity:calc(.38 * var(--edge-intensity));animation:v43-edge 3.6s linear infinite;}
+.atelier .identity-zone .card-stage:is([data-phase=verifying],[data-phase=submitting],[data-phase=processing]) .face .edge-track .edge-comet{opacity:var(--edge-intensity);animation:v43-edge 3.6s linear infinite;}
+.atelier .identity-zone .card-stage[data-phase=verifying] .face .edge-track :is(.edge-trail,.edge-comet){animation-duration:2.3s;}
+.atelier .identity-zone .card-stage[data-phase=success] .face .edge-track .edge-settle{stroke-width:.85;stroke-dasharray:100 100;opacity:.52;animation:v43-close 1s var(--card-ease) both;}
+.atelier .identity-zone .card-stage[data-phase=success][data-settle=no] .face .edge-track .edge-settle{animation:none;stroke-dashoffset:0;}
+.atelier .identity-zone .card-stage:is([data-phase=action],[data-phase=unknown]) .face .edge-track .edge-base{stroke:color-mix(in srgb,var(--card-ink) 30%,var(--card-edge));opacity:.36;stroke-dasharray:2 2;}
+.atelier .identity-zone .card-stage[data-phase=failed] .face .edge-track .edge-base{stroke:#a96359;stroke-dasharray:100 0;opacity:.42;}
+/* Each stage lights its card; the 45 complete palettes remain authoritative. */
+.atelier[data-stage=porcelain] .identity-zone .face{box-shadow:inset 0 1px #fff9,inset 0 -1px #1232,0 2px 0 color-mix(in srgb,var(--card-edge) 25%,var(--card-base)),0 24px 49px -22px #29423848;}
+.atelier[data-stage=silk] .identity-zone .reflection-sheet{background:linear-gradient(119deg,transparent 25%,color-mix(in srgb,var(--card-reflector) 20%,transparent) 47%,transparent 73%)!important;}
+.atelier[data-stage=astral] .identity-zone .theme-etch{opacity:.055!important;}
+.atelier[data-stage=orbit] .identity-zone:before{content:'';position:absolute;width:112%;height:88%;left:-6%;top:2%;border:1px solid #a6a8df13;border-radius:50%;transform:rotate(-14deg);pointer-events:none;z-index:-1;}
+.atelier[data-stage=orbit] .identity-zone:after{content:'';position:absolute;inset:3% -10%;border-radius:50%;background:radial-gradient(ellipse,#8273db10,transparent 68%);pointer-events:none;z-index:-1;}
+.atelier .shade{background:radial-gradient(ellipse at 48% 48%,transparent 0%,#03050a22 76%,#03050a66);}
+.atelier[data-stage=porcelain] .shade{background:linear-gradient(90deg,#fff0,#f2f4ef30);}
+/* Complex operations can grow; the same challenge host stays outside all card transforms. */
+.atelier[data-work-phase=challenge] .headcopy,.atelier[data-work-phase=challenge-expired] .headcopy,.atelier[data-work-phase=waiting-verification] .headcopy,.atelier[data-work-phase=review] .headcopy,.atelier[data-work-phase=precheck-blocked] .headcopy{margin-bottom:23px;}
+.atelier[data-work-phase=challenge] .headcopy .deck,.atelier[data-work-phase=challenge-expired] .headcopy .deck,.atelier[data-work-phase=waiting-verification] .headcopy .deck{display:none;}
+.atelier[data-stage] .main-stage.journey-grid[data-mode=batch]{grid-template-columns: minmax(0,400px) minmax(0,580px);gap:65px;}.atelier .batch-row{font-size:11px;}
+@keyframes v43-metal{0%{transform:translateX(-14%) translateY(-3%)}100%{transform:translateX(17%) translateY(2%)}}
+@keyframes v43-read{from{transform:translateX(-30%);opacity:.35}to{transform:translateX(24%);opacity:.6}}
+@keyframes v43-edge{from{stroke-dashoffset:0}to{stroke-dashoffset:-100}}
+@keyframes v43-close{from{stroke-dashoffset:100;opacity:.25}to{stroke-dashoffset:0;opacity:.52}}
+@keyframes v43-seal{from{opacity:0;transform:rotate(-6deg) translateY(3px)}to{opacity:.8;transform:rotate(-6deg) translateY(0)}}
+@keyframes v43-check{to{stroke-dashoffset:0}}
+@media(min-width:1650px){.atelier[data-stage] .main-stage.journey-grid{max-width:1320px;grid-template-columns:minmax(0,720px) minmax(0,352px);gap:120px;}.atelier[data-stage] .headcopy h1{font-size:49px;}}
+@media(max-width:1100px){.atelier[data-stage] .main-stage.journey-grid{gap:55px;padding:64px 32px 84px;grid-template-columns:minmax(0,1.52fr) minmax(0,1fr);}.atelier[data-stage] .headcopy h1{font-size:38px;}.atelier .topbar{padding:0 32px;}.atelier .identity-zone .face{padding:24px 25px 20px;}.atelier .identity-zone .digest-product{font-size:54px!important;}.atelier .identity-zone .digest-product[data-long=true]{font-size:40px!important;}.atelier .identity-zone .digest-status{font-size:9px;}.atelier .identity-zone .elapsed-row{right:25px;bottom:78px;}.atelier .identity-zone .elapsed-caption{display:none;}.atelier .footer{width:calc(100% - 64px);}}
+@media(max-width:820px){.atelier[data-stage] .main-stage.journey-grid{gap:32px;padding-inline:25px;}.atelier[data-stage] .headcopy h1{font-size:33px;}.atelier .identity-zone .face{padding:20px 23px 17px;}.atelier .identity-zone .digest-product{font-size:45px!important;}.atelier .identity-zone .digest-family{font-size:7px;letter-spacing:1.5px;margin-bottom:9px;}.atelier .identity-zone .digest-edition{font-size:9px;margin-top:9px;}.atelier .identity-zone .card-digest{padding:13px 0 20px;}.atelier .identity-zone .card-footer{margin-top:12px;padding-top:10px;}.atelier .identity-zone .card-brand{font-size:13px;}.atelier .identity-zone .card-tag{font-size:6px;}.atelier .identity-zone .elapsed-row{right:23px;bottom:69px;}.atelier .identity-zone .digest-seal{bottom:31px;padding:4px 8px;font-size:10px;}}
+@media(max-width:700px){
+ .atelier .topbar{height:69px;padding:0 23px;gap:15px;}.atelier .toplinks{gap:15px;}.atelier .toplinks a{font-size:9px;}.atelier .brand{font-size:19px;gap:8px;}.atelier .brand svg{width:23px;}.atelier .tool-button{min-height:35px;font-size:9px;padding:0 10px;}.atelier .dots{display:none;}
+ .atelier[data-stage] .main-stage.journey-grid,.atelier[data-stage] .main-stage.journey-grid[data-mode=batch]{display:flex!important;flex-direction:column;max-width:470px;margin:0 auto;padding:17px 23px 40px;gap:29px;min-height:0;align-items:stretch;}
+ .atelier .identity-zone,.atelier .operation-zone{display:block;align-self:auto;width:100%;padding:0;order:unset;}.atelier .identity-zone{order:1;}.atelier .operation-zone{order:2;}
+ .atelier[data-stage] .identity-zone .card-stage{width:100%;margin:0;order:unset;}.atelier .identity-zone .card-orbit{min-height:0!important;aspect-ratio:1.586;height:auto;}
+ .atelier .identity-zone .face{padding:20px 22px 17px;border-radius:14px!important;}.atelier .identity-zone .card-brand{font-size:12px;gap:7px;}.atelier .identity-zone .card-brand svg{width:18px;height:18px;}.atelier .identity-zone .card-tag{font-size:6px;letter-spacing:1.2px;}.atelier .identity-zone .card-brandrow{min-height:18px;}
+ .atelier .identity-zone .digest-family{font-size:6.7px;letter-spacing:1.4px;margin-bottom:8px;}.atelier .identity-zone .digest-product{font-size:44px!important;letter-spacing:-1px;}.atelier .identity-zone .digest-product[data-long=true]{font-size:33px!important;letter-spacing:-1px;}.atelier .identity-zone [data-product=unidentified] .digest-product{font-size:20px!important;letter-spacing:1.8px;}
+ .atelier .identity-zone .card-digest{padding:13px 0 20px;}.atelier .identity-zone .digest-edition{font-size:8px;margin-top:7px;letter-spacing:0;}.atelier .identity-zone .digest-status{font-size:8px;line-height:1.3;}
+ .atelier .identity-zone .card-footer{margin-top:10px;padding-top:9px;}.atelier .identity-zone .foot-label{font-size:5.5px;letter-spacing:1.1px;margin-bottom:3px;}.atelier .identity-zone .foot-value,.atelier .identity-zone .foot-value.mono{font-size:7.5px;}.atelier .identity-zone .elapsed-row{right:22px;bottom:61px;font-size:7px;}.atelier .identity-zone .elapsed-row time{font-size:10px;letter-spacing:.5px;}
+ .atelier .identity-zone .digest-seal{bottom:28px;font-size:9px;padding:4px 7px;gap:4px;}.atelier .digest-seal svg{width:13px;height:13px;}
+ .atelier .card-caption{margin-top:20px;font-size:6.5px;letter-spacing:1.6px;}.atelier .context-line{display:none;}
+ .atelier[data-stage] .headcopy{margin:0 0 22px;display:block;padding:0;order:unset;text-align:left;}.atelier[data-stage] .headcopy h1{font-size:31px;line-height:1.27;letter-spacing:-1px;}.atelier[data-stage] .headcopy h1 span{display:inline;}.atelier[data-stage] .headcopy h1 span+span{margin-left:0;}.atelier .headcopy .eyebrow{display:none;}.atelier .headcopy .deck{font-size:11px;line-height:1.85;margin:10px 0 0;max-width:100%;}
+ .atelier .work-header{margin-bottom:17px;}.atelier .work-header h2{font-size:24px;}.atelier .work-header>p{font-size:11px;}.atelier .work-eyebrow{font-size:7px;}
+ .atelier .workbench,.atelier[data-stage] .workbench{padding:0;order:unset;background:none;box-shadow:none;border:0;}.atelier .work-input{font-size:16px;min-height:48px;}.atelier .work-input::placeholder{font-size:12px;}.atelier .work-primary{min-height:45px;font-size:12px;}
+ .atelier .code-line .work-primary{min-width:76px;width:76px;}.atelier .field-hint{font-size:10px;}.atelier .guide-line{margin-top:12px;}.atelier .work-guide{font-size:11px;min-height:39px;}.atelier .work-bottom{padding-top:2px;margin-top:0;}
+ .atelier .challenge-host{margin:17px 0 0;padding:17px 0 0;}.atelier .challenge-host p{font-size:12px;}.atelier .challenge-host .work-primary{min-height:48px;}.atelier .widget-surface iframe{min-width:0;}
+ .atelier .review-list>div,.atelier .agreement{font-size:12px;}.atelier .privacy-note{font-size:10px;}.atelier .task-controls{gap:14px;}
+ .atelier .footer{width:calc(100% - 46px);margin:0 auto;min-height:62px;padding:15px 0;font-size:8px;gap:10px;flex-wrap:wrap;}.atelier .footer-links{gap:12px;}.atelier .footer a,.atelier .footer button{font-size:8px;}
+ .atelier .identity-zone .theme-etch{opacity:.025!important;}.atelier .identity-zone .face .edge-track{inset:0;width:100%;height:100%;}
+ .atelier:not([data-work-phase=entry]):not([data-work-phase=verifying]) .headcopy .deck{display:none;}.atelier:not([data-work-phase=entry]):not([data-work-phase=verifying]) .headcopy{display:none;}
+}
+@media(max-width:360px){.atelier .topbar{padding:0 17px;gap:11px;}.atelier .toplinks{gap:10px;}.atelier .toplinks a{font-size:8px;}.atelier .brand{font-size:17px;}.atelier .brand svg{width:19px;}.atelier .tool-button{padding:0 8px;}.atelier[data-stage] .main-stage.journey-grid{padding:12px 17px 30px;gap:26px;}.atelier .identity-zone .face{padding:17px 19px 14px;}.atelier .identity-zone .digest-product{font-size:38px!important;}.atelier .identity-zone .digest-product[data-long=true]{font-size:29px!important;}.atelier .identity-zone .digest-edition{font-size:7px;margin-top:6px;}.atelier .identity-zone .card-digest{padding:11px 0 18px;}.atelier .identity-zone .digest-status{font-size:7.5px;}.atelier .identity-zone .elapsed-row{right:19px;bottom:57px;}.atelier .identity-zone .card-tag{font-size:5.5px;}.atelier .identity-zone .digest-seal{bottom:26px;padding:3px 5px;}.atelier[data-stage] .headcopy h1{font-size:27px;}.atelier .footer{width:calc(100% - 34px);}}
+@media(prefers-reduced-motion:reduce){.atelier .identity-zone *,.atelier .identity-zone *::after,.atelier .identity-zone *::before{animation:none!important;transition:none!important;}.atelier .identity-zone .digest-seal path{stroke-dashoffset:0;}}
+.atelier[data-motion=static] .identity-zone *{animation:none!important;transition:none!important;}.atelier[data-motion=static] .digest-seal path{stroke-dashoffset:0;}
+.atelier[data-hidden=true] .identity-zone *{animation-play-state:paused!important;}
+
+/* In later steps the supporting title becomes the action, not another marketing headline. */
+.atelier:not([data-work-phase=entry]):not([data-work-phase=verifying]) .headcopy h1,
+.atelier:not([data-work-phase=entry]):not([data-work-phase=verifying]) .headcopy .deck{display:none;}
+.atelier:not([data-work-phase=entry]):not([data-work-phase=verifying]) .headcopy{margin-bottom:19px;}
+.atelier .identity-zone .card-caption{order:unset;}
+@media(max-width:700px){
+ .atelier[data-stage] .main-stage.journey-grid{justify-content:flex-start;}
+ .atelier .toplinks{display:flex!important;flex:1;min-width:0;justify-content:flex-end;overflow-x:auto;scrollbar-width:none;white-space:nowrap;}
+ .atelier .toplinks a{display:flex!important;flex:none;}
+ .atelier .brand,.atelier .tool-button{flex-shrink:0;}
+ .atelier .card-caption{margin-top:0;margin-bottom:12px;}
+ .atelier .identity-zone .card-stage{font-synthesis:none;}
+}
+
+/* One heading per active task; preserve the labelled challenge DOM for accessibility. */
+.atelier[data-work-phase=challenge] #challenge-title{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0;padding:0;}
+.atelier[data-work-phase=challenge] .work-header>p{display:none;}
+.atelier[data-work-phase=challenge] .challenge-caption{margin-bottom:12px;}

@@ -1,0 +1,75 @@
+/* V4.5: original graphic hallmarks and coordinated light. Approved V4.3 layout retained.
+   Decorative layers alone move. Inputs, quotes and challenge hosts do not transform. */
+.atelier{--motion-ease:cubic-bezier(.22,1,.36,1);--ambient-foil-x:0px;--ambient-foil-y:0px;--ambient-foil-opacity:.4;transition:color .32s ease,background-color .72s ease;}
+.atelier .topbar,.atelier .operation-zone,.atelier .footer{transition:color .32s ease,border-color .55s ease;}
+.atelier .identity-zone .card-stage[data-craft] .couture-watermark,
+.atelier .identity-zone .card-stage[data-craft] .couture-tier{display:none!important;}
+.atelier .identity-zone .card-stage[data-craft] .couture-motif{
+ --emblem-metal:var(--card-edge);--emblem-highlight:var(--card-reflector);--emblem-shadow:color-mix(in srgb,var(--card-deep) 68%,var(--card-edge));
+ width:28%;right:5.8%;top:26%;opacity:var(--crest-opacity);filter:drop-shadow(0 1px .4px color-mix(in srgb,var(--card-deep) 60%,transparent));
+ transition:opacity .42s ease,filter .6s ease;
+}
+.emblem45-body{stroke:var(--emblem-metal,currentColor);stroke-width:.8;stroke-linejoin:round;}
+.emblem45-body .low-facet{fill:var(--emblem-shadow,currentColor);fill-opacity:.70;}
+.emblem45-body .open-line{fill:none;stroke-width:1.2;stroke-linecap:round;}
+.emblem45-field{fill:none;stroke:var(--emblem-metal,currentColor);stroke-width:.65;opacity:.17;}
+.emblem45-detail{fill:none;stroke:var(--emblem-highlight,currentColor);stroke-width:.75;stroke-linecap:round;stroke-linejoin:round;opacity:.88;}
+.emblem45-detail .hairline{stroke-width:.70;}
+.emblem45-detail .centre{fill:var(--emblem-metal,currentColor);fill-opacity:.26;stroke-width:1.1;}
+.emblem45-detail .node{fill:var(--emblem-metal,currentColor);stroke-width:.7;}
+.emblem45-register{fill:none;stroke:var(--emblem-metal,currentColor);stroke-width:.65;stroke-linecap:round;opacity:.36;}
+[data-craft-level="1"] .emblem45-register,[data-craft-level="2"] .emblem45-register{display:none;}
+.atelier .identity-zone .card-stage[data-craft] .couture-signature{top:73%;letter-spacing:1.6px;opacity:.62;}
+.atelier .identity-zone .card-stage[data-craft=unidentified] .couture-motif{opacity:.22;width:28%;}
+.atelier .identity-zone .card-stage[data-craft=go] .couture-motif{width:25%;right:7%;top:28%;}
+.atelier .identity-zone .card-stage[data-craft=pro-500] .couture-motif{filter:drop-shadow(0 1px .3px #0008);}
+.atelier .identity-zone .card-stage[data-family=claude] .emblem45-register{display:none;}
+.atelier .identity-zone .card-stage[data-craft=codex-credits] .couture-motif{width:27%;}
+/* Preserve 45 palettes. More precise and quieter grain leaves room for the stamp. */
+.atelier .identity-zone .card-stage[data-craft] .couture-grain{opacity:.17;}
+.atelier .identity-zone .card-stage[data-craft-finish=alloy] .couture-grain{opacity:.30;}
+.atelier .identity-zone .card-stage[data-craft-finish=nacre] .couture-grain{opacity:.07;}
+.atelier .identity-zone .card-stage[data-craft-finish=carbon] .couture-grain{opacity:.21;}
+.atelier .identity-zone .card-stage[data-craft] .couture-facet-light{opacity:.28;}
+.atelier .identity-zone .card-stage[data-craft-finish=platinum] .couture-facet-light{opacity:.61;}
+.atelier .identity-zone .card-stage[data-craft] .couture-bezel{border-color:color-mix(in srgb,var(--card-edge) 22%,transparent);opacity:.40;}
+.atelier .identity-zone .card-stage[data-craft-finish=obsidian] .couture-bezel,.atelier .identity-zone .card-stage[data-craft-finish=amethyst] .couture-bezel{opacity:.76;}
+.atelier .identity-zone .card-stage[data-craft-finish=platinum] .couture-bezel{opacity:.88;}
+/* A single moving studio light supplies both card reflection and scene highlights. */
+.atelier .identity-zone .card-stage[data-craft] .reflection-sheet{
+ animation:none!important;transform:translate3d(var(--ambient-foil-x,0px),var(--ambient-foil-y,0px),0) rotate(-2deg);
+ opacity:var(--ambient-foil-opacity,.42)!important;
+ background:linear-gradient(118deg,transparent 17%,color-mix(in srgb,var(--card-reflector) 4%,transparent) 38%,color-mix(in srgb,var(--card-reflector) 23%,transparent) 48%,color-mix(in srgb,var(--card-reflector) 5%,transparent) 56%,transparent 76%)!important;
+ transition:opacity .65s ease;
+}
+.atelier .identity-zone .card-stage[data-craft-theme=silk] .reflection-sheet{background:linear-gradient(115deg,transparent 10%,color-mix(in srgb,var(--card-reflector) 21%,transparent) 49%,transparent 85%)!important;}
+.atelier .identity-zone .card-stage[data-craft-theme=porcelain] .reflection-sheet{opacity:.28!important;}
+.atelier .identity-zone .card-stage[data-craft]:is([data-phase=review],[data-phase=action],[data-phase=unknown]) .reflection-sheet{opacity:.18!important;}
+.atelier .identity-zone .card-stage[data-craft][data-phase=failed] .reflection-sheet{opacity:.08!important;}
+/* No extra moving ring. One feathered head retains its angular position across color/theme updates. */
+.atelier .identity-zone .card-stage[data-craft] .face .edge-track .jewel-runner{transition:opacity .45s ease,stroke .4s ease;}
+.atelier .identity-zone .card-stage[data-craft] .face .edge-track .jewel-0{stroke-width:calc(var(--craft-width) + 2.2px);filter:blur(.75px);}
+.atelier .identity-zone .card-stage[data-craft] .face .edge-track .jewel-1{stroke-width:calc(var(--craft-width) + .9px);filter:blur(.25px);}
+.atelier .identity-zone .card-stage[data-craft] .face .edge-track .jewel-6{stroke-width:calc(var(--craft-width) * .75);filter:drop-shadow(0 0 1.2px var(--card-edge));}
+.atelier .identity-zone .card-stage[data-craft]:is([data-phase=idle],[data-phase=specimen],[data-phase=identified]) .face .edge-track .jewel-runner{opacity:calc(var(--tail-alpha) * var(--edge-intensity) * .18);}
+.atelier .identity-zone .card-stage[data-craft]:is([data-phase=action],[data-phase=unknown],[data-phase=failed],[data-phase=review],[data-phase=success]) .face .edge-track .jewel-runner{animation:none!important;opacity:0!important;}
+.atelier .identity-zone .card-stage[data-craft][data-phase=success] .digest-seal{animation:v45-receipt .65s var(--motion-ease) both;}
+.atelier .identity-zone .card-stage[data-craft][data-phase=success] .couture-motif{opacity:var(--crest-opacity);}
+/* Uniform interaction cadence; no transform on human verification or live input hosts. */
+.atelier .workbench [data-work-view]{animation:none!important;}
+.atelier .modal[open]{animation:v45-dialog .32s var(--motion-ease) both;}
+.atelier :is(.main-action,.w-primary,.primary,.tool-button,.stage-choice,.specimen-choice){transition:background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .22s ease;}
+.atelier :is(.main-action,.w-primary,.primary):active{filter:brightness(.94);}
+.atelier .mini-ornament{--emblem-metal:var(--mini-edge);--emblem-highlight:var(--mini-ink);--emblem-shadow:var(--mini-deep);opacity:.83;}
+.atelier.atlas .identity-zone .card-stage[data-craft] .reflection-sheet{animation:v45-atlas-light 16s ease-in-out infinite alternate!important;}
+@keyframes v45-atlas-light{from{transform:translate3d(-12%,0,0)}to{transform:translate3d(12%,2%,0)}}
+@keyframes v45-dialog{from{opacity:0;transform:translateY(7px) scale(.99)}to{opacity:1;transform:none}}
+@keyframes v45-receipt{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(max-width:1100px){.atelier .identity-zone .card-stage[data-craft] .couture-signature{letter-spacing:.8px;}}
+@media(max-width:700px){.atelier .identity-zone .card-stage[data-craft] .couture-motif{width:27%;right:5.5%;top:27%;}.atelier .identity-zone .card-stage[data-craft=go] .couture-motif{width:24%;right:7%;}}
+.atelier[data-hidden=true] *,.atelier[data-hidden=true] *::before,.atelier[data-hidden=true] *::after{animation-play-state:paused!important;}
+.atelier[data-motion=static] *,.atelier[data-motion=static] *::before,.atelier[data-motion=static] *::after,
+.atelier .identity-zone .card-stage[data-fx=static] *{animation:none!important;transition:none!important;}
+.atelier[data-motion=static] .identity-zone .card-stage[data-craft] .reflection-sheet{transform:none!important;}
+.atelier[data-motion=static] .identity-zone .card-stage[data-craft] .digest-seal{animation:none!important;}
+@media(prefers-reduced-motion:reduce){.atelier *,.atelier *::before,.atelier *::after{animation:none!important;transition:none!important;}.atelier .identity-zone .card-stage[data-craft] .reflection-sheet{transform:none!important;}}

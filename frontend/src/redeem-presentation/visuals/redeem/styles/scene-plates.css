@@ -1,0 +1,26 @@
+/* 实景底板在动态画布之下。画布仍按原路径绘制，只降低整层不透明度，让对应主题的照片透出来。 */
+.atelier .ambient .ambient-plate{position:absolute;inset:-2%;width:104%;height:104%;object-fit:cover;object-position:42% 44%;pointer-events:none;z-index:0;background:#070a10;transform-origin:34% 46%;animation:plate-drift 48s ease-in-out infinite alternate}
+@keyframes plate-drift{from{transform:scale(1) translate3d(0,0,0)}to{transform:scale(1.045) translate3d(-.8%,-.6%,0)}}
+.atelier .ambient canvas[data-v4-environment]{z-index:1;opacity:var(--plate-veil,.72)}
+.atelier .ambient canvas[data-v4-stars]{z-index:2;opacity:.5}
+.atelier .ambient .shade{z-index:3}
+/* 操作列压一层主题底色，背景图调亮后右侧文字与表单仍清楚；窄屏改为整体轻压。 */
+.atelier .ambient::after{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent 42%,color-mix(in srgb,var(--a-bg,#070a10) 30%,transparent) 62%,color-mix(in srgb,var(--a-bg,#070a10) 38%,transparent))}
+.atelier[data-visitor-light=night] .ambient::after{background:linear-gradient(90deg,transparent 42%,color-mix(in srgb,var(--night-bg,#070a10) 32%,transparent) 62%,color-mix(in srgb,var(--night-bg,#070a10) 40%,transparent))}
+.atelier[data-stage=porcelain] .ambient .ambient-plate,.atelier[data-stage=dawn] .ambient .ambient-plate{background:#e8eee9}
+/* 层次：主题图 → 动态画布（半透，按主题让出主体）→ 星尘/纹线 → 压暗 → 卡片与操作。 */
+.atelier[data-stage=atelier]{--plate-veil:.34}
+.atelier[data-stage=silk]{--plate-veil:.36}
+.atelier[data-stage=porcelain]{--plate-veil:.4}
+.atelier[data-stage=orbit]{--plate-veil:.32}
+.atelier[data-stage=astral]{--plate-veil:.36}
+.atelier[data-stage=verdant]{--plate-veil:.5}
+.atelier[data-stage=dawn]{--plate-veil:.4}
+/* 浅色主题图在夜间先压暗，避免整张亮图透过深色画布泛白。 */
+.atelier[data-visitor-light=night][data-stage=porcelain],.atelier[data-visitor-light=night][data-stage=dawn],.atelier[data-visitor-light=night][data-stage=silk]{--plate-veil:.5}
+.atelier[data-visitor-light=night][data-stage=porcelain] .ambient .ambient-plate,.atelier[data-visitor-light=night][data-stage=dawn] .ambient .ambient-plate{filter:brightness(.5) saturate(.85)}
+@media(max-width:900px){.atelier .ambient .ambient-plate{object-position:30% 42%}.atelier .ambient::after{background:color-mix(in srgb,var(--a-bg,#070a10) 22%,transparent)}.atelier[data-visitor-light=night] .ambient::after{background:color-mix(in srgb,var(--night-bg,#070a10) 26%,transparent)}}
+@media(prefers-reduced-motion:reduce){.atelier .ambient .ambient-plate{animation:none}}
+.atelier[data-motion=static] .ambient .ambient-plate{animation:none}
+.atelier:has(:is(input,textarea,select):focus) .ambient .ambient-plate{animation-play-state:paused}
+.atelier button:disabled{cursor:not-allowed}
