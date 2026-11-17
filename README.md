@@ -7,8 +7,8 @@
 | 类型 | 链接 |
 |------|------|
 | **卡台官网** | [https://zovocard.com](https://zovocard.com) |
-| **官方频道** | [https://t.me/spacex_card_visa](https://t.me/spacex_card_visa) |
-| **官方群聊 2 群** | [https://t.me/spacex_card2](https://t.me/spacex_card2) |
+| **官方频道** | [https://t.me/spacex_card_visa](https://t.me/zovo_card_tz) |
+
 
 ## 主要特性
 
