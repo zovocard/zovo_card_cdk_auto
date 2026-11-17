@@ -1479,7 +1479,7 @@ onMounted(async () => {
   background: var(--primary-soft);
   font-size: 13px;
 }
-.mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.mono { font-variant-numeric: tabular-nums; font-family: var(--font-mono); }
 
 /* 列表卡密：可点复制 */
 .code-cell {
@@ -1551,10 +1551,10 @@ onMounted(async () => {
   word-break: break-word;
   font-size: 12px;
   line-height: 1.35;
-  color: var(--el-text-color-primary, #303133);
+  color: var(--ink);
 }
 .note-cell__empty {
   font-size: 12px;
-  color: var(--el-text-color-placeholder, #a8abb2);
+  color: var(--ink-3);
 }
 </style>

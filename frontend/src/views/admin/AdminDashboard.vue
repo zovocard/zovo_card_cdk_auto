@@ -132,11 +132,10 @@
 
     <div
       v-if="pwdModal"
-      class="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style="background: rgba(0,0,0,0.5)"
+      class="modal-mask fixed inset-0 z-50 flex items-center justify-center p-4"
       @click.self="closePwdModal"
     >
-      <div class="card w-full max-w-md space-y-4">
+      <div class="card card-solid w-full max-w-md space-y-4" role="dialog" aria-modal="true">
         <h2 class="text-xl font-semibold text-ink">修改密码</h2>
         <div class="form-group">
           <label>旧密码</label>

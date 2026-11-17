@@ -35,7 +35,7 @@
         >
           <div class="flex items-start justify-between gap-1">
             <span class="prod-code mono">{{ p.product_code }}</span>
-            <el-tag :type="isProductOnline(p) ? 'success' : 'danger'" size="small" effect="dark">
+            <el-tag :type="isProductOnline(p) ? 'success' : 'danger'" size="small">
               {{ isProductOnline(p) ? '在线' : '已下线' }}
             </el-tag>
           </div>
@@ -224,7 +224,7 @@
           <div
             v-for="b in blocklist"
             :key="b.card_id"
-            class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line/60 px-3 py-2 text-sm"
+            class="flex flex-wrap items-center justify-between gap-2 rounded-lg border bd px-3 py-2 text-sm"
           >
             <div>
               <span class="mono font-medium">#{{ b.card_id }}</span>
@@ -243,7 +243,7 @@
         <div v-if="!failEvents.length" class="text-sm text-muted py-2">暂无（需 Webhook 或用户轮询 result）</div>
         <div v-else class="overflow-x-auto">
           <table class="w-full text-xs text-left">
-            <thead class="text-muted border-b border-line/50">
+            <thead class="text-muted border-b bd">
               <tr>
                 <th class="py-1 pr-2">时间</th>
                 <th class="py-1 pr-2">卡</th>
@@ -254,7 +254,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="e in failEvents" :key="e.id" class="border-b border-line/30">
+              <tr v-for="e in failEvents" :key="e.id" class="border-b bd">
                 <td class="py-1 pr-2 mono whitespace-nowrap">{{ e.created_at }}</td>
                 <td class="py-1 pr-2 mono">#{{ e.card_id }}{{ e.card_last_four ? ' ·' + e.card_last_four : '' }}</td>
                 <td class="py-1 pr-2 mono">{{ e.order_id || '—' }}</td>

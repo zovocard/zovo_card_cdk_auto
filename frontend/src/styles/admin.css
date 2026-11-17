@@ -41,3 +41,306 @@ html[data-area='admin'] .el-card {
 .badge--err, .badge--danger { color: var(--err); background: var(--err-soft); border-color: color-mix(in srgb, var(--err) 28%, transparent); }
 .badge--info { color: var(--ink-2); }
 .badge--primary { color: var(--primary); background: var(--primary-soft); border-color: color-mix(in srgb, var(--primary) 28%, transparent); }
+
+/* ── 3. Element Plus 完整配色映射（后台）────────────────────────────────────
+   theme.ts 只在 html 上内联了一小部分 --el-*（主色阶梯按 SKINS 里的 primary 算，和 CSS 里各皮肤
+   实际的 --primary 并不总是一致，如 ocean）；其余（成功/警告/危险/信息阶梯、填充、边框、表格、阴影…）
+   全落回 Element Plus 默认的蓝灰色，暗色皮肤下下拉、标签、分页、开关都是一块块亮斑。
+   这里按皮肤 token 全量映射：
+   - 写在 html 和 body 两处：html 上的值用 html 的 --surface（可能半透明）解析，body 上重新解析为
+     不透明面板色；body 挂载的弹层（下拉 / 弹窗 / 抽屉 / 消息）在 body 里，读到的是 body 的值。
+   - !important：为了压过 theme.ts 在 html 上的内联值（用户页仍用内联值，外观不变）。
+   - 阶梯用 color-mix 往「不透明面板色」混，而不是固定往白/黑混：亮暗皮肤自然各得其所；
+     「dark-2」往 --ink（亮皮肤近黑、暗皮肤近白）混，暗色下悬停是变亮而不是变暗。 */
+html[data-area='admin'],
+html[data-area='admin'] body {
+  --adm-base: var(--surface-solid);
+  --adm-sunken: color-mix(in srgb, var(--ink) 5%, var(--surface-solid));
+  --adm-sunken-2: color-mix(in srgb, var(--ink) 9%, var(--surface-solid));
+  --adm-hover: color-mix(in srgb, var(--primary) 9%, var(--surface-solid));
+  --adm-stripe: color-mix(in srgb, var(--ink) 2.5%, var(--surface-solid));
+
+  --el-color-white: #ffffff !important;
+  --el-color-black: #000000 !important;
+
+  --el-color-primary: var(--primary) !important;
+  --el-color-primary-light-3: color-mix(in srgb, var(--primary) 70%, var(--adm-base)) !important;
+  --el-color-primary-light-5: color-mix(in srgb, var(--primary) 50%, var(--adm-base)) !important;
+  --el-color-primary-light-7: color-mix(in srgb, var(--primary) 30%, var(--adm-base)) !important;
+  --el-color-primary-light-8: color-mix(in srgb, var(--primary) 20%, var(--adm-base)) !important;
+  --el-color-primary-light-9: color-mix(in srgb, var(--primary) 10%, var(--adm-base)) !important;
+  --el-color-primary-dark-2: color-mix(in srgb, var(--primary) 80%, var(--ink)) !important;
+
+  --el-color-success: var(--good) !important;
+  --el-color-success-light-3: color-mix(in srgb, var(--good) 70%, var(--adm-base)) !important;
+  --el-color-success-light-5: color-mix(in srgb, var(--good) 50%, var(--adm-base)) !important;
+  --el-color-success-light-7: color-mix(in srgb, var(--good) 30%, var(--adm-base)) !important;
+  --el-color-success-light-8: color-mix(in srgb, var(--good) 20%, var(--adm-base)) !important;
+  --el-color-success-light-9: color-mix(in srgb, var(--good) 10%, var(--adm-base)) !important;
+  --el-color-success-dark-2: color-mix(in srgb, var(--good) 80%, var(--ink)) !important;
+
+  --el-color-warning: var(--warn) !important;
+  --el-color-warning-light-3: color-mix(in srgb, var(--warn) 70%, var(--adm-base)) !important;
+  --el-color-warning-light-5: color-mix(in srgb, var(--warn) 50%, var(--adm-base)) !important;
+  --el-color-warning-light-7: color-mix(in srgb, var(--warn) 30%, var(--adm-base)) !important;
+  --el-color-warning-light-8: color-mix(in srgb, var(--warn) 20%, var(--adm-base)) !important;
+  --el-color-warning-light-9: color-mix(in srgb, var(--warn) 10%, var(--adm-base)) !important;
+  --el-color-warning-dark-2: color-mix(in srgb, var(--warn) 80%, var(--ink)) !important;
+
+  --el-color-danger: var(--err) !important;
+  --el-color-danger-light-3: color-mix(in srgb, var(--err) 70%, var(--adm-base)) !important;
+  --el-color-danger-light-5: color-mix(in srgb, var(--err) 50%, var(--adm-base)) !important;
+  --el-color-danger-light-7: color-mix(in srgb, var(--err) 30%, var(--adm-base)) !important;
+  --el-color-danger-light-8: color-mix(in srgb, var(--err) 20%, var(--adm-base)) !important;
+  --el-color-danger-light-9: color-mix(in srgb, var(--err) 10%, var(--adm-base)) !important;
+  --el-color-danger-dark-2: color-mix(in srgb, var(--err) 80%, var(--ink)) !important;
+  --el-color-error: var(--err) !important;
+  --el-color-error-light-3: var(--el-color-danger-light-3) !important;
+  --el-color-error-light-5: var(--el-color-danger-light-5) !important;
+  --el-color-error-light-7: var(--el-color-danger-light-7) !important;
+  --el-color-error-light-8: var(--el-color-danger-light-8) !important;
+  --el-color-error-light-9: var(--el-color-danger-light-9) !important;
+  --el-color-error-dark-2: var(--el-color-danger-dark-2) !important;
+
+  /* Element Plus 的 info 是「中性灰」（已消耗 / 仅前缀这类），不是皮肤里偏蓝的 --info */
+  --el-color-info: var(--ink-3) !important;
+  --el-color-info-light-3: color-mix(in srgb, var(--ink-3) 70%, var(--adm-base)) !important;
+  --el-color-info-light-5: color-mix(in srgb, var(--ink-3) 50%, var(--adm-base)) !important;
+  --el-color-info-light-7: color-mix(in srgb, var(--ink-3) 30%, var(--adm-base)) !important;
+  --el-color-info-light-8: color-mix(in srgb, var(--ink-3) 20%, var(--adm-base)) !important;
+  --el-color-info-light-9: color-mix(in srgb, var(--ink-3) 10%, var(--adm-base)) !important;
+  --el-color-info-dark-2: color-mix(in srgb, var(--ink-3) 80%, var(--ink)) !important;
+
+  --el-bg-color: var(--surface-solid) !important;
+  --el-bg-color-page: var(--bg) !important;
+  --el-bg-color-overlay: var(--surface-solid) !important;
+
+  --el-text-color-primary: var(--ink) !important;
+  --el-text-color-regular: var(--ink-2) !important;
+  --el-text-color-secondary: var(--ink-3) !important;
+  --el-text-color-placeholder: color-mix(in srgb, var(--ink-3) 85%, var(--adm-base)) !important;
+  --el-text-color-disabled: color-mix(in srgb, var(--ink-3) 60%, var(--adm-base)) !important;
+
+  --el-border-color: var(--brd) !important;
+  --el-border-color-light: var(--brd) !important;
+  --el-border-color-lighter: var(--brd) !important;
+  --el-border-color-extra-light: color-mix(in srgb, var(--brd) 60%, transparent) !important;
+  --el-border-color-dark: var(--brd-2) !important;
+  --el-border-color-darker: var(--brd-2) !important;
+  --el-border-color-hover: var(--brd-2) !important;
+
+  --el-fill-color: var(--adm-sunken) !important;
+  --el-fill-color-light: color-mix(in srgb, var(--ink) 4%, var(--adm-base)) !important;
+  --el-fill-color-lighter: var(--adm-stripe) !important;
+  --el-fill-color-extra-light: color-mix(in srgb, var(--ink) 1.5%, var(--adm-base)) !important;
+  --el-fill-color-dark: var(--adm-sunken-2) !important;
+  --el-fill-color-darker: color-mix(in srgb, var(--ink) 13%, var(--adm-base)) !important;
+  --el-fill-color-blank: var(--surface-solid) !important;
+
+  --el-box-shadow: var(--shadow) !important;
+  --el-box-shadow-light: var(--shadow-sm) !important;
+  --el-box-shadow-lighter: var(--shadow-sm) !important;
+  --el-box-shadow-dark: var(--shadow) !important;
+
+  --el-mask-color: rgba(0, 0, 0, 0.42) !important;
+  --el-mask-color-extra-light: rgba(0, 0, 0, 0.2) !important;
+  --el-overlay-color: rgba(0, 0, 0, 0.6) !important;
+  --el-overlay-color-light: rgba(0, 0, 0, 0.5) !important;
+  --el-overlay-color-lighter: rgba(0, 0, 0, 0.42) !important;
+
+  --el-font-family: var(--font-sans) !important;
+  --el-border-radius-base: var(--radius-md) !important;
+  --el-border-radius-small: calc(var(--radius-md) * 0.66) !important;
+}
+html.dark[data-area='admin'],
+html.dark[data-area='admin'] body,
+html[data-area='admin'][data-skin='cyber'],
+html[data-area='admin'][data-skin='cyber'] body,
+html[data-area='admin'][data-skin='ember'],
+html[data-area='admin'][data-skin='ember'] body,
+html[data-area='admin'][data-skin='noir'],
+html[data-area='admin'][data-skin='noir'] body {
+  --el-mask-color: rgba(0, 0, 0, 0.62) !important;
+  --el-overlay-color-lighter: rgba(0, 0, 0, 0.62) !important;
+  --adm-hover: color-mix(in srgb, var(--primary) 12%, var(--surface-solid));
+}
+
+/* 主色上的文字/图标：勾选框对勾、选中的分段按钮、带底色分页的当前页——默认是写死的白色，
+   金色/青色/白色主色的皮肤上会看不清，统一用皮肤的 --primary-on */
+html[data-area='admin'] .el-checkbox { --el-checkbox-checked-icon-color: var(--primary-on); }
+html[data-area='admin'] .el-radio-button { --el-radio-button-checked-text-color: var(--primary-on); }
+html[data-area='admin'] .el-pagination.is-background .el-pager li.is-active { color: var(--primary-on); }
+html[data-area='admin'] .el-tag--dark { --el-tag-text-color: var(--primary-on); }
+html[data-area='admin'] .el-switch { --el-switch-on-color: var(--primary); --el-switch-off-color: var(--adm-sunken-2); }
+
+/* ── 4. 表格：不透明底（固定列是 sticky，透明的话滚动时下面的内容会透出来）── */
+html[data-area='admin'] .el-table {
+  --el-table-bg-color: var(--surface-solid);
+  --el-table-tr-bg-color: var(--surface-solid);
+  --el-table-expanded-cell-bg-color: var(--surface-solid);
+  --el-table-header-bg-color: var(--adm-sunken);
+  --el-table-header-text-color: var(--ink-3);
+  --el-table-text-color: var(--ink);
+  --el-table-row-hover-bg-color: var(--adm-hover);
+  --el-table-current-row-bg-color: var(--adm-hover);
+  --el-table-border-color: var(--brd);
+  --el-table-fixed-box-shadow: none;
+  --el-table-fixed-left-column: inset 10px 0 10px -10px color-mix(in srgb, var(--ink) 18%, transparent);
+  --el-table-fixed-right-column: inset -10px 0 10px -10px color-mix(in srgb, var(--ink) 18%, transparent);
+  background: var(--surface-solid);
+  color: var(--ink);
+}
+/* 压过 style.css 里暗色 / zovo 用半透明 --surface-2 的 !important 表头 */
+html[data-area='admin'] .el-table th.el-table__cell,
+html.dark[data-area='admin'] .el-table th.el-table__cell,
+html[data-area='admin'][data-skin] .el-table th.el-table__cell {
+  background: var(--el-table-header-bg-color) !important;
+  color: var(--el-table-header-text-color) !important;
+}
+html[data-area='admin'] .el-table__body tr:hover > td.el-table__cell,
+html.dark[data-area='admin'] .el-table__body tr:hover > td.el-table__cell {
+  background: var(--el-table-row-hover-bg-color) !important;
+}
+html[data-area='admin'] .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell,
+html.dark[data-area='admin'] .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
+  background: var(--adm-stripe);
+}
+html[data-area='admin'] .el-table--striped .el-table__body tr.el-table__row--striped:hover td.el-table__cell {
+  background: var(--el-table-row-hover-bg-color) !important;
+}
+html[data-area='admin'] .el-table__body tr.el-table__row.is-selected-row > td.el-table__cell {
+  background: color-mix(in srgb, var(--primary) 7%, var(--surface-solid));
+}
+html[data-area='admin'] .el-table .el-table__empty-text { color: var(--ink-3); }
+html[data-area='admin'] .el-table .el-table__inner-wrapper::before { background-color: var(--brd); }
+
+/* ── 5. 输入 / 下拉 / 弹层 ───────────────────────────────────────────────── */
+html[data-area='admin'] .el-input__wrapper,
+html[data-area='admin'] .el-textarea__inner,
+html[data-area='admin'] .el-select__wrapper {
+  background: var(--surface-solid) !important;
+  box-shadow: 0 0 0 1px var(--brd) inset !important;
+}
+html[data-area='admin'] .el-input__wrapper:hover,
+html[data-area='admin'] .el-select__wrapper:hover { box-shadow: 0 0 0 1px var(--brd-2) inset !important; }
+html[data-area='admin'] .el-input__wrapper.is-focus,
+html[data-area='admin'] .el-select__wrapper.is-focused,
+html[data-area='admin'] .el-textarea__inner:focus {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 70%, transparent) inset, 0 0 0 3px var(--primary-soft) !important;
+}
+html[data-area='admin'] .el-input.is-disabled .el-input__wrapper { background: var(--adm-sunken) !important; }
+html[data-area='admin'] .el-input-group__append,
+html[data-area='admin'] .el-input-group__prepend { background: var(--adm-sunken); color: var(--ink-2); box-shadow: 0 0 0 1px var(--brd) inset; }
+html[data-area='admin'] .el-input__inner::placeholder,
+html[data-area='admin'] .el-textarea__inner::placeholder { color: var(--el-text-color-placeholder); }
+html[data-area='admin'] .el-select__placeholder.is-transparent { color: var(--el-text-color-placeholder); }
+
+html[data-area='admin'] .el-popper.is-light,
+html[data-area='admin'] .el-dropdown__popper.el-popper,
+html[data-area='admin'] .el-select__popper.el-popper {
+  background: var(--surface-solid);
+  border: 1px solid var(--brd-2);
+  box-shadow: var(--shadow);
+}
+html[data-area='admin'] .el-popper.is-light .el-popper__arrow::before,
+html[data-area='admin'] .el-dropdown__popper .el-popper__arrow::before,
+html[data-area='admin'] .el-select__popper .el-popper__arrow::before {
+  background: var(--surface-solid) !important;
+  border-color: var(--brd-2) !important;
+}
+html[data-area='admin'] .el-dropdown-menu { background: var(--surface-solid) !important; padding: 4px; }
+html[data-area='admin'] .el-dropdown-menu__item {
+  color: var(--ink-2);
+  border-radius: calc(var(--radius-md) * 0.6);
+  padding: 6px 12px;
+  line-height: 20px;
+}
+html[data-area='admin'] .el-dropdown-menu__item:not(.is-disabled):hover,
+html[data-area='admin'] .el-dropdown-menu__item:not(.is-disabled):focus {
+  background: var(--adm-hover) !important;
+  color: var(--ink) !important;
+}
+html[data-area='admin'] .el-dropdown-menu__item.is-disabled { color: var(--el-text-color-disabled); }
+html[data-area='admin'] .el-dropdown-menu__item--divided { border-top-color: var(--brd); }
+html[data-area='admin'] .el-dropdown-menu__item.is-danger { color: var(--err); }
+html[data-area='admin'] .el-dropdown-menu__item.is-danger:not(.is-disabled):hover { background: var(--err-soft) !important; color: var(--err) !important; }
+html[data-area='admin'] .el-select-dropdown__item { color: var(--ink-2); }
+html[data-area='admin'] .el-select-dropdown__item.is-hovering { background: var(--adm-hover); color: var(--ink); }
+html[data-area='admin'] .el-select-dropdown__item.is-selected { color: var(--primary); font-weight: 600; }
+
+html[data-area='admin'] .el-dialog,
+html[data-area='admin'] .el-drawer,
+html[data-area='admin'] .el-message-box {
+  background: var(--surface-solid) !important;
+  border: 1px solid var(--brd);
+  color: var(--ink);
+}
+html[data-area='admin'] .el-drawer__header { color: var(--ink); margin-bottom: 12px; }
+html[data-area='admin'] .el-drawer__title { font-family: var(--font-display, var(--font-sans)); font-weight: 700; color: var(--ink); }
+html[data-area='admin'] .el-descriptions__body { background: var(--surface-solid); color: var(--ink); }
+html[data-area='admin'] .el-descriptions__label.is-bordered-label { background: var(--adm-sunken); color: var(--ink-3); font-weight: 500; }
+html[data-area='admin'] .el-descriptions__cell { border-color: var(--brd) !important; }
+
+html[data-area='admin'] .el-alert--warning.is-light { background: var(--warn-soft); color: var(--warn); }
+html[data-area='admin'] .el-alert--info.is-light { background: var(--adm-sunken); color: var(--ink-2); }
+html[data-area='admin'] .el-alert--success.is-light { background: var(--good-soft); color: var(--good); }
+html[data-area='admin'] .el-alert--error.is-light { background: var(--err-soft); color: var(--err); }
+html[data-area='admin'] .el-alert__description { color: inherit; }
+
+html[data-area='admin'] .el-tag { --el-tag-border-radius: 6px; }
+html[data-area='admin'] .el-tag.el-tag--info { --el-tag-text-color: var(--ink-2); }
+
+html[data-area='admin'] .el-pagination {
+  --el-pagination-bg-color: transparent;
+  --el-pagination-text-color: var(--ink-2);
+  --el-pagination-button-color: var(--ink-2);
+  --el-pagination-button-disabled-color: var(--el-text-color-disabled);
+  --el-pagination-button-disabled-bg-color: transparent;
+  --el-pagination-hover-color: var(--primary);
+  color: var(--ink-2);
+}
+html[data-area='admin'] .el-pagination.is-background .btn-prev,
+html[data-area='admin'] .el-pagination.is-background .btn-next,
+html[data-area='admin'] .el-pagination.is-background .el-pager li:not(.is-active) {
+  background: var(--adm-sunken) !important;
+  color: var(--ink-2);
+}
+html[data-area='admin'] .el-pagination.is-background .el-pager li.is-active {
+  background: var(--primary) !important;
+  color: var(--primary-on) !important;
+}
+html[data-area='admin'] .el-pagination.is-background .btn-prev:disabled,
+html[data-area='admin'] .el-pagination.is-background .btn-next:disabled { color: var(--el-text-color-disabled); }
+
+html[data-area='admin'] .el-input-number__decrease,
+html[data-area='admin'] .el-input-number__increase { background: var(--adm-sunken); color: var(--ink-2); border-color: var(--brd) !important; }
+html[data-area='admin'] .el-input-number__decrease:hover,
+html[data-area='admin'] .el-input-number__increase:hover { color: var(--primary); }
+
+html[data-area='admin'] .el-checkbox__inner { background: var(--surface-solid); border-color: var(--brd-2); }
+html[data-area='admin'] .el-checkbox__input.is-checked .el-checkbox__inner,
+html[data-area='admin'] .el-checkbox__input.is-indeterminate .el-checkbox__inner { background: var(--primary); border-color: var(--primary); }
+html[data-area='admin'] .el-checkbox__input.is-indeterminate .el-checkbox__inner::before { background-color: var(--primary-on); }
+html[data-area='admin'] .el-checkbox__label { color: var(--ink-2); }
+html[data-area='admin'] .el-checkbox__input.is-checked + .el-checkbox__label { color: var(--ink); }
+
+html[data-area='admin'] .el-radio-button__inner { background: var(--surface-solid); color: var(--ink-2); border-color: var(--brd); }
+html[data-area='admin'] .el-radio-button:first-child .el-radio-button__inner { border-left-color: var(--brd); }
+html[data-area='admin'] .el-radio-button__original-radio:checked + .el-radio-button__inner {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary-on) !important;
+  box-shadow: -1px 0 0 0 var(--primary) !important;
+}
+
+html[data-area='admin'] .el-empty { --el-empty-description-color: var(--ink-3); }
+html[data-area='admin'] .el-result__title p { color: var(--ink); }
+html[data-area='admin'] .el-result__subtitle p { color: var(--ink-2); }
+html[data-area='admin'] .el-loading-mask { background-color: color-mix(in srgb, var(--surface-solid) 70%, transparent); }
+html[data-area='admin'] .el-scrollbar { --el-scrollbar-bg-color: var(--ink-3); --el-scrollbar-hover-bg-color: var(--ink-2); }
+html[data-area='admin'] .el-form-item__label { color: var(--ink-2); }
+html[data-area='admin'] .el-popover.el-popper { color: var(--ink); }
+html[data-area='admin'] .el-popper.is-dark { background: var(--ink); color: var(--surface-solid); border-color: var(--ink); }
+
+/* 非 EP 原件：页面级滚动条跟主题 */
+html[data-area='admin'] { scrollbar-color: color-mix(in srgb, var(--ink-3) 55%, transparent) transparent; }

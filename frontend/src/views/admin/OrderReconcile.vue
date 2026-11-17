@@ -373,6 +373,6 @@ onMounted(load)
 <style scoped>
 .mono {
   font-variant-numeric: tabular-nums;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
 }
 </style>

@@ -7,7 +7,7 @@
           <div class="text-xs uppercase tracking-wide text-muted">本机出口 IP · 卡台白名单</div>
           <div class="mt-1 flex flex-wrap items-baseline gap-3">
             <span class="text-3xl font-bold mono text-ink">{{ egressIp || '…' }}</span>
-            <el-tag v-if="egressIp" size="small" effect="dark" type="warning">填到卡台 API Key 白名单</el-tag>
+            <el-tag v-if="egressIp" size="small" type="warning">填到卡台 API Key 白名单</el-tag>
           </div>
           <p class="text-xs text-subtle mt-2">发码/拉价格/余额从此 IP 出网（不是浏览器 IP）</p>
         </div>
