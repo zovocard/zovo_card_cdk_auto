@@ -6,7 +6,7 @@
     </div>
     <div v-if="$slots.default || $slots.more" class="adm-head__actions">
       <slot />
-      <el-dropdown v-if="$slots.more" trigger="click" placement="bottom-end" @command="(c: string) => emit('more', c)">
+      <el-dropdown v-if="$slots.more" :persistent="false" trigger="click" placement="bottom-end" @command="(c: string) => emit('more', c)">
         <el-button aria-label="更多操作">更多<el-icon class="el-icon--right"><ArrowDown /></el-icon></el-button>
         <template #dropdown>
           <el-dropdown-menu><slot name="more" /></el-dropdown-menu>

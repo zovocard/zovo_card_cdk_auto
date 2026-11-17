@@ -29,7 +29,7 @@
           <span v-if="layout !== 'rail'">跳转 <kbd>{{ modKey }}K</kbd></span>
           <span v-else aria-hidden="true">⌘</span>
         </button>
-        <el-popover placement="right-end" :width="340" trigger="click">
+        <el-popover :persistent="false" placement="right-end" :width="340" trigger="click">
           <template #reference>
             <button type="button" class="side-tool" title="整站主题" aria-label="整站主题">
               <el-icon><Brush /></el-icon>
@@ -69,7 +69,7 @@
             <button type="button" class="kbd-btn" :title="`跳转到页面（${modKey}K）`" aria-label="跳转到页面" @click="paletteOpen = true">
               <span>跳转</span><kbd>{{ modKey }}K</kbd>
             </button>
-            <el-popover placement="bottom-end" :width="340" trigger="click">
+            <el-popover :persistent="false" placement="bottom-end" :width="340" trigger="click">
               <template #reference>
                 <button type="button" class="hicon" title="整站主题" aria-label="整站主题"><el-icon><Brush /></el-icon></button>
               </template>
