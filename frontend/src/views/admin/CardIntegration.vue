@@ -1,110 +1,34 @@
 <template>
-  <div class="space-y-4">
-    <!-- 出口 IP -->
+  <div class="adm-page">
+    <AdminPageHeader title="卡台接入" desc="填写卡台站点根地址与 Open API Key；Open API / 公开 CDK 路径自动拼接" @more="onMore">
+      <el-button type="primary" :loading="busy" @click="runAllChecks">一键检测</el-button>
+      <template #more>
+        <el-dropdown-item command="ping">连通检测</el-dropdown-item>
+        <el-dropdown-item command="plans">刷新价格</el-dropdown-item>
+        <el-dropdown-item command="balance">刷新余额</el-dropdown-item>
+        <el-dropdown-item divided command="egress">重新探测出口 IP</el-dropdown-item>
+      </template>
+    </AdminPageHeader>
+
+    <!-- 出口 IP：卡台白名单要填这个 -->
     <div class="card egress-hero">
       <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div class="text-xs uppercase tracking-wide text-muted">本机出口 IP · 卡台白名单</div>
-          <div class="mt-1 flex flex-wrap items-baseline gap-3">
-            <span class="text-3xl font-bold mono text-ink">{{ egressIp || '…' }}</span>
-            <el-tag v-if="egressIp" size="small" type="warning">填到卡台 API Key 白名单</el-tag>
+          <div class="text-xs text-muted">本机出口 IP · 填到卡台 API Key 白名单</div>
+          <div class="mt-1 flex flex-wrap items-baseline gap-3 min-h-[40px]">
+            <span v-if="egressIp" class="text-3xl font-bold mono text-ink">{{ egressIp }}</span>
+            <span v-else class="sk" style="width: 220px; height: 30px" />
           </div>
-          <p class="text-xs text-subtle mt-2">发码/拉价格/余额从此 IP 出网（不是浏览器 IP）</p>
+          <p class="text-xs text-subtle mt-1">发码 / 拉价格 / 余额从此 IP 出网（不是浏览器 IP）</p>
         </div>
         <div class="flex gap-2">
-          <el-button type="primary" :disabled="!egressIp" @click="copyText(egressIp)">复制 IP</el-button>
+          <el-button type="primary" plain :disabled="!egressIp" @click="copyText(egressIp)">复制 IP</el-button>
           <el-button :loading="loadingNet" @click="loadNetwork">重探测</el-button>
         </div>
       </div>
     </div>
 
-    <!-- 配置 -->
-    <div class="card space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 class="text-xl font-bold text-ink">卡台接入</h2>
-          <p class="text-sm text-muted mt-1">Base 用站点根；Open API / CDK 路径自动拼接</p>
-        </div>
-        <div class="flex gap-2">
-          <el-tag v-if="hints.card_api_key_configured" type="success" effect="plain">Key 已存</el-tag>
-          <el-tag v-else type="info" effect="plain">Key 未配置</el-tag>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap gap-2">
-        <el-button round :type="presetActive === 'prod' ? 'primary' : 'default'" @click="applyPreset('prod')">
-          生产 · zovocard.com
-        </el-button>
-        <el-button round :type="presetActive === 'sandbox' ? 'primary' : 'default'" @click="applyPreset('sandbox')">
-          沙盒 · sandbox
-        </el-button>
-      </div>
-
-      <div class="path-chips">
-        <div class="path-chip">
-          <span class="k">Open API</span>
-          <code class="v">{{ resolvedOpenapi }}</code>
-        </div>
-        <div class="path-chip">
-          <span class="k">公开 CDK</span>
-          <code class="v">{{ resolvedCdk }}</code>
-        </div>
-      </div>
-
-      <el-form label-position="top" class="max-w-xl" @submit.prevent>
-        <el-form-item label="卡台 Base URL">
-          <el-input v-model="form.card_api_base" clearable size="large" @blur="normalizeBase" />
-        </el-form-item>
-        <el-form-item label="Open API Key (sk_…)">
-          <el-input
-            v-model="secrets.card_api_key"
-            type="password"
-            show-password
-            clearable
-            size="large"
-            :placeholder="keyHint"
-            autocomplete="off"
-          />
-        </el-form-item>
-        <el-form-item label="代理换码密码">
-          <el-input
-            v-model="secrets.agent_swap_password"
-            type="password"
-            show-password
-            clearable
-            size="large"
-            :placeholder="swapPwHint"
-            autocomplete="off"
-          />
-          <p class="text-xs text-subtle mt-1">
-            代理凭此密码进入隐藏页，将<strong>失败且未扣款</strong>的 CDK 换一张新码。留空保存=不修改；
-            <el-tag v-if="hints.agent_swap_password_configured" size="small" type="success" effect="plain">已设置</el-tag>
-            <el-tag v-else size="small" type="info" effect="plain">未设置</el-tag>
-          </p>
-        </el-form-item>
-        <el-form-item label="发给代理的换码链接（可复制）">
-          <div class="flex flex-wrap items-center gap-2 w-full">
-            <el-input :model-value="agentSwapUrl" readonly size="large" class="!flex-1 mono" />
-            <el-button type="primary" size="large" @click="copyText(agentSwapUrl)">复制链接</el-button>
-            <el-button size="large" @click="window.open(agentSwapUrl, '_blank')">打开</el-button>
-          </div>
-          <p class="text-xs text-subtle mt-1">
-            路径固定 <code class="mono">/partner/swap</code>（短链 <code class="mono">/a/swap</code>）。导航栏不展示，把完整链接 + 密码发给代理即可。
-          </p>
-        </el-form-item>
-        <div class="flex flex-wrap gap-2">
-          <el-button type="primary" size="large" :loading="saving" @click="save">保存</el-button>
-          <el-button type="success" size="large" plain :loading="busy" @click="runAllChecks">
-            一键检测
-          </el-button>
-          <el-button size="large" :loading="pinging" @click="ping">连通</el-button>
-          <el-button size="large" :loading="loadingPlans" @click="loadPlans">价格</el-button>
-          <el-button size="large" :loading="loadingBal" @click="loadBalance">余额</el-button>
-        </div>
-      </el-form>
-    </div>
-
-    <!-- 状态摘要卡片（精简，详情进弹窗） -->
+    <!-- 状态摘要（详情进弹窗） -->
     <div class="grid gap-3 sm:grid-cols-3">
       <button type="button" class="status-card" @click="openStatusDialog">
         <div class="sc-label">连通状态</div>
@@ -125,10 +49,97 @@
       </button>
     </div>
 
-    <div class="flex flex-wrap gap-2">
-      <router-link class="btn-primary" to="/ops/cdkeys">去发码</router-link>
-      <router-link class="btn-secondary" to="/ops/webhooks">Webhook</router-link>
-      <router-link class="btn-secondary" to="/ops/appearance">整站主题</router-link>
+    <!-- 配置 -->
+    <section class="card">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <h2 class="adm-section-title">接入配置</h2>
+        <el-tag v-if="hints.card_api_key_configured" type="success" size="small">Key 已存</el-tag>
+        <el-tag v-else type="info" size="small">Key 未配置</el-tag>
+      </div>
+      <form class="set-group" autocomplete="off" @submit.prevent="save">
+        <div class="set-row">
+          <div>
+            <div class="set-row__label">卡台 Base URL</div>
+            <div class="set-row__desc">填站点根即可，末尾的 /openapi/v1 会自动去掉</div>
+          </div>
+          <div class="set-row__field">
+            <div class="flex flex-wrap gap-2">
+              <el-button size="small" :type="presetActive === 'prod' ? 'primary' : 'default'" :plain="presetActive === 'prod'" @click="applyPreset('prod')">
+                生产 · zovocard.com
+              </el-button>
+              <el-button size="small" :type="presetActive === 'sandbox' ? 'primary' : 'default'" :plain="presetActive === 'sandbox'" @click="applyPreset('sandbox')">
+                沙盒 · sandbox
+              </el-button>
+            </div>
+            <el-input v-model="form.card_api_base" clearable @blur="normalizeBase" />
+            <div class="path-chips">
+              <div class="path-chip"><span class="k">Open API</span><code class="v">{{ resolvedOpenapi }}</code></div>
+              <div class="path-chip"><span class="k">公开 CDK</span><code class="v">{{ resolvedCdk }}</code></div>
+            </div>
+          </div>
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-row__label">Open API Key</div>
+            <div class="set-row__desc">sk_ 开头。留空保存 = 不修改</div>
+          </div>
+          <div class="set-row__field">
+            <el-input
+              v-model="secrets.card_api_key"
+              type="password"
+              show-password
+              clearable
+              :placeholder="keyHint"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-row__label">代理换码密码</div>
+            <div class="set-row__desc">代理凭此密码进入隐藏页，把<strong>失败且未扣款</strong>的 CDK 换一张新码。留空保存 = 不修改</div>
+          </div>
+          <div class="set-row__field">
+            <el-input
+              v-model="secrets.agent_swap_password"
+              type="password"
+              show-password
+              clearable
+              :placeholder="swapPwHint"
+              autocomplete="off"
+            />
+            <div>
+              <el-tag v-if="hints.agent_swap_password_configured" size="small" type="success">已设置</el-tag>
+              <el-tag v-else size="small" type="info">未设置</el-tag>
+            </div>
+          </div>
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-row__label">代理换码链接</div>
+            <div class="set-row__desc">
+              路径固定 <code class="mono">/partner/swap</code>（短链 <code class="mono">/a/swap</code>），导航栏不展示；把完整链接 + 密码发给代理即可
+            </div>
+          </div>
+          <div class="set-row__field">
+            <el-input :model-value="agentSwapUrl" readonly class="mono-input">
+              <template #append>
+                <el-button @click="copyText(agentSwapUrl)">复制</el-button>
+              </template>
+            </el-input>
+            <div><el-button size="small" text type="primary" @click="openSwap">在新标签打开 ↗</el-button></div>
+          </div>
+        </div>
+        <div class="set-actions">
+          <el-button type="primary" native-type="submit" :loading="saving">保存</el-button>
+        </div>
+      </form>
+    </section>
+
+    <div class="flex flex-wrap gap-4 text-sm">
+      <router-link class="adm-link" to="/ops/cdkeys">去发码 →</router-link>
+      <router-link class="adm-link" to="/ops/webhooks">配置 Webhook →</router-link>
+      <router-link class="adm-link" to="/ops/appearance">整站主题 →</router-link>
     </div>
 
     <!-- 连通详情弹窗 -->
@@ -202,6 +213,8 @@
         <el-button type="primary" :loading="loadingPlans" @click="loadPlans">刷新价格</el-button>
       </template>
     </el-dialog>
+
+    <UnsavedBar :show="dirtyParts.length > 0" :saving="saving" :detail="dirtyParts.join('、')" @discard="discardEdits" @save="save" />
   </div>
 </template>
 
@@ -209,6 +222,9 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { authFetch } from '../../lib/api'
 import { dialog } from '../../lib/dialog'
+import { copyToClipboard } from '../../lib/clipboard'
+import AdminPageHeader from '../../components/admin/AdminPageHeader.vue'
+import UnsavedBar from '../../components/admin/UnsavedBar.vue'
 
 const PRESETS: Record<string, string> = {
   prod: 'https://zovocard.com',
@@ -295,12 +311,33 @@ function normalizeBase() {
   form.card_api_base = siteRoot.value
 }
 async function copyText(t: string) {
-  try {
-    await navigator.clipboard.writeText(t)
-    dialog.toast('已复制', 'ok')
-  } catch {
-    dialog.toast('复制失败', 'err')
-  }
+  const ok = await copyToClipboard(t)
+  dialog.toast(ok ? '已复制' : '复制失败', ok ? 'ok' : 'err')
+}
+// 模板里不能直接用 window（原来的「打开」按钮因此点了没反应）
+function openSwap() {
+  window.open(agentSwapUrl.value, '_blank', 'noopener')
+}
+function onMore(cmd: string) {
+  if (cmd === 'ping') return ping()
+  if (cmd === 'plans') return loadPlans()
+  if (cmd === 'balance') return loadBalance()
+  if (cmd === 'egress') return loadNetwork()
+}
+
+// 未保存：Base 与服务端不同，或填了新 Key / 新密码
+const savedBase = ref('')
+const dirtyParts = computed(() => {
+  const out: string[] = []
+  if (savedBase.value && siteRoot.value !== savedBase.value) out.push('Base URL')
+  if (secrets.card_api_key.trim()) out.push('API Key')
+  if (secrets.agent_swap_password.trim()) out.push('代理换码密码')
+  return out
+})
+function discardEdits() {
+  if (savedBase.value) form.card_api_base = savedBase.value
+  secrets.card_api_key = ''
+  secrets.agent_swap_password = ''
 }
 
 async function loadNetwork() {
@@ -321,6 +358,7 @@ async function loadSettings() {
   form.card_api_base = d.card_api_base || PRESETS.prod
   Object.assign(hints, d)
   normalizeBase()
+  savedBase.value = siteRoot.value
 }
 
 async function save() {
@@ -339,6 +377,7 @@ async function save() {
     Object.assign(hints, d)
     secrets.card_api_key = ''
     secrets.agent_swap_password = ''
+    savedBase.value = siteRoot.value
     dialog.toast('已保存', 'ok')
     return true
   } finally {
@@ -442,9 +481,11 @@ onMounted(async () => {
 
 <style scoped>
 .egress-hero {
-  background: linear-gradient(120deg, var(--primary-soft), transparent 55%);
+  background: linear-gradient(120deg, var(--primary-soft), transparent 55%), var(--surface-solid);
   border-color: var(--brd-2);
 }
+.set-actions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--brd); }
+.mono-input :deep(.el-input__inner) { font-family: var(--font-mono); font-size: 12.5px; }
 .path-chips { display: flex; flex-direction: column; gap: 8px; }
 .path-chip {
   display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
@@ -472,7 +513,7 @@ onMounted(async () => {
   transform: translateY(-2px);
 }
 .sc-label { font-size: 12px; color: var(--ink-3); }
-.sc-value { margin-top: 6px; font-size: 20px; font-weight: 700; color: var(--ink); }
+.sc-value { margin-top: 6px; font-size: 20px; font-weight: 700; color: var(--ink); min-height: 30px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sc-value.ok { color: var(--good); }
 .sc-value.bad { color: var(--err); }
 .sc-hint { margin-top: 6px; font-size: 11px; color: var(--ink-3); }

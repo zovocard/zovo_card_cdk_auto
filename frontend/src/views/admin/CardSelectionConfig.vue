@@ -1,12 +1,19 @@
 <template>
-  <div class="space-y-4">
+  <div class="adm-page">
+    <AdminPageHeader title="选卡配置" desc="兑换时用哪张卡：开卡产品在线状态、自动选卡优先级、本站兑换策略与卡健康归因" @more="onMore">
+      <el-button type="primary" :loading="syncing" @click="doSync">立即同步产品</el-button>
+      <template #more>
+        <el-dropdown-item command="health">刷新卡健康</el-dropdown-item>
+        <el-dropdown-item command="reload">重新载入全部配置</el-dropdown-item>
+      </template>
+    </AdminPageHeader>
 
     <!-- 产品在线状态 -->
     <div class="card">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
-          <h2 class="text-xl font-bold text-ink">产品在线状态</h2>
-          <p class="text-sm text-muted mt-1">
+          <h2 class="adm-section-title">产品在线状态</h2>
+          <p class="adm-section-desc">
             与卡台「可开卡产品」对齐 · 每 3 分钟同步 · 在线
             <strong>{{ onlineCount }}</strong> / 共 {{ products.length }}
             <span v-if="lastSync" class="ml-2 text-subtle">上次：{{ lastSync }}</span>
@@ -17,13 +24,17 @@
           </p>
         </div>
         <div class="flex gap-2 items-center">
-          <el-checkbox v-model="showOffline">显示已下线</el-checkbox>
-          <el-button :loading="syncing" type="primary" plain @click="doSync">立即同步</el-button>
+          <el-switch v-model="showOffline" active-text="显示已下线" />
         </div>
       </div>
 
-      <div v-if="products.length === 0" class="text-sm text-muted py-6 text-center">
-        暂无产品缓存——点击「立即同步」（需先在「卡台接入」配置 API Key）
+      <div v-if="!loaded" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div v-for="i in 8" :key="i" class="prod-card"><span class="sk" style="width: 60%" /><span class="sk" style="width: 40%" /><span class="sk" style="width: 80%" /></div>
+      </div>
+      <div v-else-if="products.length === 0" class="empty-state">
+        <div class="empty-state__title">暂无产品缓存</div>
+        <div class="empty-state__desc">从卡台同步可开卡产品（需先在「卡台接入」配置 API Key）。</div>
+        <el-button type="primary" :loading="syncing" @click="doSync">立即同步</el-button>
       </div>
 
       <div v-else class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -51,19 +62,23 @@
     <div class="card">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
-          <h2 class="text-xl font-bold text-ink">自动选卡优先级</h2>
-          <p class="text-sm text-muted mt-1">
+          <h2 class="adm-section-title">自动选卡优先级</h2>
+          <p class="adm-section-desc">
             顺序越靠前优先级越高；已下线或禁用的自动跳过
             <el-tag type="warning" size="small" effect="plain" class="ml-2">仅美卡参与自动选卡</el-tag>
           </p>
         </div>
         <div class="flex gap-2">
-          <el-button plain @click="showAddDialog = true">+ 添加产品</el-button>
+          <el-button @click="showAddDialog = true">+ 添加产品</el-button>
           <el-button type="primary" :loading="saving" @click="saveRules">保存</el-button>
         </div>
       </div>
 
-      <div v-if="rules.length === 0" class="text-sm text-muted py-8 text-center">暂无规则</div>
+      <div v-if="loaded && rules.length === 0" class="empty-state">
+        <div class="empty-state__title">暂无选卡规则</div>
+        <div class="empty-state__desc">没有规则时由卡台默认级联选卡；添加产品后可调整先后顺序。</div>
+        <el-button type="primary" @click="showAddDialog = true">+ 添加产品</el-button>
+      </div>
 
       <div v-else class="rules-list">
         <div
@@ -101,14 +116,14 @@
             </div>
           </div>
 
-          <!-- 启用开关 -->
-          <el-switch v-model="rule.enabled" size="small" />
+          <!-- 启用（保存后生效，所以用勾选框而不是即时开关） -->
+          <el-checkbox v-model="rule.enabled">启用</el-checkbox>
 
           <!-- 上下移 + 删除 -->
           <div class="rule-actions">
-            <el-button size="small" circle :disabled="idx === 0" @click="moveUp(idx)" title="上移">↑</el-button>
-            <el-button size="small" circle :disabled="idx === rules.length - 1" @click="moveDown(idx)" title="下移">↓</el-button>
-            <el-button size="small" circle type="danger" plain @click="removeRule(idx)" title="移除">×</el-button>
+            <el-button size="small" circle :disabled="idx === 0" title="上移" aria-label="上移" @click="moveUp(idx)">↑</el-button>
+            <el-button size="small" circle :disabled="idx === rules.length - 1" title="下移" aria-label="下移" @click="moveDown(idx)">↓</el-button>
+            <el-button size="small" circle text type="danger" title="从列表移除（保存后生效）" aria-label="移除" @click="removeRule(idx)">×</el-button>
           </div>
         </div>
       </div>
@@ -123,8 +138,8 @@
     <div class="card">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
-          <h2 class="text-xl font-bold text-ink">本站可控策略</h2>
-          <p class="text-sm text-muted mt-1">
+          <h2 class="adm-section-title">本站可控策略</h2>
+          <p class="adm-section-desc">
             选卡优先级保存后会同步到卡台所有者规则（<code class="mono text-xs">select_priority</code> + <code class="mono text-xs">strict_select</code>）。
             未启动的卡头自动跳过。兑换有规则即声明 <code class="mono text-xs">strict_card_preference</code>，不再被卡台 537872/星链级联盖过。
           </p>
@@ -133,8 +148,7 @@
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-sm text-muted">{{ policy.enabled ? '已启用本站策略' : '保持关闭' }}</span>
-          <el-switch v-model="policy.enabled" active-text="启用本站兑换策略" />
+          <el-checkbox v-model="policy.enabled" border>启用本站兑换策略</el-checkbox>
         </div>
       </div>
 
@@ -173,11 +187,9 @@
         <el-checkbox v-model="autoSwitchUnpaid" :disabled="!policy.enabled">
           确认未扣款/失败后自动换卡（关闭=发 no_auto_card_switch）
         </el-checkbox>
-        <el-switch
-          v-model="policy.auto_open_when_no_card"
-          :disabled="!policy.enabled"
-          active-text="无合格卡时自动开卡"
-        />
+        <el-checkbox v-model="policy.auto_open_when_no_card" :disabled="!policy.enabled">
+          无合格卡时自动开卡
+        </el-checkbox>
         <el-button type="primary" :loading="policySaving" @click="savePolicy">保存策略</el-button>
       </div>
       <p class="text-xs text-subtle mt-3">
@@ -190,17 +202,17 @@
     <div class="card">
       <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
-          <h2 class="text-xl font-bold text-ink">卡健康（失败归因）</h2>
-          <p class="text-sm text-muted mt-1">
+          <h2 class="adm-section-title">卡健康（失败归因）</h2>
+          <p class="adm-section-desc">
             本站观察充值失败：同一张卡失败达到阈值后——
             <strong>不同邮箱</strong>判为卡问题（拉黑并冻结，下次自动选卡跳过）；
             <strong>同一邮箱</strong>判为邮箱/号问题（不冻卡）。
           </p>
         </div>
         <div class="flex items-center gap-3">
-          <el-switch v-model="healthPolicy.enabled" active-text="启用" />
+          <el-checkbox v-model="healthPolicy.enabled" border>启用</el-checkbox>
+          <el-button :loading="healthLoading" @click="loadHealth">刷新</el-button>
           <el-button type="primary" :loading="healthSaving" @click="saveHealthPolicy">保存</el-button>
-          <el-button :loading="healthLoading" plain @click="loadHealth">刷新</el-button>
         </div>
       </div>
 
@@ -233,7 +245,7 @@
               <span class="text-muted ml-2">失败 {{ b.fail_count }} · 邮箱 {{ b.distinct_emails }}</span>
               <span class="text-subtle ml-2">冻:{{ b.freeze_status || '—' }}</span>
             </div>
-            <el-button size="small" type="warning" plain @click="unblockCard(b.card_id)">解禁并解冻</el-button>
+            <el-button size="small" :loading="unblockingId === b.card_id" @click="unblockCard(b.card_id)">解禁并解冻</el-button>
           </div>
         </div>
       </div>
@@ -241,31 +253,31 @@
       <div>
         <h3 class="text-sm font-semibold text-ink mb-2">最近失败观察</h3>
         <div v-if="!failEvents.length" class="text-sm text-muted py-2">暂无（需 Webhook 或用户轮询 result）</div>
-        <div v-else class="overflow-x-auto">
-          <table class="w-full text-xs text-left">
-            <thead class="text-muted border-b bd">
+        <div v-else class="tbl-scroll" style="max-height: 420px">
+          <table class="adm-plain-table">
+            <thead>
               <tr>
-                <th class="py-1 pr-2">时间</th>
-                <th class="py-1 pr-2">卡</th>
-                <th class="py-1 pr-2">订单</th>
-                <th class="py-1 pr-2">邮箱</th>
-                <th class="py-1 pr-2">判定</th>
-                <th class="py-1 pr-2">状态</th>
+                <th style="width: 170px">时间</th>
+                <th style="width: 130px">卡</th>
+                <th style="width: 100px">订单</th>
+                <th>邮箱</th>
+                <th style="width: 110px">判定</th>
+                <th style="width: 110px">状态</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="e in failEvents" :key="e.id" class="border-b bd">
-                <td class="py-1 pr-2 mono whitespace-nowrap">{{ e.created_at }}</td>
-                <td class="py-1 pr-2 mono">#{{ e.card_id }}{{ e.card_last_four ? ' ·' + e.card_last_four : '' }}</td>
-                <td class="py-1 pr-2 mono">{{ e.order_id || '—' }}</td>
-                <td class="py-1 pr-2 mono">{{ e.account_email_norm }}</td>
-                <td class="py-1 pr-2">
-                  <el-tag
-                    size="small"
-                    :type="e.verdict === 'card_suspect' ? 'danger' : e.verdict === 'email_suspect' ? 'warning' : 'info'"
-                  >{{ verdictLabel(e.verdict) }}</el-tag>
+              <tr v-for="e in failEvents" :key="e.id">
+                <td class="mono whitespace-nowrap text-xs">{{ e.created_at }}</td>
+                <td class="mono text-xs">#{{ e.card_id }}{{ e.card_last_four ? ' ·' + e.card_last_four : '' }}</td>
+                <td class="mono text-xs">{{ e.order_id || '—' }}</td>
+                <td class="mono text-xs truncate" :title="e.account_email_norm">{{ e.account_email_norm }}</td>
+                <td>
+                  <span
+                    class="badge"
+                    :class="e.verdict === 'card_suspect' ? 'badge--danger' : e.verdict === 'email_suspect' ? 'badge--warning' : ''"
+                  >{{ verdictLabel(e.verdict) }}</span>
                 </td>
-                <td class="py-1 pr-2">{{ e.order_status }}</td>
+                <td class="text-xs">{{ e.order_status }}</td>
               </tr>
             </tbody>
           </table>
@@ -303,6 +315,7 @@
       </template>
     </el-dialog>
 
+    <UnsavedBar :show="dirtyParts.length > 0" :saving="savingAll" :detail="dirtyParts.join('、')" @discard="discardAll" @save="saveAll" />
   </div>
 </template>
 
@@ -310,6 +323,8 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { authFetch } from '../../lib/api'
 import { dialog } from '../../lib/dialog'
+import AdminPageHeader from '../../components/admin/AdminPageHeader.vue'
+import UnsavedBar from '../../components/admin/UnsavedBar.vue'
 
 interface CardProduct {
   product_code: string
@@ -464,6 +479,7 @@ async function loadRules() {
     _id: ++_idSeq,
     enabled: item.enabled !== false,
   }))
+  snap.rules = rulesKey()
 }
 
 async function loadPlanStatus() {
@@ -511,6 +527,7 @@ async function saveRules() {
     rules.value = (d.rules || []).map((item: any) => ({
       ...item, _id: ++_idSeq, enabled: item.enabled !== false,
     }))
+    snap.rules = rulesKey()
     if (d.cardplatform_ok === false) {
       dialog.toast('已保存本站规则，但同步卡台失败：' + (d.cardplatform_err || 'unknown'), 'warn')
     } else {
@@ -560,6 +577,7 @@ async function loadPolicy() {
     resolvedPref.issuer = rp.issuer || ''
     resolvedPref.segment_type = rp.segment_type || ''
     resolvedPref.segment_key = rp.segment_key || ''
+    snap.policy = policyKey()
   } catch { /* ignore */ }
 }
 
@@ -577,6 +595,7 @@ async function savePolicy() {
     }
     const p = d.policy || {}
     Object.assign(policy, p)
+    snap.policy = policyKey()
     const rp = d.resolved_pref || {}
     resolvedPref.issuer = rp.issuer || ''
     resolvedPref.segment_type = rp.segment_type || ''
@@ -627,6 +646,7 @@ async function loadHealth() {
       freeze_on_block: p.freeze_on_block !== false,
       require_known_email: p.require_known_email !== false,
     })
+    snap.health = healthKey()
     blocklist.value = Array.isArray(d.blocklist) ? d.blocklist.filter((b: any) => b.active !== false) : []
     failEvents.value = Array.isArray(d.events) ? d.events : []
   } finally {
@@ -647,28 +667,75 @@ async function saveHealthPolicy() {
       return
     }
     if (d.policy) Object.assign(healthPolicy, d.policy)
+    snap.health = healthKey()
     dialog.toast('卡健康策略已保存', 'ok')
   } finally {
     healthSaving.value = false
   }
 }
 
+const unblockingId = ref<number | null>(null)
 async function unblockCard(cardId: number) {
-  const r = await authFetch('/api/v1/admin/card-health/unblock', {
-    method: 'POST',
-    body: JSON.stringify({ card_id: cardId, unfreeze: true }),
-  })
-  const d = await r.json().catch(() => ({}))
-  if (!r.ok) {
-    dialog.toast(d.error || '解禁失败', 'err')
-    return
+  if (unblockingId.value != null) return // 防连点重复提交
+  unblockingId.value = cardId
+  try {
+    const r = await authFetch('/api/v1/admin/card-health/unblock', {
+      method: 'POST',
+      body: JSON.stringify({ card_id: cardId, unfreeze: true }),
+    })
+    const d = await r.json().catch(() => ({}))
+    if (!r.ok) {
+      dialog.toast(d.error || '解禁失败', 'err')
+      return
+    }
+    dialog.toast('已解禁' + (d.unfreeze ? `（${d.unfreeze}）` : ''), 'ok')
+    await loadHealth()
+  } finally {
+    unblockingId.value = null
   }
-  dialog.toast('已解禁' + (d.unfreeze ? `（${d.unfreeze}）` : ''), 'ok')
-  await loadHealth()
 }
 
+// ── 未保存更改：三块配置各自和最近一次载入/保存的快照比 ──
+const snap = reactive({ rules: '', policy: '', health: '' })
+function rulesKey() { return JSON.stringify(rules.value.map((r) => [r.plan_key, !!r.enabled])) }
+function policyKey() { return JSON.stringify(policy) }
+function healthKey() { return JSON.stringify(healthPolicy) }
+const dirtyParts = computed(() => {
+  if (!loaded.value) return []
+  const out: string[] = []
+  if (rulesKey() !== snap.rules) out.push('选卡优先级')
+  if (policyKey() !== snap.policy) out.push('本站策略')
+  if (healthKey() !== snap.health) out.push('卡健康策略')
+  return out
+})
+const savingAll = computed(() => saving.value || policySaving.value || healthSaving.value)
+async function saveAll() {
+  const parts = dirtyParts.value
+  if (parts.includes('选卡优先级')) await saveRules()
+  if (parts.includes('本站策略')) await savePolicy()
+  if (parts.includes('卡健康策略')) await saveHealthPolicy()
+}
+async function discardAll() {
+  const parts = dirtyParts.value
+  await Promise.all([
+    parts.includes('选卡优先级') ? loadRules() : null,
+    parts.includes('本站策略') ? loadPolicy() : null,
+    parts.includes('卡健康策略') ? loadHealth() : null,
+  ])
+}
+function onMore(cmd: string) {
+  if (cmd === 'health') return loadHealth()
+  if (cmd === 'reload') return Promise.all([loadRules(), loadPlanStatus(), loadPolicy(), loadHealth()])
+}
+
+const loaded = ref(false)
 onMounted(async () => {
   await Promise.all([loadRules(), loadPlanStatus(), loadPolicy(), loadHealth()])
+  // 某块没载入成功时，以当前（默认）值为基准，免得一进页面就提示「未保存」
+  if (!snap.rules) snap.rules = rulesKey()
+  if (!snap.policy) snap.policy = policyKey()
+  if (!snap.health) snap.health = healthKey()
+  loaded.value = true
   pollTimer = setInterval(loadPlanStatus, 3 * 60 * 1000)
 })
 onUnmounted(() => { if (pollTimer) clearInterval(pollTimer) })

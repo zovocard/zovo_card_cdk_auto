@@ -1,43 +1,50 @@
 <template>
-  <div class="pb-2">
-    <div class="w-full space-y-8">
-      <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-        <div>
-          <h1 class="mt-3 text-3xl font-bold text-ink">管理后台</h1>
-          <p class="text-sm text-muted mt-2">
-            CDK 白标门户：卡台发码 / 公开兑换 / Webhook / Session 账单查询。
-          </p>
-        </div>
-        <el-button @click="openPwdModal">修改密码</el-button>
-      </div>
+  <div class="adm-page">
+    <AdminPageHeader title="总览" desc="CDK 白标门户：卡台发码 / 公开兑换 / Webhook / Session 账单查询" @more="onMore">
+      <el-button :loading="statsLoading" @click="loadStats">刷新</el-button>
+      <template #more>
+        <el-dropdown-item command="pwd">修改密码</el-dropdown-item>
+        <el-dropdown-item command="version">检查更新</el-dropdown-item>
+      </template>
+    </AdminPageHeader>
 
-      <div v-if="statsError" class="alert alert-error">{{ statsError }}</div>
+    <div class="w-full space-y-4">
+      <div v-if="statsError" class="inline-err">
+        <span>{{ statsError }}</span>
+        <span class="flex gap-2 items-center">
+          <router-link v-if="stats.configured === false" to="/ops/integration" class="adm-link text-xs">去配置 →</router-link>
+          <el-button size="small" :loading="statsLoading" @click="loadStats">重试</el-button>
+        </span>
+      </div>
       <div v-if="stats.counts_partial" class="alert alert-warning text-sm">
         CDK 数量较多，状态分布为扫描样本汇总；总数仍以卡台 total 为准。
       </div>
 
-      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <article v-for="card in statCards" :key="card.label" class="card">
-          <div class="text-sm text-muted">{{ card.label }}</div>
-          <div class="mt-3 text-3xl font-bold text-ink mono">{{ card.value }}</div>
-          <div class="mt-2 text-sm text-subtle">{{ card.hint }}</div>
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <article v-for="card in statCards" :key="card.label" class="card stat-card">
+          <div class="stat-card__label">{{ card.label }}</div>
+          <div class="stat-card__value mono">
+            <span v-if="card.value === '…'" class="sk" style="width: 72px; height: 28px" />
+            <template v-else>{{ card.value }}</template>
+          </div>
+          <div class="stat-card__hint">{{ card.hint }}</div>
         </article>
       </div>
 
-      <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <section class="card space-y-3">
-          <h2 class="text-xl font-semibold text-ink">快捷入口</h2>
+          <h2 class="adm-section-title">快捷入口</h2>
           <div class="flex flex-wrap gap-2">
-            <router-link to="/ops/cdkeys" class="btn-primary">CDK 卡密</router-link>
-            <router-link to="/ops/orders" class="btn-secondary">兑换对账</router-link>
-            <router-link to="/ops/integration" class="btn-secondary">卡台接入</router-link>
-            <router-link to="/ops/webhooks" class="btn-secondary">Webhook</router-link>
-            <router-link to="/ops/appearance" class="btn-secondary">外观</router-link>
-            <router-link to="/billing" class="btn-secondary">Session 账单</router-link>
+            <router-link to="/ops/cdkeys" class="btn-primary !px-4 !py-2 text-sm">CDK 卡密</router-link>
+            <router-link to="/ops/orders" class="btn-secondary !px-4 !py-2 text-sm">兑换对账</router-link>
+            <router-link to="/ops/integration" class="btn-secondary !px-4 !py-2 text-sm">卡台接入</router-link>
+            <router-link to="/ops/webhooks" class="btn-secondary !px-4 !py-2 text-sm">Webhook</router-link>
+            <router-link to="/ops/appearance" class="btn-secondary !px-4 !py-2 text-sm">外观</router-link>
+            <router-link to="/billing" class="btn-secondary !px-4 !py-2 text-sm">Session 账单</router-link>
           </div>
         </section>
         <section class="card space-y-3">
-          <h2 class="text-xl font-semibold text-ink">能力说明</h2>
+          <h2 class="adm-section-title">能力说明</h2>
           <ul class="text-sm text-muted list-disc pl-5 space-y-1">
             <li>发码 / 实时服务费：卡台 Open API</li>
             <li>用户兑换：公开 CDK 四步 + 本站 BFF</li>
@@ -48,7 +55,7 @@
         <section class="card space-y-3">
           <div class="flex items-start justify-between gap-3">
             <div>
-              <h2 class="text-xl font-semibold text-ink">版本更新</h2>
+              <h2 class="adm-section-title">版本更新</h2>
               <p class="text-xs text-muted mt-1">GitHub 预编译包 · 一键无痕热更</p>
             </div>
             <el-button size="small" :loading="versionLoading" @click="loadVersion(true)">检查更新</el-button>
@@ -136,7 +143,7 @@
       @click.self="closePwdModal"
     >
       <div class="card card-solid w-full max-w-md space-y-4" role="dialog" aria-modal="true">
-        <h2 class="text-xl font-semibold text-ink">修改密码</h2>
+        <h2 class="adm-section-title !text-lg">修改密码</h2>
         <div class="form-group">
           <label>旧密码</label>
           <input v-model="pwdForm.old_password" type="password" class="input" autocomplete="current-password" />
@@ -151,8 +158,8 @@
         </div>
         <div v-if="pwdError" class="alert alert-error">{{ pwdError }}</div>
         <div class="flex gap-2 justify-end">
-          <button class="btn-secondary" type="button" @click="closePwdModal">取消</button>
-          <button class="btn-primary" type="button" :disabled="pwdLoading" @click="submitPwd">保存</button>
+          <el-button @click="closePwdModal">取消</el-button>
+          <el-button type="primary" :loading="pwdLoading" @click="submitPwd">保存</el-button>
         </div>
       </div>
     </div>
@@ -162,10 +169,13 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { authFetch } from '../../lib/api'
+import { dialog } from '../../lib/dialog'
+import AdminPageHeader from '../../components/admin/AdminPageHeader.vue'
 
 const stats = ref<any>({})
 const statsError = ref('')
 const statsLoading = ref(false)
+const statsLoaded = ref(false)
 const pwdModal = ref(false)
 const pwdLoading = ref(false)
 const pwdError = ref('')
@@ -270,11 +280,11 @@ async function waitForReload() {
 async function oneClickUpdate() {
   if (!canOneClickUpdate.value) return
   const target = versionInfo.value.latest || 'latest'
-  const ok = window.confirm(
-    `确认一键无痕更新到 v${target}？\n\n` +
-      '• 在线下载 GitHub 预编译包\n' +
+  const ok = await dialog.confirm(
+    '• 在线下载 GitHub 预编译包\n' +
       '• 热替换二进制与前端（不改 app.env / 数据库）\n' +
-      '• 进程 re-exec 亚秒重载\n',
+      '• 进程 re-exec 亚秒重载',
+    { title: `确认一键无痕更新到 v${target}？`, okText: '开始更新' },
   )
   if (!ok) return
 
@@ -311,10 +321,10 @@ async function oneClickUpdate() {
 const statCards = computed(() => {
   const s = stats.value || {}
   return [
-    { label: 'CDK 总数', value: statsLoading.value ? '…' : numOrDash(s.total_cdks ?? s.total_cdkeys), hint: '卡台 Open API' },
-    { label: '可用 CDK', value: statsLoading.value ? '…' : numOrDash(s.unused_cdks ?? s.active_cdks ?? s.active_cdkeys), hint: 'unused 未使用' },
-    { label: '已兑换', value: statsLoading.value ? '…' : numOrDash(s.consumed_cdks), hint: 'consumed' },
-    { label: '兑换订单', value: statsLoading.value ? '…' : numOrDash(s.total_cdk_orders ?? s.total_tasks), hint: '卡台 CDK 订单' },
+    { label: 'CDK 总数', value: (statsLoading.value && !statsLoaded.value) ? '…' : numOrDash(s.total_cdks ?? s.total_cdkeys), hint: '卡台 Open API' },
+    { label: '可用 CDK', value: (statsLoading.value && !statsLoaded.value) ? '…' : numOrDash(s.unused_cdks ?? s.active_cdks ?? s.active_cdkeys), hint: 'unused 未使用' },
+    { label: '已兑换', value: (statsLoading.value && !statsLoaded.value) ? '…' : numOrDash(s.consumed_cdks), hint: 'consumed' },
+    { label: '兑换订单', value: (statsLoading.value && !statsLoaded.value) ? '…' : numOrDash(s.total_cdk_orders ?? s.total_tasks), hint: '卡台 CDK 订单' },
   ]
 })
 
@@ -340,7 +350,12 @@ async function loadVersion(force = false) {
   }
 }
 
-onMounted(async () => {
+function onMore(cmd: string) {
+  if (cmd === 'pwd') return openPwdModal()
+  if (cmd === 'version') return loadVersion(true)
+}
+
+async function loadStats() {
   statsLoading.value = true
   statsError.value = ''
   try {
@@ -360,7 +375,12 @@ onMounted(async () => {
     statsError.value = e?.message || '网络错误'
   } finally {
     statsLoading.value = false
+    statsLoaded.value = true
   }
+}
+
+onMounted(() => {
+  loadStats()
   loadVersion(false)
 })
 
@@ -400,3 +420,10 @@ async function submitPwd() {
   }
 }
 </script>
+
+<style scoped>
+.stat-card { display: flex; flex-direction: column; gap: 4px; min-height: 112px; }
+.stat-card__label { font-size: 13px; color: var(--ink-2); }
+.stat-card__value { display: flex; align-items: center; min-height: 40px; font-size: 28px; line-height: 36px; font-weight: 700; color: var(--ink); }
+.stat-card__hint { font-size: 12px; color: var(--ink-3); }
+</style>

@@ -1,80 +1,102 @@
 <template>
-  <div class="space-y-4">
-    <el-card shadow="never">
-      <template #header>
-        <div class="flex items-center justify-between">
-          <span class="font-semibold">卡台 Webhook 回调</span>
-          <el-tag size="small" type="success">验签 + 幂等入库</el-tag>
-        </div>
-      </template>
-      <p class="text-sm text-muted mb-3">
-        兑换结果仍可用轮询 <code>/public/cdk/result</code>；配置 Webhook 后卡台会主动推送
-        <code>gpt_direct.completed</code> / 卡交易等事件（OpenAPI §7）。
-      </p>
-      <el-form label-width="140px" class="max-w-2xl">
-        <el-form-item label="回调 URL">
-          <el-input :model-value="webhookUrl" readonly>
-            <template #append>
-              <el-button @click="copy(webhookUrl)">复制</el-button>
-            </template>
-          </el-input>
-          <div class="text-xs text-subtle mt-1">填到卡台「开发者」页的回调地址（须 https）</div>
-        </el-form-item>
-        <el-form-item label="Webhook Secret">
-          <el-input
-            v-model="secretInput"
-            type="password"
-            show-password
-            :placeholder="secretHint"
-          />
-          <div class="text-xs text-subtle mt-1">
-            卡台首次保存回调地址后生成的 <code>whsec_…</code>；本站用其校验 <code>X-Signature</code>
-          </div>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :loading="saving" @click="saveSecret">保存 Secret</el-button>
-          <el-button :loading="loading" @click="load">刷新事件</el-button>
-        </el-form-item>
-      </el-form>
-      <el-alert
-        v-if="!secretSet"
-        type="warning"
-        :closable="false"
-        show-icon
-        title="尚未配置 webhook_secret：卡台回调会被 503/401 拒绝"
-        class="mt-2"
-      />
-    </el-card>
+  <div class="adm-page">
+    <AdminPageHeader title="Webhook" desc="卡台主动推送兑换结果与卡交易事件（OpenAPI §7）；验签 + 幂等入库">
+      <el-button type="primary" :loading="loading" @click="load">刷新事件</el-button>
+    </AdminPageHeader>
 
-    <el-card shadow="never" header="最近事件">
-      <div v-if="error" class="alert alert-error mb-3">{{ error }}</div>
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>类型</th>
-            <th>幂等键</th>
-            <th>时间</th>
-            <th>摘要</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="loading">
-            <td colspan="5" class="py-6 text-center text-muted">加载中…</td>
-          </tr>
-          <tr v-else-if="!events.length">
-            <td colspan="5" class="py-6 text-center text-muted">暂无回调（先配 URL + secret，或继续用轮询）</td>
-          </tr>
-          <tr v-for="e in events" :key="e.id">
-            <td class="mono">{{ e.id }}</td>
-            <td>{{ e.event_type }}</td>
-            <td class="mono text-xs">{{ e.idem_key }}</td>
-            <td class="text-sm text-muted">{{ e.created_at }}</td>
-            <td class="text-xs text-subtle">{{ summarize(e.payload) }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </el-card>
+    <section class="card">
+      <div class="mb-3">
+        <h2 class="adm-section-title">回调配置</h2>
+        <p class="adm-section-desc">
+          兑换结果仍可用轮询 <code>/public/cdk/result</code>；配置后卡台会主动推送 <code>gpt_direct.completed</code> / 卡交易等事件。
+        </p>
+      </div>
+      <div class="set-group">
+        <div class="set-row">
+          <div>
+            <div class="set-row__label">回调 URL</div>
+            <div class="set-row__desc">填到卡台「开发者」页的回调地址（须 https）</div>
+          </div>
+          <div class="set-row__field">
+            <el-input :model-value="webhookUrl" readonly class="mono-input">
+              <template #append>
+                <el-button @click="copy(webhookUrl)">复制</el-button>
+              </template>
+            </el-input>
+          </div>
+        </div>
+        <div class="set-row">
+          <div>
+            <div class="set-row__label">Webhook Secret</div>
+            <div class="set-row__desc">卡台首次保存回调地址后生成的 <code>whsec_…</code>；本站用它校验 <code>X-Signature</code>。留空不修改。</div>
+          </div>
+          <div class="set-row__field">
+            <el-input
+              v-model="secretInput"
+              type="password"
+              show-password
+              autocomplete="off"
+              :placeholder="secretHint"
+            />
+            <div class="flex items-center gap-2 text-xs">
+              <span class="dot" :class="secretSet ? 'dot--good' : 'dot--warn'" />
+              <span :style="{ color: secretSet ? 'var(--ink-2)' : 'var(--warn)' }">
+                {{ secretSet ? secretHint : '尚未配置 webhook_secret：卡台回调会被 503/401 拒绝' }}
+              </span>
+            </div>
+            <div>
+              <el-button type="primary" :loading="saving" :disabled="!secretInput.trim()" @click="saveSecret">保存 Secret</el-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card list-card">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h2 class="adm-section-title">最近事件</h2>
+          <p class="adm-section-desc">共 {{ events.length }} 条</p>
+        </div>
+      </div>
+      <div v-if="error" class="inline-err">
+        <span>{{ error }}</span>
+        <el-button size="small" :loading="loading" @click="load">重试</el-button>
+      </div>
+      <div class="tbl-wrap">
+        <div class="adm-progress" :class="{ 'is-on': loading && loaded }" aria-hidden="true" />
+        <TableSkeleton v-if="!loaded" :rows="8" :cols="[0.6, 1.4, 2, 1.4, 3]" />
+        <div v-else-if="!events.length" class="empty-state">
+          <div class="empty-state__title">暂无回调</div>
+          <div class="empty-state__desc">先配好回调 URL 与 Secret；未配置时仍可用轮询拿结果。</div>
+          <el-button type="primary" @click="copy(webhookUrl)">复制回调 URL</el-button>
+        </div>
+        <div v-else class="tbl-scroll" :class="`is-${density}`">
+          <table class="adm-plain-table">
+            <thead>
+              <tr>
+                <th style="width: 80px">ID</th>
+                <th style="width: 190px">类型</th>
+                <th style="width: 240px">幂等键</th>
+                <th style="width: 180px">时间</th>
+                <th>摘要</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="e in events" :key="e.id">
+                <td class="mono">{{ e.id }}</td>
+                <td><span class="badge badge--primary">{{ e.event_type }}</span></td>
+                <td class="mono ellipsis" :title="e.idem_key">{{ e.idem_key }}</td>
+                <td class="mono text-muted nowrap">{{ e.created_at }}</td>
+                <td class="text-subtle ellipsis" :title="summarize(e.payload)">{{ summarize(e.payload) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <UnsavedBar :show="!!secretInput.trim()" :saving="saving" detail="Webhook Secret" @discard="secretInput = ''" @save="saveSecret" />
   </div>
 </template>
 
@@ -82,6 +104,11 @@
 import { onMounted, ref } from 'vue'
 import { authFetch } from '../../lib/api'
 import { dialog } from '../../lib/dialog'
+import { copyToClipboard } from '../../lib/clipboard'
+import AdminPageHeader from '../../components/admin/AdminPageHeader.vue'
+import TableSkeleton from '../../components/admin/TableSkeleton.vue'
+import UnsavedBar from '../../components/admin/UnsavedBar.vue'
+import { tableDensity as density } from '../../lib/admin-prefs'
 
 const webhookUrl = ref('https://gptcdk.ai/api/v1/webhooks/cardplatform')
 const secretSet = ref(false)
@@ -91,6 +118,7 @@ const events = ref<any[]>([])
 const loading = ref(false)
 const saving = ref(false)
 const error = ref('')
+const loaded = ref(false)
 
 function summarize(p: any) {
   if (!p || typeof p !== 'object') return '—'
@@ -120,8 +148,11 @@ async function load() {
     secretSet.value = !!d.webhook_secret_set
     secretHint.value = d.webhook_secret_set ? `已配置 ${d.webhook_secret_hint || ''}` : '未配置'
     events.value = d.events || []
+  } catch (e: any) {
+    error.value = e?.message || '网络错误'
   } finally {
     loading.value = false
+    loaded.value = true
   }
 }
 
@@ -150,13 +181,19 @@ async function saveSecret() {
 }
 
 async function copy(t: string) {
-  try {
-    await navigator.clipboard.writeText(t)
-    dialog.toast('已复制', 'ok')
-  } catch {
-    dialog.toast('复制失败', 'err')
-  }
+  // 后台常跑在 http 内网地址上，navigator.clipboard 不可用；copyToClipboard 有 execCommand 回退
+  const ok = await copyToClipboard(t)
+  dialog.toast(ok ? '已复制' : '复制失败', ok ? 'ok' : 'err')
 }
 
 onMounted(load)
 </script>
+
+<style scoped>
+.list-card { display: flex; flex-direction: column; gap: 12px; }
+.tbl-wrap { position: relative; }
+.nowrap { white-space: nowrap; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12.5px; }
+.ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mono-input :deep(.el-input__inner) { font-family: var(--font-mono); font-size: 12.5px; }
+</style>
