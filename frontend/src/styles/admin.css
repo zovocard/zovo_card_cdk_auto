@@ -670,3 +670,12 @@ html[data-area='admin'] .row-act:disabled { color: var(--ink-3); cursor: not-all
 html[data-area='admin'] .row-act--danger { color: var(--err); }
 html[data-area='admin'] .row-act--danger:hover:not(:disabled) { background: var(--err-soft); }
 html[data-area='admin'] .row-act--ph { visibility: hidden; }
+
+/* 窄屏：分页换行、长文案勾选框换行，避免整页横向滚动 */
+html[data-area='admin'] .el-pagination { flex-wrap: wrap; row-gap: 8px; }
+html[data-area='admin'] .el-checkbox { white-space: normal; height: auto; min-height: 32px; }
+html[data-area='admin'] .el-checkbox__label { line-height: 1.45; }
+@media (max-width: 640px) {
+  html[data-area='admin'] .adm-head__title { font-size: 20px; line-height: 28px; }
+  html[data-area='admin'] .el-pagination .el-pagination__jump { margin-left: 0; }
+}
