@@ -26,7 +26,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ModalDialog from './ModalDialog.vue'
-import chapters from '../data/chapters.json'
+import chapters from '../presets/chapters.json'
 import guide from '../visuals/redeem/guide.json'
 import { redeemMusic, toggleRedeemMusic, pauseRedeemMusic, blockRedeemMusic } from '../utils/redeemMusic'
 import { type RedeemContent, type RedeemTheme } from '../utils/redeemPresentation'

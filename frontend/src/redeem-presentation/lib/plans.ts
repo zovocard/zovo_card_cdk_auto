@@ -1,6 +1,6 @@
-import proSeries from '../data/products/pro-series.json'
-import grokSeries from '../data/products/grok-series.json'
-import xSeries from '../data/products/x-series.json'
+import proSeries from '../presets/products/pro-series.json'
+import grokSeries from '../presets/products/grok-series.json'
+import xSeries from '../presets/products/x-series.json'
 
 export const X_PRODUCTS = xSeries
 export const GROK_PRODUCTS = grokSeries

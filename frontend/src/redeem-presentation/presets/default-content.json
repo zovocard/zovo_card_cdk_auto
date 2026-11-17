@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "brand": "RedeemAI",
+  "footerText": "© RedeemAI · 每一步，都有着落。",
+  "navigation": [
+    {
+      "id": "redeem",
+      "label": "卡密兑换",
+      "description": "回到当前兑换步骤，不清空输入",
+      "url": "/recharge",
+      "target": "_self",
+      "enabled": true
+    },
+    {
+      "id": "subscription",
+      "label": "订阅查询",
+      "description": "核对账号订阅、到期时间与账单",
+      "url": "/billing",
+      "target": "_blank",
+      "enabled": true
+    },
+    {
+      "id": "status",
+      "label": "状态查询",
+      "description": "查询兑换订单、原任务进度与处理结果",
+      "url": "/history",
+      "target": "_blank",
+      "enabled": true
+    }
+  ],
+  "footerLinks": [
+    {
+      "id": "text-guide",
+      "label": "图文教程",
+      "description": "逐步查看输入、核对、人机验证与结果处理",
+      "url": "/recharge",
+      "target": "_self",
+      "enabled": true
+    },
+    {
+      "id": "video-guide",
+      "label": "教学视频",
+      "description": "约 2 分钟 · 口语字幕 · 含人机验证处理",
+      "url": "/recharge",
+      "target": "_self",
+      "enabled": true
+    },
+    {
+      "id": "challenge-guide",
+      "label": "遇到人机验证？",
+      "description": "直接查看验证步骤，不重新提交",
+      "url": "/recharge",
+      "target": "_self",
+      "enabled": true
+    }
+  ],
+  "copy": {
+    "inputTitle": "填写兑换码",
+    "inputLabel": "CDK / 兑换码",
+    "placeholder": "输入你的 CDK / 兑换码",
+    "inputHint": "请粘贴完整兑换码。本步只识别套餐，不会提交兑换。",
+    "verifyLabel": "验证",
+    "confirmLabel": "确认本次兑换",
+    "guideLabel": "使用指南",
+    "appearanceLabel": "今日主题",
+    "reviewIntro": "请核对账号与套餐。确认后才会提交。"
+  },
+  "guide": {
+    "title": "跟着走一遍，就会了",
+    "intro": "先把卡密贴进去。再核对账号和套餐。页面要你做人机验证时，再按它给的入口做。",
+    "steps": [
+      {
+        "id": "code",
+        "title": "先贴卡密",
+        "body": "在卡片右边找到“CDK / 兑换码”。把整段卡密贴进去。点“验证”。卡片翻过来后，看显示的是不是你买的套餐。"
+      },
+      {
+        "id": "account",
+        "title": "填对账号",
+        "body": "认出套餐后，在右边贴上要开通的账号材料。先确认登录的就是这个账号。再点“预检账号并继续”。这些材料不要发到聊天里，也不要放进公开截图。"
+      },
+      {
+        "id": "review",
+        "title": "看一眼再确认",
+        "body": "看账号和套餐对不对。兑换点数时，再看数量、金额和报价时间。对了再勾选，点一次“确认本次兑换”。报价过期就返回，重新检查。"
+      },
+      {
+        "id": "wait",
+        "title": "留在这一页",
+        "body": "看到任务编号，说明这一次已经收下。边上的光在走，表示还在等，不是倒计时。中途可能要你操作。先别关页面。"
+      },
+      {
+        "id": "challenge",
+        "title": "需要验证时，点这里",
+        "body": "看到“请完成人机验证”，点这笔订单下面的入口。在新页面做完验证。再回到这里看原来的任务。"
+      },
+      {
+        "id": "result",
+        "title": "完成后，保存账单",
+        "body": "看到“兑换已完成”后，卡片上留着这次回执。右边有“账单与凭证”。点“查看账单”在线看。点“下载账单 PDF”存到电脑。看套餐和到期时间，用顶部“订阅查询”。查这一笔兑换，用“状态查询”。"
+      }
+    ],
+    "faq": [
+      {
+        "id": "f1",
+        "question": "我只是想查结果，要重新填一次兑换吗？",
+        "answer": "不用。顶部“状态查询”专门查原记录，拿原来的卡密查询即可。"
+      },
+      {
+        "id": "f2",
+        "question": "验证完成后，为什么还在等？",
+        "answer": "人机验证和订单完成是两件事。回到原页面查询，等订单返回明确结果。"
+      },
+      {
+        "id": "verification-window",
+        "question": "点了人机验证，页面没有打开怎么办？",
+        "answer": "先检查浏览器是否拦截了新窗口，再点击当前订单下方的“直接打开验证页”。完成后回到原页面查询状态，不要重新提交兑换。"
+      },
+      {
+        "id": "invoice",
+        "question": "已经完成，为什么还没有下载按钮？",
+        "answer": "账单可能比订单结果稍晚返回。先保留原任务，稍后查询；只显示这笔任务实际返回的账单地址，不需要重新兑换。"
+      }
+    ]
+  },
+  "presentation": {
+    "defaultTemplate": "atelier",
+    "enabledTemplates": [
+      "classic",
+      "atelier",
+      "silk",
+      "porcelain",
+      "orbit",
+      "astral",
+      "verdant",
+      "dawn"
+    ],
+    "allowSwitch": false,
+    "defaultMotion": "full"
+  },
+  "templates": {
+    "atelier": {
+      "name": "天阙云殿",
+      "eyebrow": "REDEEMAI · THE CARD EDITION",
+      "titleFirst": "一张卡，",
+      "titleSecond": "开启下一程。",
+      "description": "粘贴兑换码。识别、核对与回执，始终围绕这张卡。",
+      "caption": "CRAFTED AROUND ONE CARD.",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    },
+    "silk": {
+      "name": "流霞天绫",
+      "eyebrow": "A QUIETER KIND OF BRILLIANCE",
+      "titleFirst": "从一枚卡密，",
+      "titleSecond": "到下一种可能。",
+      "description": "光在卡上流动，每一步都清楚。",
+      "caption": "GOLD IN THE DETAILS.",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    },
+    "porcelain": {
+      "name": "月魄玉璧",
+      "eyebrow": "LIGHT. PRECISE. PERSONAL.",
+      "titleFirst": "让开通，",
+      "titleSecond": "轻一点。",
+      "description": "从输入开始。把复杂留给系统，把清楚留在卡上。",
+      "caption": "LESS NOISE. MORE CLARITY.",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    },
+    "orbit": {
+      "name": "星宿天衡",
+      "eyebrow": "YOUR NEXT POSSIBILITY",
+      "titleFirst": "下一程，",
+      "titleSecond": "由此开启。",
+      "description": "识别你的卡片，连接下一种可能。",
+      "caption": "ONE CARD. A NEW ORBIT.",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    },
+    "astral": {
+      "name": "辰海天河",
+      "eyebrow": "BEYOND THE EVERYDAY",
+      "titleFirst": "一张卡，",
+      "titleSecond": "抵达星河。",
+      "description": "输入兑换码，让每一步都有清楚的回应。",
+      "caption": "A SMALL KEY. AN OPEN SKY.",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    },
+    "verdant": {
+      "name": "青玉山海",
+      "eyebrow": "THE EMERALD EDITION",
+      "titleFirst": "把繁琐留给我们，",
+      "titleSecond": "把时间留给自己。",
+      "description": "粘贴卡密，从这里继续。",
+      "caption": "EMERALD / SCULPTED LIGHT",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    },
+    "dawn": {
+      "name": "曦羽流霞",
+      "eyebrow": "A SOFTER BEGINNING",
+      "titleFirst": "新的一天，",
+      "titleSecond": "从容开始。",
+      "description": "一张卡，接续你的每一天。",
+      "caption": "ROSE / MORNING LIGHT",
+      "backgroundEnabled": true,
+      "overline": "REDEEMAI / DIGITAL EDITION"
+    }
+  },
+  "visitorDefaults": {
+    "fontStyle": "editorial",
+    "onlineFonts": true,
+    "light": "auto",
+    "musicVolume": 0.2,
+    "musicAutoplay": true
+  },
+  "themeRotation": {
+    "enabled": true,
+    "timezone": "Asia/Shanghai",
+    "anchorMonday": "2026-09-28",
+    "seed": "redeemai-seven-scenes-2026-v1",
+    "revision": 1,
+    "order": [
+      "atelier",
+      "silk",
+      "porcelain",
+      "orbit",
+      "astral",
+      "verdant",
+      "dawn"
+    ]
+  }
+}

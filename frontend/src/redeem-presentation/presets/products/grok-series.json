@@ -1,0 +1,6 @@
+[
+  { "plan_type": "grok_xai_plus", "plan_display_name": "Grok X AI Plus", "country": "PH", "currency": "PHP", "interval": "month", "max_payable_percent": 100, "default_checkout_region": "US", "checkout_regions": { "PH": "PHP", "US": "USD" } },
+  { "plan_type": "grok_xai_premium", "plan_display_name": "Grok X AI Premium", "country": "PH", "currency": "PHP", "interval": "month", "max_payable_percent": 100, "default_checkout_region": "US", "checkout_regions": { "PH": "PHP", "US": "USD" } },
+  { "plan_type": "grok_xai_super", "plan_display_name": "Grok X AI Super", "country": "PH", "currency": "PHP", "interval": "month", "max_payable_percent": 100, "default_checkout_region": "US", "checkout_regions": { "PH": "PHP", "US": "USD" } },
+  { "plan_type": "grok_xai_ultra", "plan_display_name": "Grok X AI Ultra", "country": "PH", "currency": "PHP", "interval": "month", "max_payable_percent": 100, "default_checkout_region": "US", "checkout_regions": { "PH": "PHP", "US": "USD" } }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "plan_type": "pro5x",
+    "plan_display_name": "Pro100（Standard）",
+    "overview": { "name": "Pro Standard", "caption": "Pro 100", "formerPlan": "Pro 5X" },
+    "display_multiplier": "5X",
+    "tier": 3,
+    "default_checkout_region": "PH",
+    "checkout_regions": ["PH", "CL", "EG", "JP", "US"]
+  },
+  {
+    "plan_type": "pro20x",
+    "plan_display_name": "Pro200（More）",
+    "overview": { "name": "Pro More", "caption": "Pro 200", "formerPlan": "Pro 20X" },
+    "display_multiplier": "10X",
+    "tier": 4,
+    "default_checkout_region": "PH",
+    "checkout_regions": ["PH", "JP", "US"]
+  },
+  {
+    "plan_type": "pro50x",
+    "plan_display_name": "Pro500（Max）",
+    "overview": { "name": "Pro Max", "caption": "Pro 500" },
+    "display_multiplier": "25X",
+    "tier": 5,
+    "default_checkout_region": "CL",
+    "checkout_regions": ["CL", "PH", "EG"],
+    "providers": {
+      "spacexcard": {
+        "plan": "pro_50x",
+        "pricing_tier": "x50"
+      },
+      "desolate": {
+        "plan": "chatgptpromax"
+      }
+    }
+  }
+]

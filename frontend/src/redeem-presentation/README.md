@@ -20,8 +20,8 @@
 | `visuals/redeem/**` `visuals/product-identity/**` `assets/redeem/*.webp` | 卡片运行时、样式、场景/印章 SVG、纹理 | 两处 CSS 全局规则加了 `[data-family=mythic]` 限定 |
 | `utils/*` `lib/plans.ts` | 原样（`publicPresentation.ts` 除外） | — |
 | `utils/publicPresentation.ts` | **本站重写的适配版**：不请求外观接口，主题跟随本站皮肤 | 是 |
-| `data/default-content.json` | 原项目后端默认外观内容 | 否 |
-| `data/products/*.json` `data/chapters.json` | 原项目后端套餐清单、教程章节 | 否（只改了引用路径） |
+| `presets/default-content.json` | 原项目后端默认外观内容 | 否 |
+| `presets/products/*.json` `presets/chapters.json` | 原项目后端套餐清单、教程章节 | 否（只改了引用路径） |
 | `i18n/m19.ts` | 原样 | 否 |
 | `theme.ts` `i18n/index.ts` | 本站适配：转接到 `src/theme.ts`、`src/i18n` | 新增 |
 | `i18n/messages.ts` `content.ts` `adapter.ts` `config.ts` `shell-state.ts` `styles/host-overrides.css` | 本站接入层 | 新增 |
@@ -30,7 +30,7 @@
 
 - **主题**：本站皮肤 `currentSkinMeta.family === 'mythic'` 时，展示主题 = 皮肤 id（`atelier`…`dawn`），换肤实时生效。
 - **明暗**：完全跟随本站 `src/theme.ts`（`isDark()` / `themeMode`）；展示层不再按内容默认值改明暗。
-- **内容**：随包的 `data/default-content.json`，由 `content.ts` 覆盖：品牌字样换成本站品牌、导航换成本站路由、
+- **内容**：随包的 `presets/default-content.json`，由 `content.ts` 覆盖：品牌字样换成本站品牌、导航换成本站路由、
   图文教程改写成本站流程、英文界面换英文标题与按钮。不新增后端端点，不发外观请求。
 - **兑换页**：`src/views/user/RechargeView.vue` 在东方意象皮肤下渲染进 `<RedeemPresentation surface="recharge">`，
   表单作为默认 slot，沿用原项目的表单类名（`cdk-entry` / `account-entry` / `review-entry` / `task-observation`）以复用其样式；

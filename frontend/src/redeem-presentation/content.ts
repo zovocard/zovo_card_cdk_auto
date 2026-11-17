@@ -5,7 +5,7 @@
 //    阻止原导航逻辑自动补「教程中心」（本站没有 /help 页）；
 //  - 图文教程改写成本站兑换流程（原文讲的是原项目的界面）；
 //  - 英文界面下把标题、说明、按钮文案换成英文（原项目的内容只有中文）。
-import raw from './data/default-content.json'
+import raw from './presets/default-content.json'
 import type { RedeemContent, ContentLink } from './utils/redeemPresentation'
 
 type GuideStep = { id: string; title: string; body: string; note?: string }

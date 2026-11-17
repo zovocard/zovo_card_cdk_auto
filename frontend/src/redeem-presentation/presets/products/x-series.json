@@ -1,0 +1,8 @@
+[
+  { "plan_type": "x_basic_monthly", "plan_display_name": "X Basic Monthly", "provider_plan": "basic_monthly", "months": 1, "default_checkout_region": "US", "checkout_regions": { "US": "USD", "PH": "PHP" } },
+  { "plan_type": "x_basic_yearly", "plan_display_name": "X Basic Yearly", "provider_plan": "basic_yearly", "months": 12, "default_checkout_region": "US", "checkout_regions": { "US": "USD", "PH": "PHP" } },
+  { "plan_type": "x_premium_monthly", "plan_display_name": "X Premium Monthly", "provider_plan": "premium_monthly", "months": 1, "default_checkout_region": "US", "checkout_regions": { "US": "USD", "PH": "PHP" } },
+  { "plan_type": "x_premium_yearly", "plan_display_name": "X Premium Yearly", "provider_plan": "premium_yearly", "months": 12, "default_checkout_region": "US", "checkout_regions": { "US": "USD", "PH": "PHP" } },
+  { "plan_type": "x_premium_plus_monthly", "plan_display_name": "X Premium+ Monthly", "provider_plan": "premium_plus_monthly", "months": 1, "default_checkout_region": "US", "checkout_regions": { "US": "USD", "PH": "PHP" } },
+  { "plan_type": "x_premium_plus_yearly", "plan_display_name": "X Premium+ Yearly", "provider_plan": "premium_plus_yearly", "months": 12, "default_checkout_region": "US", "checkout_regions": { "US": "USD", "PH": "PHP" } }
+]
