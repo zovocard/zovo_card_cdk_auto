@@ -1,14 +1,26 @@
 <template>
-  <div class="u-page">
-    <UserPageHeader :eyebrow="t('hero.batchEyebrow')" :title="t('batch.title')" :subtitle="t('batch.subtitle')" />
-    <div class="u-main max-w-3xl">
+  <!-- 东方意象七主题下，整页渲染进展示外壳的批量模式（surface=recharge, mode=batch；移植自 autocard，原作者授权开源使用）。
+       其它皮肤仍是原来的 div.u-page：外层用动态组件切换，经典版输出的 DOM 不变。 -->
+  <component :is="mythicPresentation ? RedeemPresentation : 'div'" ref="presentation" v-bind="batchShellAttrs">
+    <UserPageHeader v-if="!mythicPresentation" :eyebrow="t('hero.batchEyebrow')" :title="t('batch.title')" :subtitle="t('batch.subtitle')" />
+    <div :class="mythicPresentation ? 'recharge-page' : 'u-main max-w-3xl'">
 
-      <RedeemModeTabs />
-      <p class="hint-line text-sm text-muted mb-3">{{ t('xPremium.batchHint') }}</p>
-      <p class="hint-line text-sm text-muted mb-3">{{ t('grok.batchHint') }}</p>
+      <RedeemModeTabs v-if="!mythicPresentation" />
+      <div v-else class="recharge-mode-switch mb-4">
+        <div class="flex gap-2">
+          <button type="button" class="recharge-mode-btn" :aria-pressed="false" @click="router.push('/recharge')">{{ t('rp.single') }}</button>
+          <button type="button" class="recharge-mode-btn recharge-mode-btn--active" :aria-pressed="true">{{ t('rp.batch') }}</button>
+        </div>
+      </div>
+      <p v-if="!mythicPresentation" class="hint-line text-sm text-muted mb-3">{{ t('xPremium.batchHint') }}</p>
+      <p v-if="!mythicPresentation" class="hint-line text-sm text-muted mb-3">{{ t('grok.batchHint') }}</p>
 
       <div class="card space-y-4">
-        <div class="flex items-start gap-3 pb-3 border-b bd">
+        <div v-if="mythicPresentation" class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <h3 class="text-lg font-bold text-ink">{{ t('rp.batchTitle') }}</h3>
+          <span class="rounded-full bg-soft px-3 py-1 text-xs font-semibold text-ink">{{ batchChip }}</span>
+        </div>
+        <div v-else class="flex items-start gap-3 pb-3 border-b bd">
           <div
             class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white text-[10px] font-bold leading-tight text-center"
             style="background: var(--primary)"
@@ -21,8 +33,66 @@
           </div>
         </div>
 
+        <!-- input phase（东方意象外壳：沿用原项目批量模式的表单结构） -->
+        <template v-if="phase === 'input' && mythicPresentation">
+          <div class="form-group ru-has-tools">
+            <label for="batch-cdk-input">{{ t('batch.cdkListLabel', { max: BATCH_MAX_KEYS }) }}</label>
+            <div class="ru-micro-actions">
+              <button type="button" class="ru-micro-btn" :disabled="verifying" @click="pasteBatchCdks">{{ t('m19.pasteBtn') }}</button>
+            </div>
+            <textarea
+              id="batch-cdk-input"
+              v-model="cdkText"
+              :placeholder="t('batch.cdkPlaceholder')"
+              class="work-input input mono"
+              rows="5"
+              spellcheck="false"
+              style="resize: vertical; min-height: 100px"
+              @keydown.meta.enter.prevent="handleVerifyBatch"
+              @keydown.ctrl.enter.prevent="handleVerifyBatch"
+            ></textarea>
+            <div v-if="parsedCdks.length > 0" class="ru-batch-bar">
+              <span>{{ t('rp.batchRecognized', { n: parsedCdks.length }) }}<template v-if="parsedCdks.length > 100"> · {{ t('batch.cdkQueueHint') }}</template></span>
+              <span class="opacity-75">⌘/Ctrl + Enter</span>
+            </div>
+            <p class="session-input-hint text-xs text-subtle">{{ t('xPremium.batchHint') }} {{ t('grok.batchHint') }}</p>
+          </div>
+
+          <div class="form-group">
+            <label>{{ t('rp.credMode') }}</label>
+            <div class="query-tabs flex gap-2">
+              <button type="button" :aria-pressed="credMode === 'session'" @click="credMode = 'session'">{{ t('batch.modeSession') }}</button>
+              <button type="button" :aria-pressed="credMode === 'mailbox'" @click="credMode = 'mailbox'">{{ t('batch.modeMailbox') }}</button>
+            </div>
+          </div>
+
+          <ExcelImportBlock
+            v-if="credMode === 'session'"
+            :session-pool="sessionPool"
+            :import-msg="importMsg"
+            :importing="importing"
+            @pick="onPickFile"
+            @clear="clearSessionPool"
+          />
+          <div v-else class="form-group space-y-1.5">
+            <label for="batch-mailbox-input">{{ t('batch.mailboxLabel') }}</label>
+            <textarea id="batch-mailbox-input" v-model="mailboxText" rows="5" class="work-input input mono" spellcheck="false" :placeholder="t('batch.mailboxPlaceholder')" />
+            <div class="ru-batch-bar"><span>{{ t('batch.mailboxRecognized', { n: parsedMailboxes.length }) }}</span></div>
+            <input ref="mailboxFileRef" type="file" accept=".xlsx,.xls,.csv,.txt" class="hidden" @change="onPickMailboxFile" />
+            <button type="button" class="btn-secondary w-full" :disabled="importing" @click="mailboxFileRef?.click()">{{ importing ? t('batch.importing') : t('batch.mailboxImportBtn') }}</button>
+            <p v-if="importMsg" class="text-xs text-muted leading-relaxed">{{ importMsg }}</p>
+            <p class="session-input-hint text-xs text-subtle">{{ t('batch.mailboxHint') }}</p>
+          </div>
+
+          <button type="button" class="work-primary btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed" :disabled="verifying || parsedCdks.length === 0" @click="handleVerifyBatch">
+            <span v-if="!verifying">{{ t('batch.verifyStart') }}</span>
+            <span v-else class="flex items-center justify-center gap-2"><span class="spinner"></span>{{ t('batch.verifying') }}</span>
+          </button>
+          <p v-if="sessionError" class="alert alert-error">{{ sessionError }}</p>
+        </template>
+
         <!-- input phase -->
-        <template v-if="phase === 'input'">
+        <template v-else-if="phase === 'input'">
           <div>
             <label class="block text-sm font-medium text-ink mb-1.5">
               {{ t('batch.cdkListLabel', { max: BATCH_MAX_KEYS }) }}
@@ -326,7 +396,7 @@
         </template>
       </div>
     </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -335,6 +405,11 @@ import { useI18n } from 'vue-i18n'
 import UserPageHeader from '../../components/UserPageHeader.vue'
 import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import ExcelImportBlock from '../../components/ExcelImportBlock.vue'
+// 东方意象七主题的展示外壳（移植自 autocard，原作者授权开源使用，2026-11-17）
+import { useRouter } from 'vue-router'
+import RedeemPresentation from '../../redeem-presentation/components/RedeemPresentation.vue'
+import { batchPhase, mythicPresentation, queryCard } from '../../redeem-presentation/adapter'
+import { maskRedeemCode } from '../../redeem-presentation/utils/redeemCard'
 import { isGrokCredential } from '../../lib/grok'
 import {
   AUTO_SUBMIT_CONCURRENCY,
@@ -1144,6 +1219,41 @@ function resetAll() {
 }
 
 onUnmounted(() => stopAllPolls())
+
+// ── 东方意象展示外壳的状态映射（只读本页现有状态，不改批量流程） ──
+const router = useRouter()
+const presentation = ref<any>(null)
+const batchShellPhase = computed(() => batchPhase({
+  phase: phase.value,
+  verifying: verifying.value,
+  submitting: submitting.value || autoSubmitting.value,
+  ...stats.value,
+}))
+const batchFocusItem = computed(() => currentItem.value || items.value.find((i) => i.planLabel) || null)
+const batchShellCard = computed(() => {
+  const focus = batchFocusItem.value
+  return queryCard({
+    phase: batchShellPhase.value,
+    plan: focus?.planLabel || '',
+    identified: !!focus?.planLabel,
+    identity: focus ? maskRedeemCode(focus.cardKey) : '',
+    quantity: items.value.length || undefined,
+  })
+})
+const batchChip = computed(() => phase.value === 'input'
+  ? (parsedCdks.value.length ? t('rp.batchRecognized', { n: parsedCdks.value.length }) : t('rp.batchWaiting'))
+  : t('rp.batchStats', stats.value))
+// 外层动态组件的属性：外壳时传展示 props；经典版只给原来的 class，输出与改动前一致。
+const batchShellAttrs = computed<Record<string, unknown>>(() => mythicPresentation.value
+  ? { surface: 'recharge', mode: 'batch', workPhase: 'entry', phase: batchShellPhase.value, card: batchShellCard.value, busy: verifying.value || submitting.value || autoSubmitting.value }
+  : { class: 'u-page' })
+async function pasteBatchCdks() {
+  try {
+    const text = (await navigator.clipboard.readText()).trim()
+    if (!text) return
+    cdkText.value = cdkText.value.trim() ? `${cdkText.value.trimEnd()}\n${text}` : text
+  } catch { /* 浏览器不允许读剪贴板时什么都不做，用户可手动粘贴 */ }
+}
 </script>
 
 <style scoped>

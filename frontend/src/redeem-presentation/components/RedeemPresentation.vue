@@ -3,7 +3,7 @@
   <div v-show="theme !== 'classic'" class="ambient" aria-hidden="true"><img v-if="theme !== 'classic'" class="ambient-plate" alt="" decoding="async" fetchpriority="low" sizes="(max-width: 900px) 320px, 100vw" :srcset="scenePlateSet(theme)" :src="scenePlate(theme)" /><canvas data-v4-environment /><canvas data-v4-stars /><div class="shade" /></div>
   <header v-show="theme !== 'classic'||surface==='learn'" class="topbar">
    <router-link class="brand" to="/" :aria-label="`${brandName} 首页`"><svg aria-hidden="true" viewBox="0 0 48 42"><path d="M5 36V6h18c21 0 21 21 0 21H5m20 0 18 12" /></svg>{{ content?.brand || brandName }}</router-link>
-   <nav id="site-navigation" class="toplinks" :aria-label="t('m19.serviceNavigation')"><a v-for="link in visibleNavigation" :key="link.id" :class="surface==='recharge'?'m11-nav-item':undefined" :aria-current="(['/','/recharge'].includes(link.url)&&surface==='recharge')||(link.url==='/billing'&&surface==='billing')||(link.url==='/history'&&surface==='history')||(isTutorialLink(link.url)&&surface==='learn')?'page':undefined" :href="navigationUrl(link)" :target="navigationTarget(link)" rel="noopener noreferrer" referrerpolicy="no-referrer" @click="navigate($event,navigationUrl(link))">{{ tutorialNavigationText(link, 'label', t('learn.title')) }}</a></nav><button class="m11-nav-trigger" type="button" @click="navigationOpen=true" :aria-label="t('m19.serviceNavigation')" :aria-expanded="navigationOpen" aria-controls="public-service-menu" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" /></svg>{{ t('m19.navigation') }}</button><ThemeToggle presentation /><LanguageToggle v-model:open="languageOpen" presentation />
+   <nav id="site-navigation" class="toplinks" :aria-label="t('m19.serviceNavigation')"><a v-for="link in visibleNavigation" :key="link.id" :class="surface==='recharge'?'m11-nav-item':undefined" :aria-current="isCurrentLink(link)?'page':undefined" :href="navigationUrl(link)" :target="navigationTarget(link)" rel="noopener noreferrer" referrerpolicy="no-referrer" @click="navigate($event,navigationUrl(link))">{{ tutorialNavigationText(link, 'label', t('learn.title')) }}</a></nav><button class="m11-nav-trigger" type="button" @click="navigationOpen=true" :aria-label="t('m19.serviceNavigation')" :aria-expanded="navigationOpen" aria-controls="public-service-menu" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16" aria-hidden="true"><path d="M5 7h14M5 12h14M5 17h14" /></svg>{{ t('m19.navigation') }}</button><ThemeToggle presentation /><LanguageToggle v-model:open="languageOpen" presentation />
   </header>
   <p v-if="appearanceError" class="appearance-error" role="status">外观暂不可用，原操作仍可继续。<button type="button" :disabled="appearanceLoading" @click="loadPublicPresentation">重新读取外观</button></p>
   <section v-if="surface!=='learn'" :class="surface==='recharge'?'main-stage journey-grid':'query-main'" :data-mode="mode">
@@ -65,7 +65,7 @@ import { cardForTask, redeemProducts as products } from '../utils/redeemCard'
 import { redeemMusic, toggleRedeemMusic, blockRedeemMusic, setRedeemMusicVolume } from '../utils/redeemMusic'
 import { isDark, themeMode } from '../theme'
 // 本站接入：品牌、路由、外壳计数（让 App 级背景画布让位）、媒体降级开关。
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { siteBrand } from '../../theme'
 import { presentationShells } from '../shell-state'
 import { MUSIC_AVAILABLE, TUTORIAL_VIDEO_AVAILABLE } from '../config'
@@ -95,7 +95,10 @@ const tierOverview=products.filter(product=>product.family==='openai'&&product.k
 const props=withDefaults(defineProps<{phase?:RedeemPhase;card?:CardView;busy?:boolean;mode?:'single'|'batch';workPhase?:string;surface?:'recharge'|'billing'|'history'|'learn'}>(),{phase:'idle',busy:false,mode:'single',workPhase:'entry',surface:'recharge'})
 const emit=defineEmits<{content:[content:RedeemContent];theme:[theme:RedeemTheme]}>()
 const {t,locale}=useI18n({useScope:'global'})
-const router=useRouter()
+const router=useRouter(),route=useRoute()
+// 本站接入：导航高亮按当前路由判断（/batch 与 /recharge 同属 recharge 外壳）；路由不在导航里时沿用原判据。
+const currentPath=computed(()=>route.path==='/'?'/recharge':route.path)
+function isCurrentLink(link:{url:string}){if(visibleNavigation.value.some(item=>item.url===currentPath.value))return link.url===currentPath.value;return (['/','/recharge'].includes(link.url)&&props.surface==='recharge')||(link.url==='/billing'&&props.surface==='billing')||(link.url==='/history'&&props.surface==='history')||(isTutorialLink(link.url)&&props.surface==='learn')}
 const brandName=computed(()=>(siteBrand.value.name||'').trim()||'CDK Portal'),brandUpper=computed(()=>brandName.value.toUpperCase())
 const root=ref<HTMLElement|null>(null),cardHost=ref<HTMLElement|null>(null),guideOpen=ref(false),tiersOpen=ref(false),motionOpen=ref(false),languageOpen=ref(false),navigationOpen=ref(false),motionOverride=ref<RedeemMotion|null>(null)
 const themeIdentity=ref<InstanceType<typeof RedeemThemeIdentity>|null>(null)
@@ -137,7 +140,7 @@ provideRedeemSurfaceTheme(surfaceTheme)
 const visibleNavigation = computed(() => publicNavigationLinks(content.value?.navigation))
 function navigationUrl(link:{id:string;url:string}){return props.surface!=='recharge'&&link.id==='redeem'&&['#code','/#code'].includes(link.url)?'/':link.url}
 function navigationTarget(link:{url:string;target:string}){return isTutorialLink(link.url)?props.surface==='learn'?'_self':'_blank':link.target}
-function navigate(event:MouseEvent,url:string){if(props.surface==='recharge'&&['/','/recharge'].includes(url))event.preventDefault();else if(props.surface==='learn'&&url==='/help'&&typeof window!=='undefined'&&window.location?.pathname==='/help')event.preventDefault()
+function navigate(event:MouseEvent,url:string){if(url===currentPath.value||props.surface==='recharge'&&url==='/'&&currentPath.value==='/recharge')event.preventDefault();else if(props.surface==='learn'&&url==='/help'&&typeof window!=='undefined'&&window.location?.pathname==='/help')event.preventDefault()
  // 本站接入：站内 _self 链接走路由，不整页刷新（保留新标签打开等修饰键行为）。
  else if(url.startsWith('/')&&!url.startsWith('//')&&!event.defaultPrevented&&event.button===0&&!event.metaKey&&!event.ctrlKey&&!event.shiftKey&&!event.altKey&&(event.currentTarget as HTMLAnchorElement|null)?.target!=='_blank'){event.preventDefault();void router.push(url)}}
 const musicDetailsAvailable=computed(()=>!!redeemMusic.notice.value&&!redeemMusic.playing.value&&!redeemMusic.pending.value)

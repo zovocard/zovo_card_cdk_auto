@@ -1,5 +1,177 @@
 <template>
-  <div class="u-page">
+  <!-- 东方意象七主题：售后查询渲染进展示外壳的查询页（surface=history，移植自 autocard，原作者授权开源使用）。
+       状态与函数与下方经典版共用；结构沿用原项目查询页类名（query-tabs / query-result / query-facts）以复用其样式。 -->
+  <RedeemPresentation
+    v-if="mythicPresentation"
+    ref="presentation"
+    surface="history"
+    :mode="mode"
+    :phase="historyPhase"
+    :card="historyCard"
+    :busy="querying"
+  >
+    <div class="history-page">
+      <main aria-labelledby="history-query-title">
+        <section class="card space-y-5" role="search" aria-labelledby="history-query-title">
+          <h2 id="history-query-title" class="query-form-title text-xl font-bold text-ink">{{ t('cdkLookup.queryTitle') }}</h2>
+          <div class="query-tabs flex gap-2">
+            <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors" :aria-pressed="mode === 'single'" @click="setMode('single')">{{ t('m19.singleQuery') }}</button>
+            <button type="button" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors" :aria-pressed="mode === 'batch'" @click="setMode('batch')">{{ t('cdkLookup.modeBatch') }}</button>
+          </div>
+
+          <template v-if="mode === 'single'">
+            <div class="form-group ru-has-tools">
+              <label for="history-cdk-code">{{ t('m19.cdkMaterials') }}</label>
+              <div class="ru-micro-actions">
+                <button type="button" class="ru-micro-btn" :disabled="querying" @click="pasteInto('single')">{{ t('m19.pasteBtn') }}</button>
+              </div>
+              <p id="history-query-hint" class="sr-only">{{ t('cdkLookup.queryHint') }}</p>
+              <textarea
+                id="history-cdk-code"
+                v-model="cdkCode"
+                aria-describedby="history-query-hint"
+                rows="3"
+                autocomplete="off"
+                spellcheck="false"
+                :placeholder="t('m19.pasteHere')"
+                class="work-input input mono"
+                @keydown.enter.exact.prevent="query"
+              ></textarea>
+            </div>
+            <div class="query-actions">
+              <button type="button" class="work-primary btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed" :disabled="!cdkCode.trim() || querying" @click="query">
+                <span v-if="!querying">{{ t('m19.queryOriginal') }}</span>
+                <span v-else class="flex items-center justify-center gap-2"><span class="spinner"></span>{{ t('common.querying') }}</span>
+                <span v-if="!querying" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="work-guide" @click="clearQueries">{{ t('m19.clear') }}</button>
+            </div>
+          </template>
+
+          <template v-else>
+            <div class="form-group ru-has-tools">
+              <label for="history-batch-cdk-codes">{{ t('m19.batchMaterials') }}</label>
+              <div class="ru-micro-actions">
+                <button type="button" class="ru-micro-btn" :disabled="querying" @click="pasteInto('batch')">{{ t('m19.pasteBtn') }}</button>
+              </div>
+              <p id="history-batch-hint" class="sr-only">{{ t('cdkLookup.batchHint', { max: LOOKUP_BATCH_MAX }) }}</p>
+              <textarea
+                id="history-batch-cdk-codes"
+                v-model="batchText"
+                aria-describedby="history-batch-hint"
+                rows="5"
+                autocomplete="off"
+                spellcheck="false"
+                :placeholder="t('cdkLookup.batchPlaceholder')"
+                class="work-input input mono"
+                style="resize: vertical"
+                @keydown.meta.enter.prevent="queryBatch"
+                @keydown.ctrl.enter.prevent="queryBatch"
+              ></textarea>
+              <div v-if="parsedCodes.length > 0" class="ru-batch-bar" :data-over="parsedCodes.length > LOOKUP_BATCH_MAX ? 'true' : undefined">
+                <span>{{ t('rp.historyBatchCount', { n: parsedCodes.length, max: LOOKUP_BATCH_MAX }) }}<template v-if="parsedCodes.length > LOOKUP_BATCH_MAX"> · {{ t('cdkLookup.batchTruncated', { max: LOOKUP_BATCH_MAX }) }}</template></span>
+                <span class="opacity-75">{{ t('m19.shortcutSubmitHint') }}</span>
+              </div>
+            </div>
+            <div class="query-actions">
+              <button type="button" class="work-primary btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed" :disabled="parsedCodes.length === 0 || querying" @click="queryBatch">
+                <span v-if="!querying">{{ t('m19.queryOriginal') }}</span>
+                <span v-else class="flex items-center justify-center gap-2"><span class="spinner"></span>{{ t('common.querying') }}</span>
+                <span v-if="!querying" aria-hidden="true">→</span>
+              </button>
+              <button type="button" class="work-guide" @click="clearQueries">{{ t('m19.clear') }}</button>
+            </div>
+          </template>
+          <p v-if="error" class="query-alert" role="status">{{ error }}</p>
+          <div class="query-help"><button type="button" @click="presentation?.openGuide()">{{ t('m19.readGuide') }}</button></div>
+        </section>
+
+        <div v-if="mode === 'single' && result" class="query-result result-flow mt-8 card" data-result-flow="" role="status" aria-live="polite">
+          <h2 class="text-xl font-bold text-ink mb-6">{{ t('cdkLookup.resultTitle') }}</h2>
+          <div class="space-y-6">
+            <div class="history-task-summary rf-summary border-b bd pb-4 space-y-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+                <p class="text-sm font-medium text-ink">{{ statusText(result.status) }}</p>
+                <p v-if="result.used_at" class="text-xs text-muted">{{ t('cdkLookup.usedAt') }}<span class="ml-1 font-mono text-ink">{{ result.used_at }}</span></p>
+              </div>
+            </div>
+            <dl class="history-task-details query-facts rf-facts grid min-w-0 grid-cols-2 gap-x-4 gap-y-4 rounded-xl bg-soft p-4 text-sm sm:p-6">
+              <div class="min-w-0">
+                <dt class="text-xs text-muted">{{ t('cdkLookup.useStatus') }}</dt>
+                <dd class="mt-1" :style="{ color: statusColor(result.status) }">{{ statusText(result.status) }}</dd>
+              </div>
+              <div class="min-w-0">
+                <dt class="text-xs text-muted">{{ t('cdkLookup.plan') }}</dt>
+                <dd class="mt-1 break-words text-ink">{{ result.plan ? planLabel(result.plan) : t('cdkLookup.emailEmpty') }}</dd>
+              </div>
+              <div class="col-span-2 min-w-0 sm:col-span-1">
+                <dt class="text-xs text-muted">{{ t('cdkLookup.cdkCode') }}</dt>
+                <dd class="mt-1 break-all font-mono text-ink">{{ result.cdk_code }}</dd>
+              </div>
+              <div class="col-span-2 min-w-0 sm:col-span-1">
+                <dt class="text-xs text-muted">{{ t('cdkLookup.rechargeEmail') }}</dt>
+                <dd class="mt-1 break-all font-mono text-ink">{{ result.account_email || t('cdkLookup.emailEmpty') }}</dd>
+              </div>
+              <div v-if="result.used_at" class="min-w-0">
+                <dt class="text-xs text-muted">{{ t('cdkLookup.usedAt') }}</dt>
+                <dd class="mt-1 break-words text-muted">{{ result.used_at }}</dd>
+              </div>
+            </dl>
+            <div class="alert rf-note space-y-1" :class="`alert-${resultNote.tone}`" data-testid="task-feedback">
+              <p class="text-ink">{{ resultNote.text }}</p>
+            </div>
+          </div>
+          <div class="rf-actions flex gap-3 mt-6">
+            <button type="button" class="btn-secondary flex-1" @click="reset">{{ t('cdkLookup.queryOther') }}</button>
+            <button v-if="result.can_resubmit || result.status === 'unused'" type="button" class="work-primary btn-primary flex-1 text-center" @click="goRedeem(result.cdk_code)">{{ result.can_resubmit ? t('cdkLookup.resubmit') : t('cdkLookup.goRedeem') }}</button>
+          </div>
+        </div>
+
+        <div v-if="mode === 'batch' && batchResults.length" class="query-result result-flow mt-8 card space-y-4" data-result-flow="">
+          <div class="rf-summary">
+            <h2>{{ t('cdkLookup.resultTitle') }}</h2>
+          </div>
+          <dl class="query-facts rf-facts">
+            <div><dt>{{ t('cdkLookup.status.used') }}</dt><dd>{{ batchSummary.used }}</dd></div>
+            <div><dt>{{ t('cdkLookup.status.failed') }}</dt><dd>{{ batchSummary.failed }}</dd></div>
+            <div><dt>{{ t('cdkLookup.status.unused') }}</dt><dd>{{ batchSummary.unused }}</dd></div>
+            <div><dt>{{ t('cdkLookup.status.processing') }}</dt><dd>{{ batchSummary.processing }}</dd></div>
+          </dl>
+          <div class="ru-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ t('cdkLookup.cdkCode') }}</th>
+                  <th>{{ t('cdkLookup.useStatus') }}</th>
+                  <th>{{ t('cdkLookup.rechargeEmail') }}</th>
+                  <th>{{ t('cdkLookup.plan') }}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(row, i) in batchResults" :key="row.cdk_code + i">
+                  <td>{{ i + 1 }}</td>
+                  <td class="font-mono break-all">{{ row.cdk_code }}</td>
+                  <td :style="{ color: statusColor(row.status) }">{{ statusText(row.status) }}</td>
+                  <td class="font-mono break-all">{{ row.account_email || t('cdkLookup.emailEmpty') }}</td>
+                  <td>{{ row.plan ? planLabel(row.plan) : t('cdkLookup.emailEmpty') }}</td>
+                  <td>
+                    <button v-if="row.can_resubmit || row.status === 'unused'" type="button" class="ru-micro-btn" @click="goRedeem(row.cdk_code)">{{ row.can_resubmit ? t('cdkLookup.resubmit') : t('cdkLookup.goRedeem') }}</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="rf-actions flex gap-3">
+            <button type="button" class="btn-secondary flex-1" @click="copyUsedEmails">{{ t('cdkLookup.copyEmails') }}</button>
+            <button type="button" class="btn-secondary flex-1" @click="exportCsv">{{ t('cdkLookup.exportCsv') }}</button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </RedeemPresentation>
+  <div v-else class="u-page">
     <UserPageHeader :eyebrow="t('hero.lookupEyebrow')" :title="t('cdkLookup.title')" :subtitle="t('cdkLookup.subtitle')" />
     <div class="u-main max-w-5xl">
 
@@ -235,6 +407,12 @@ import RedeemModeTabs from '../../components/RedeemModeTabs.vue'
 import { parseCdks } from '../../lib/batch-session'
 import { copyToClipboard } from '../../lib/clipboard'
 import { toast } from '../../lib/ui'
+import { planLabel } from '../../lib/plan'
+// 东方意象七主题的展示外壳（移植自 autocard，原作者授权开源使用，2026-11-17）
+import RedeemPresentation from '../../redeem-presentation/components/RedeemPresentation.vue'
+import { mythicPresentation, queryCard } from '../../redeem-presentation/adapter'
+import { maskRedeemCode } from '../../redeem-presentation/utils/redeemCard'
+import type { RedeemPhase } from '../../redeem-presentation/utils/redeemPresentation'
 
 const { t } = useI18n({ useScope: 'global' })
 const router = useRouter()
@@ -391,5 +569,49 @@ function reset() {
   result.value = null
   error.value = ''
   cdkCode.value = ''
+}
+
+// ── 东方意象展示外壳的状态映射（只读本页现有状态，不改查询流程） ──
+const presentation = ref<InstanceType<typeof RedeemPresentation> | null>(null)
+// 与原项目 HistoryView.publicPhase 同义：查询中 = verifying；没结果 = idle；成功 / 失败 / 处理中按卡密状态。
+const historyPhase = computed<RedeemPhase>(() => {
+  if (mode.value === 'batch') return querying.value ? 'verifying' : 'idle'
+  if (querying.value && !result.value) return 'verifying'
+  const st = result.value?.status
+  if (!st) return 'idle'
+  if (st === 'used') return 'success'
+  if (st === 'failed' || st === 'disabled' || st === 'expired') return 'failed'
+  if (st === 'processing') return 'processing'
+  if (st === 'unused') return 'idle'
+  return 'unknown'
+})
+const historyCard = computed(() => {
+  const found = mode.value === 'single' ? result.value : null
+  const statusLabel = querying.value && !found ? t('common.querying') : !found ? t('m19.historyEmpty') : statusText(found.status)
+  return queryCard({ phase: historyPhase.value, plan: found?.plan, identified: !!found, identity: maskRedeemCode(found?.cdk_code || cdkCode.value), account: found?.account_email, statusLabel })
+})
+const resultNote = computed(() => {
+  const r = result.value
+  if (!r) return { tone: 'info', text: '' }
+  if (r.status === 'failed') return { tone: 'error', text: r.message || t('cdkLookup.msgFailed') }
+  if (r.used) return { tone: 'success', text: r.message || t('cdkLookup.msgUsed') }
+  if (r.status === 'processing') return { tone: 'info', text: r.message || t('cdkLookup.msgProcessing') }
+  if (r.status === 'disabled' || r.status === 'expired') return { tone: 'warn', text: r.message || statusText(r.status) }
+  return { tone: 'info', text: r.message || t('cdkLookup.msgUnused') }
+})
+function clearQueries() {
+  cdkCode.value = ''
+  batchText.value = ''
+  result.value = null
+  batchResults.value = []
+  error.value = ''
+}
+async function pasteInto(target: 'single' | 'batch') {
+  try {
+    const text = (await navigator.clipboard.readText()).trim()
+    if (!text) return
+    if (target === 'single') cdkCode.value = text
+    else batchText.value = batchText.value.trim() ? `${batchText.value.trimEnd()}\n${text}` : text
+  } catch { /* 浏览器不允许读剪贴板时什么都不做，用户可手动粘贴 */ }
 }
 </script>

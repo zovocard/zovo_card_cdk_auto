@@ -7,3 +7,13 @@
 
 /* 外壳比视口矮时，原项目页面底色是 body 的 #080b11；本站 html 自带皮肤底色会挡住 body 底色 */
 html:has(.redeem-presentation.atelier) { background: #080b11; }
+
+/* 原项目 body 与全局标题都用 Inter 字族、slate 字色；外壳里没被原样式另行指定的文字（如批量模式标题 h3）沿用这套。
+   本站 body 是皮肤字体，标题另有全局 h1-h4 字体。外壳页面上把这两处换回原项目的取值。 */
+html:has(.redeem-presentation.atelier) body { font-family: Inter, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; color: rgb(30, 41, 59); }
+html.dark:has(.redeem-presentation.atelier) body { color: rgb(226, 232, 240); }
+/* 特异性只有 (0,0,1)：压过本站全局 h1-h4，原项目任何带类名的标题规则仍然优先 */
+:where(.redeem-presentation.atelier, [data-redeem-portal]) :is(h1, h2, h3, h4) { font-family: Inter, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+
+/* 本站东方意象皮肤给按钮加了字距（--btn-track: .04em）；原项目按钮没有 */
+.redeem-presentation.atelier, [data-redeem-portal] { --btn-track: normal; }

@@ -96,3 +96,36 @@ export function rechargeCard(input: RechargeAppearanceInput, phase: RedeemPhase)
   }
   return card
 }
+
+/** 查询页（/history、/billing）与批量页的卡面：认得出的套餐用原项目卡面，认不出的保留本站套餐名；状态文字由页面给。 */
+export function queryCard(input: { phase: RedeemPhase; plan?: string; presentationPlanKey?: string; identified: boolean; identity?: string; taskId?: string; account?: string; quantity?: number; statusLabel?: string }): CardView {
+  const mapped = input.presentationPlanKey ?? (input.identified ? presentationPlan(input.plan || '') : '')
+  const card = cardForTask({
+    phase: input.phase,
+    plan: mapped,
+    identity: input.identity || undefined,
+    taskId: input.taskId || undefined,
+    identified: input.identified,
+    step: 2,
+    account: input.account ? input.account.replace(/^(.).+(@.*)$/, '$1•••$2') : '',
+    quantity: input.quantity,
+    serverTime: Date.now(),
+  })
+  if (input.identified && input.plan && !mapped) {
+    const label = planLabel(input.plan)
+    card.productData = { ...productForPlan(''), displayLabel: label, officialLabel: label, cardCaption: label }
+  }
+  return input.statusLabel ? { ...card, statusLabel: input.statusLabel } : card
+}
+
+/** 批量兑换整体阶段：与原项目 observedRedeemPhase 同义（全完成 = success，全终态 = failed，其余处理中）。 */
+export function batchPhase(input: { phase: 'input' | 'run'; verifying: boolean; submitting: boolean; total: number; ok: number; fail: number; run: number; wait: number }): RedeemPhase {
+  if (input.verifying) return 'verifying'
+  if (input.submitting) return 'submitting'
+  if (input.phase === 'input' || !input.total) return 'idle'
+  if (input.run > 0) return 'processing'
+  if (input.wait > 0) return 'idle'
+  if (input.ok === input.total) return 'success'
+  if (input.ok + input.fail === input.total) return input.ok > 0 ? 'unknown' : 'failed'
+  return 'processing'
+}

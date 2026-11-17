@@ -35,6 +35,12 @@
 - **兑换页**：`src/views/user/RechargeView.vue` 在东方意象皮肤下渲染进 `<RedeemPresentation surface="recharge">`，
   表单作为默认 slot，沿用原项目的表单类名（`cdk-entry` / `account-entry` / `review-entry` / `task-observation`）以复用其样式；
   其它皮肤下仍是原来的经典版，代码未动。状态映射见 `adapter.ts`。
+- **其它用户页**（同样只在东方意象皮肤下进外壳，其它皮肤不变）：
+  - `/batch`（BatchRedeemView）：`surface="recharge" mode="batch"`，对应原项目兑换页的批量模式；外层用动态组件切换外壳 / 原 `div.u-page`，
+    输入阶段沿用原项目批量表单类名（`ru-has-tools` / `ru-batch-bar` / `work-primary`），运行阶段沿用本站结构。
+  - `/history`（CDKStatusView）：`surface="history"`，对应原项目 HistoryView 的查询页（`query-tabs` / `query-result` / `query-facts`）。
+  - `/billing`（BillingCheckView）：`surface="billing"`，对应原项目订阅查询页（`billing-mode-switch.query-tabs` / `billing-result-*` / `rf-more`）。
+  - 卡面阶段与状态文字的映射见 `adapter.ts` 的 `queryCard` / `batchPhase`。
 - **背景**：外壳在时，App 级的 `MythicBackdrop` 画布让位（`shell-state.ts` 计数），避免双背景。
 
 ## 降级（未随包分发的媒体）
