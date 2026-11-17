@@ -14,6 +14,14 @@ export type SkinId =
   | 'rose'
   | 'noir'
   | 'paper'
+  // 东方意象七主题（移植自 autocard 项目，原作者授权开源使用，2026-11-17）
+  | 'atelier'
+  | 'silk'
+  | 'porcelain'
+  | 'orbit'
+  | 'astral'
+  | 'verdant'
+  | 'dawn'
 
 const MODE_KEY = 'theme-mode'
 const SKIN_KEY = 'site-skin'
@@ -48,11 +56,14 @@ export interface SkinMeta {
   primaryOnLight?: string
   /** 该皮肤用到的 Google 字体（css2 family 参数），切换皮肤时按需加载 */
   fonts: string[]
+  /** 皮肤家族：mythic = 东方意象七主题（共用性格样式、印章 logo、canvas 背景氛围） */
+  family?: 'mythic'
 }
 
 // 各皮肤共用的等宽字体（金额、卡密、表格数字）
 const MONO_FONT = 'JetBrains+Mono:wght@400;500;600'
 const SERIF_SC = 'Noto+Serif+SC:wght@500;600;700'
+const MYTHIC_FONTS = ['Manrope:wght@400;500;600;700', 'Cormorant+Garamond:wght@500;600;700', SERIF_SC]
 
 export const SKINS: SkinMeta[] = [
   {
@@ -219,6 +230,132 @@ export const SKINS: SkinMeta[] = [
     primary: '#8b5e34',
     fonts: ['Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700', SERIF_SC],
   },
+  {
+    id: 'atelier',
+    label: '天阙云殿',
+    labelEn: 'Celestial Terrace',
+    swatch: '#d3ba89',
+    swatch2: '#171613',
+    blurb: '云阙金工 · 云台流云 · 香槟金',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#d3ba89',
+    primaryOn: '#1c211e',
+    primaryLight: '#785723',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
+  {
+    id: 'silk',
+    label: '流霞天绫',
+    labelEn: 'Silk Brocade',
+    swatch: '#e0b089',
+    swatch2: '#201812',
+    blurb: '云锦流霞 · 天绫丝线 · 暖铜缎金',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#e0b089',
+    primaryOn: '#1c211e',
+    primaryLight: '#8a552e',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
+  {
+    id: 'porcelain',
+    label: '月魄玉璧',
+    labelEn: 'Lunar Jade',
+    swatch: '#b3cfc4',
+    swatch2: '#172320',
+    blurb: '月华清辉 · 玉璧圆月 · 珍珠白',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#b3cfc4',
+    primaryOn: '#1c211e',
+    primaryLight: '#386b5d',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
+  {
+    id: 'orbit',
+    label: '星宿天衡',
+    labelEn: 'Armillary',
+    swatch: '#c1b4e5',
+    swatch2: '#1b1726',
+    blurb: '天衡浑仪 · 星宿连线 · 烟紫钛',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#c1b4e5',
+    primaryOn: '#1c211e',
+    primaryLight: '#675089',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
+  {
+    id: 'astral',
+    label: '辰海天河',
+    labelEn: 'River of Stars',
+    swatch: '#9fbfe5',
+    swatch2: '#111c2a',
+    blurb: '天河星辉 · 流动星尘 · 午夜蓝',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#9fbfe5',
+    primaryOn: '#1c211e',
+    primaryLight: '#3a638f',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
+  {
+    id: 'verdant',
+    label: '青玉山海',
+    labelEn: 'Jade Ranges',
+    swatch: '#a9cba6',
+    swatch2: '#142219',
+    blurb: '山岚灵玉 · 层叠山脊 · 祖母绿',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#a9cba6',
+    primaryOn: '#1c211e',
+    primaryLight: '#376a47',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
+  {
+    id: 'dawn',
+    label: '曦羽流霞',
+    labelEn: 'Dawn Plumes',
+    swatch: '#e0b5ad',
+    swatch2: '#261b20',
+    blurb: '曦羽烟玫 · 半透羽翎 · 珠光',
+    heading: 'serif',
+    density: 'airy',
+    nav: 'underline',
+    layout: 'top',
+    primary: '#e0b5ad',
+    primaryOn: '#1c211e',
+    primaryLight: '#92584f',
+    primaryOnLight: '#fffcf7',
+    family: 'mythic',
+    fonts: MYTHIC_FONTS,
+  },
 ]
 
 function readSkin(): SkinId {
@@ -329,6 +466,8 @@ function applySkin() {
   root.setAttribute('data-density', meta.density)
   root.setAttribute('data-nav', meta.nav)
   root.setAttribute('data-layout', meta.layout)
+  if (meta.family) root.setAttribute('data-family', meta.family)
+  else root.removeAttribute('data-family')
   // preferDark 皮肤：若用户未显式选 light，自动保证暗色 class 与皮肤一致
   if (meta.preferDark && themeMode.value === 'light') {
     // 允许 light，但皮肤 CSS 本身已是暗色 token；不强制改 mode
@@ -339,7 +478,7 @@ function applySkin() {
   syncElementPlus(primary, primaryOn, dark)
   root.style.colorScheme = dark ? 'dark' : 'light'
   try {
-    localStorage.setItem(BOOT_KEY, JSON.stringify({ skin: meta.id, preferDark: !!meta.preferDark, layout: meta.layout }))
+    localStorage.setItem(BOOT_KEY, JSON.stringify({ skin: meta.id, preferDark: !!meta.preferDark, layout: meta.layout, family: meta.family || '' }))
   } catch { /* 隐私模式等写不进去：首屏退回默认，样式表到达后照常 */ }
   ensureSkinFonts(meta)
 }

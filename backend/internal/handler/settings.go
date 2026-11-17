@@ -10,10 +10,10 @@ import (
 
 // 允许写入 site_settings 的公开安全键（无密钥）
 var publicSettingKeys = map[string]bool{
-	"brand_name":  true,
-	"brand_sub":   true,
-	"skin":        true,
-	"theme_mode":  true,
+	"brand_name": true,
+	"brand_sub":  true,
+	"skin":       true,
+	"theme_mode": true,
 }
 
 // 密钥类键：只接受写入，读出脱敏
@@ -106,6 +106,8 @@ func AdminPutSettings(c *gin.Context) {
 	allowedSkins := map[string]bool{
 		"zovo": true, "terracotta": true, "ocean": true, "cyber": true, "forest": true, "violet": true,
 		"slate": true, "rose": true, "ember": true, "noir": true, "paper": true,
+		// 东方意象七主题（2026-11-17，移植自 autocard，原作者授权）
+		"atelier": true, "silk": true, "porcelain": true, "orbit": true, "astral": true, "verdant": true, "dawn": true,
 	}
 	if body.Skin != nil {
 		s := strings.TrimSpace(*body.Skin)

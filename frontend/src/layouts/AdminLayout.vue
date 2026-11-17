@@ -3,7 +3,7 @@
     <!-- 侧栏 / 细轨（cyber、slate 等） -->
     <aside v-if="layout === 'sidebar' || layout === 'rail'" class="sidenav">
       <div class="side-brand" @click="router.push('/ops')">
-        <span class="brand-icon">{{ skin === 'cyber' ? '◈' : '🚀' }}</span>
+        <span class="brand-icon" :class="{ 'mythic-seal-host': isMythic }">{{ isMythic ? '' : (skin === 'cyber' ? '◈' : '🚀') }}</span>
         <span v-if="layout !== 'rail'" class="brand-text">{{ brand.name || '运营控制台' }}</span>
       </div>
       <nav class="side-pills">
@@ -39,7 +39,7 @@
       <header v-if="layout === 'top'" class="topnav">
         <div class="nav-inner">
           <div class="brand" @click="router.push('/ops')">
-            <span class="brand-icon">🚀</span>
+            <span class="brand-icon" :class="{ 'mythic-seal-host': isMythic }">{{ isMythic ? '' : '🚀' }}</span>
             <span class="brand-text">{{ brand.name || '运营控制台' }}</span>
           </div>
           <nav class="nav-pills">
@@ -95,6 +95,7 @@ const brand = siteBrand
 const skin = siteSkin
 
 const layout = computed(() => currentSkinMeta.value.layout)
+const isMythic = computed(() => currentSkinMeta.value.family === 'mythic')
 const nav = computed(() => currentSkinMeta.value.nav)
 
 const navItems = [
@@ -160,6 +161,7 @@ async function doLogout() {
   display: flex; align-items: center; gap: 8px; cursor: pointer; flex-shrink: 0;
 }
 .brand-icon { font-size: 20px; line-height: 1; }
+.brand-icon.mythic-seal-host { display: inline-block; width: 26px; height: 26px; }
 .brand-text {
   font-size: 17px; font-weight: 700; color: var(--ink); white-space: nowrap;
   font-family: var(--font-display, var(--font-serif));

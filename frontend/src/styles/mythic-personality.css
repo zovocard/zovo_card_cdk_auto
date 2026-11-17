@@ -1,0 +1,110 @@
+/* 东方意象七主题共用「性格」层（data-family="mythic"）：
+   设计取自 autocard 项目（原作者授权开源使用，2026-11-17）——安静的蚀刻线、细描边、留白、衬线标题、
+   半透明面板透出背景氛围（canvas，见 components/MythicBackdrop.vue）。各主题只换色（mythic-skins.css）。 */
+
+html[data-family='mythic'] {
+  --btn-radius: 999px;
+  --btn-weight: 600;
+  --btn-track: 0.04em;
+  --btn-img: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 60%);
+  --btn-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 10px 26px -14px var(--glow);
+  --btn-shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 16px 34px -14px var(--glow);
+  --btn2-bg: transparent;
+  --btn2-border: 1px solid var(--brd-2);
+  --btn2-shadow: none;
+  --card-radius: 22px;
+  --card-bg: color-mix(in srgb, var(--surface) 84%, transparent);
+  --card-border: 1px solid var(--brd);
+  --card-shadow: var(--shadow);
+  --input-radius: 12px;
+  --input-bg: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  --input-border: 1px solid var(--brd);
+  --input-focus-border: 1px solid var(--primary);
+  --input-focus-shadow: 0 0 0 4px var(--primary-soft);
+  --tabs-bg: transparent;
+  --tabs-border: 0;
+  --tabs-radius: 0;
+  --tab-radius: 0;
+  --tab-track: 0.08em;
+  --tab-active-bg: transparent;
+  --tab-active-fg: var(--primary);
+  --tab-active-shadow: inset 0 -1.5px 0 var(--primary);
+  --title-font: var(--font-display);
+  --title-weight: 600;
+  --title-track: 0.01em;
+  --eyebrow-bg: transparent;
+  --eyebrow-border: 0;
+  --eyebrow-case: uppercase;
+  --eyebrow-track: 0.28em;
+  --eyebrow-fg: var(--primary);
+  --eyebrow-dot: var(--primary);
+  --badge-bg: transparent;
+  --badge-icon: var(--primary);
+  --logo-bg: transparent;
+  --logo-fg: var(--primary);
+  --logo-shadow: none;
+  --logo-radius: 0;
+}
+
+/* 面板半透明 + 轻磨砂：透出背景氛围层；弹层(EP overlay)仍用 --surface-solid 不透明 */
+html[data-family='mythic'] .card {
+  backdrop-filter: blur(6px) saturate(1.05);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+}
+
+/* 印章 logo：用各主题的 seal SVG 作遮罩，颜色跟主色 */
+html[data-family='mythic'] .u-logo svg,
+html[data-family='mythic'] .mythic-seal-host > svg { display: none; }
+html[data-family='mythic'] .u-logo { width: 42px; height: 42px; }
+html[data-family='mythic'] .u-logo::before,
+html[data-family='mythic'] .mythic-seal-host::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary);
+  -webkit-mask: var(--mythic-seal) center / contain no-repeat;
+  mask: var(--mythic-seal) center / contain no-repeat;
+}
+
+/* 场景版画：用户页标题区右侧一幅低透明度的线描（桌面端；手机隐藏，避免挤压操作区） */
+html[data-family='mythic'] .u-hero { position: relative; isolation: isolate; }
+html[data-family='mythic'] .u-hero::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  /* 贴在标题区右缘外侧，不压标题与徽章（标题居中，版画只占右侧留白） */
+  left: calc(50% + min(19vw, 270px));
+  top: 50%;
+  width: min(30vw, 400px);
+  aspect-ratio: 900 / 620;
+  transform: translateY(-50%);
+  background: var(--primary);
+  opacity: 0.26;
+  pointer-events: none;
+  -webkit-mask: var(--mythic-scene) center / contain no-repeat;
+  mask: var(--mythic-scene) center / contain no-repeat;
+}
+html.dark[data-family='mythic'] .u-hero::after { opacity: 0.34; }
+@media (max-width: 1100px) {
+  html[data-family='mythic'] .u-hero::after { display: none; }
+}
+
+/* 背景氛围画布（MythicBackdrop.vue）：固定在内容之下，不接收事件 */
+.mythic-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+/* 每个主题的印章与场景图 */
+html[data-skin='atelier'] { --mythic-seal: url('../skins/mythic/seals/atelier.svg'); --mythic-scene: url('../skins/mythic/scenes/atelier.svg'); }
+html[data-skin='silk'] { --mythic-seal: url('../skins/mythic/seals/silk.svg'); --mythic-scene: url('../skins/mythic/scenes/silk.svg'); }
+html[data-skin='porcelain'] { --mythic-seal: url('../skins/mythic/seals/porcelain.svg'); --mythic-scene: url('../skins/mythic/scenes/porcelain.svg'); }
+html[data-skin='orbit'] { --mythic-seal: url('../skins/mythic/seals/orbit.svg'); --mythic-scene: url('../skins/mythic/scenes/orbit.svg'); }
+html[data-skin='astral'] { --mythic-seal: url('../skins/mythic/seals/astral.svg'); --mythic-scene: url('../skins/mythic/scenes/astral.svg'); }
+html[data-skin='verdant'] { --mythic-seal: url('../skins/mythic/seals/verdant.svg'); --mythic-scene: url('../skins/mythic/scenes/verdant.svg'); }
+html[data-skin='dawn'] { --mythic-seal: url('../skins/mythic/seals/dawn.svg'); --mythic-scene: url('../skins/mythic/scenes/dawn.svg'); }

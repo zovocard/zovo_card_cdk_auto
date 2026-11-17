@@ -36,6 +36,7 @@
           if (dark) document.documentElement.classList.add('dark')
           document.documentElement.setAttribute('data-skin', skin)
           document.documentElement.setAttribute('data-layout', (boot && boot.layout) || 'top')
+          if (boot && boot.family) document.documentElement.setAttribute('data-family', boot.family)
         } catch (e) {}
       })()
     </script>
