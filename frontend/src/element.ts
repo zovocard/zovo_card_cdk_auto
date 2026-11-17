@@ -10,6 +10,7 @@ import { ElAlert } from 'element-plus/es/components/alert/index.mjs'
 import { ElButton, ElButtonGroup } from 'element-plus/es/components/button/index.mjs'
 import { ElCard } from 'element-plus/es/components/card/index.mjs'
 import { ElCheckbox } from 'element-plus/es/components/checkbox/index.mjs'
+import { ElConfigProvider } from 'element-plus/es/components/config-provider/index.mjs'
 import { ElDescriptions, ElDescriptionsItem } from 'element-plus/es/components/descriptions/index.mjs'
 import { ElDialog } from 'element-plus/es/components/dialog/index.mjs'
 import { ElDrawer } from 'element-plus/es/components/drawer/index.mjs'
@@ -71,7 +72,7 @@ import 'element-plus/theme-chalk/el-tooltip.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
 const components = [
-  ElAlert, ElButton, ElButtonGroup, ElCard, ElCheckbox, ElDescriptions, ElDescriptionsItem,
+  ElAlert, ElButton, ElButtonGroup, ElCard, ElCheckbox, ElConfigProvider, ElDescriptions, ElDescriptionsItem,
   ElDialog, ElDrawer, ElDropdown, ElDropdownItem, ElDropdownMenu, ElEmpty, ElForm, ElFormItem,
   ElIcon, ElInput, ElInputNumber, ElOption, ElPagination, ElPopover, ElRadioButton, ElRadioGroup,
   ElResult, ElSelect, ElSwitch, ElTable, ElTableColumn, ElTag,
