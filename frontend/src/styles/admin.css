@@ -1,0 +1,43 @@
+/* ══════════════════════════════════════════════════════════════════════
+   管理端（/ops）专用层：只在 html[data-area='admin'] 下生效（router/index.ts 与 index.html 首屏脚本负责打标）。
+   用户页不受影响。
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1. 不透明面板，无背景模糊 ─────────────────────────────────────────────
+   玻璃质感皮肤（zovo 夜间、ocean、forest、东方意象七主题）的 --surface 是半透明的，
+   东方意象还给每个 .card 加了 backdrop-filter。后台满屏是表格和卡片，模糊层叠在
+   氛围画布上会让每一帧都重算整页模糊。后台一律用各皮肤自带的不透明面板色。
+   写在 body 上而不是 html：html 上的 --surface-solid 默认就是 var(--surface)，
+   同一元素上互相引用会成环；body 继承的是 html 已解析好的值，不会。 */
+html[data-area='admin'] body {
+  --surface: var(--surface-solid);
+}
+html[data-area='admin'][data-family='mythic'] body {
+  --card-bg: var(--surface-solid);
+}
+html[data-area='admin'] .card,
+html[data-area='admin'] .el-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ── 2. 轻量状态徽标（代替表格行里的 el-tag：每行少两个组件实例）──────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--ink-2);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.badge--good, .badge--success { color: var(--good); background: var(--good-soft); border-color: color-mix(in srgb, var(--good) 28%, transparent); }
+.badge--warn, .badge--warning { color: var(--warn); background: var(--warn-soft); border-color: color-mix(in srgb, var(--warn) 28%, transparent); }
+.badge--err, .badge--danger { color: var(--err); background: var(--err-soft); border-color: color-mix(in srgb, var(--err) 28%, transparent); }
+.badge--info { color: var(--ink-2); }
+.badge--primary { color: var(--primary); background: var(--primary-soft); border-color: color-mix(in srgb, var(--primary) 28%, transparent); }

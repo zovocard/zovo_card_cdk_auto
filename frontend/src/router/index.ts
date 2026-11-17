@@ -145,4 +145,15 @@ router.beforeEach(async (to) => {
   }
 })
 
+// 区域标记：/ops 下是管理端。styles/admin.css 只在 html[data-area=admin] 下生效，
+// 用户页外观不受影响；body 挂载的弹层（下拉/弹窗/抽屉）也在 html 之下，能读到同一套变量。
+export function isAdminPath(path: string) {
+  return path === OPS_BASE || path.startsWith(`${OPS_BASE}/`)
+}
+router.afterEach((to) => {
+  const root = document.documentElement
+  if (isAdminPath(to.path)) root.setAttribute('data-area', 'admin')
+  else root.removeAttribute('data-area')
+})
+
 export default router

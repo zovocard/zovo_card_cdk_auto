@@ -6,12 +6,17 @@
 // 东方意象七主题的背景氛围（canvas 蚀刻线 + 雾气），只在 mythic 家族皮肤下挂载。
 // 画法来自 autocard 项目（原作者授权开源使用，2026-11-17）。
 // 性能：约 24fps、标签页隐藏时停、系统「减少动态效果」时只画一帧静态图；不挂任何业务事件。
+// 管理端(/ops)只画一帧静态图：后台是长时间停留、表格密集的工作界面，全屏动画每帧都要
+// 重新合成整页（以前面板还带 backdrop-filter，每帧重算模糊），表格滚动和输入都会被拖慢。
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { currentSkinMeta, isDark, themeMode } from '../theme'
 import { mythicArt } from '../skins/mythic/atmosphere.js'
 import { presentationShells } from '../redeem-presentation/shell-state'
 
 const canvas = ref<HTMLCanvasElement | null>(null)
+const route = useRoute()
+const adminArea = computed(() => route.path === '/ops' || route.path.startsWith('/ops/'))
 // 兑换页展示外壳（RedeemPresentation）自带环境画布与底板照片：外壳在时这里让位，避免双背景。
 const active = computed(() => currentSkinMeta.value.family === 'mythic' && presentationShells.value === 0)
 
@@ -41,7 +46,7 @@ function paint(now: number) {
   const el = canvas.value
   const ctx = el?.getContext('2d')
   if (!el || !ctx) return
-  const still = !!reduceMotion?.matches
+  const still = !!reduceMotion?.matches || adminArea.value
   pointer.x += (pointer.tx - pointer.x) * 0.06
   pointer.y += (pointer.ty - pointer.y) * 0.06
   ctx.clearRect(0, 0, w, h)
@@ -79,7 +84,7 @@ function start() {
   resize()
   paint(performance.now())
   window.addEventListener('resize', onResize, { passive: true })
-  if (reduceMotion?.matches) return // 静态：只在尺寸/主题变化时重画
+  if (reduceMotion?.matches || adminArea.value) return // 静态：只在尺寸/主题变化时重画
   window.addEventListener('pointermove', onPointer, { passive: true })
   raf = requestAnimationFrame(loop)
 }
@@ -92,7 +97,7 @@ function stop() {
 }
 
 watch(
-  () => [active.value, currentSkinMeta.value.id, themeMode.value] as const,
+  () => [active.value, currentSkinMeta.value.id, themeMode.value, adminArea.value] as const,
   async ([on]) => {
     if (!on) return stop()
     await nextTick()

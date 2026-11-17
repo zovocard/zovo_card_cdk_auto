@@ -256,8 +256,8 @@
                 {{ row.displayCode || '—' }}
               </span>
               <span class="code-cell__meta">
-                <el-tag v-if="row.fullCode" size="small" type="success" effect="plain">完整</el-tag>
-                <el-tag v-else size="small" type="info" effect="plain">仅前缀</el-tag>
+                <span v-if="row.fullCode" class="badge badge--good">完整</span>
+                <span v-else class="badge">仅前缀</span>
                 <span class="text-subtle">{{ (row.displayCode || '').length }}字 · 点复制</span>
               </span>
             </button>
@@ -273,7 +273,7 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag size="small" :type="statusType(row.status)">{{ statusLabel(row.status) }}</el-tag>
+            <span class="badge" :class="`badge--${statusType(row.status)}`">{{ statusLabel(row.status) }}</span>
           </template>
         </el-table-column>
         <el-table-column label="服务费" width="88">
@@ -290,19 +290,16 @@
           </template>
         </el-table-column>
         <el-table-column prop="created_at" label="时间" min-width="148" />
-        <el-table-column label="" width="72" fixed="right" align="right">
+        <el-table-column label="操作" width="150" fixed="right" align="right">
+          <!-- 行内操作最多 3 个，直接平铺成文字按钮：原来每行一个 el-dropdown，
+               每个都常驻一个弹层 DOM（200 行 = 200 个 popper），切到每页 200 条要卡 1 秒多。 -->
           <template #default="{ row }">
-            <el-dropdown trigger="click" @command="(cmd: string) => onRowCommand(cmd, row)">
-              <el-button size="small" link>操作</el-button>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="copy" :disabled="!row.fullCode">复制完整码</el-dropdown-item>
-                  <el-dropdown-item command="note" :disabled="!row.id">编辑备注</el-dropdown-item>
-                  <el-dropdown-item v-if="canDisableRow(row)" command="disable" divided>禁用</el-dropdown-item>
-                  <el-dropdown-item v-if="canEnableRow(row)" command="enable">解除禁用</el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <span class="row-acts">
+              <button type="button" class="row-act" :disabled="!row.fullCode" @click="onRowCommand('copy', row)">复制</button>
+              <button type="button" class="row-act" :disabled="!row.id" @click="onRowCommand('note', row)">备注</button>
+              <button v-if="canDisableRow(row)" type="button" class="row-act row-act--danger" @click="onRowCommand('disable', row)">禁用</button>
+              <button v-else-if="canEnableRow(row)" type="button" class="row-act" @click="onRowCommand('enable', row)">解禁</button>
+            </span>
           </template>
         </el-table-column>
       </el-table>
@@ -328,7 +325,7 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, shallowRef, watch } from 'vue'
 import { authFetch } from '../../lib/api'
 import { dialog } from '../../lib/dialog'
 import { copyToClipboard } from '../../lib/clipboard'
@@ -346,7 +343,9 @@ const agentSwapUrl =
 
 type CodeCacheEntry = { code: string; plan?: string; prefix?: string; at?: number; id?: number }
 /** id -> entry；prefix -> entry（仅作兜底 / 回填服务器） */
-const codeCache = ref<Record<string, CodeCacheEntry>>({})
+// shallowRef：缓存可能上万条，深层响应式会让每次查表都走代理、并把每个键都登记成依赖。
+// 只整体替换，从不原地改。
+const codeCache = shallowRef<Record<string, CodeCacheEntry>>({})
 const storeStats = reactive({ fullOnPage: null as number | null, fullInStore: null as number | null })
 const syncingCache = ref(false)
 const syncingUpstream = ref(false)
@@ -996,7 +995,10 @@ function saveCodeCache() {
 }
 
 function rememberIssued(items: any[], plan: string) {
-  const next = { ...codeCache.value }
+  // 每次翻页都会调用：已在缓存里的码不再复制整份对象、也不再整份写 localStorage
+  const cur = codeCache.value
+  if (!items.some((it) => { const c = extractFullCode(it); return c && !cur[`code:${c}`] })) return
+  const next = { ...cur }
   for (const it of items) {
     const code = extractFullCode(it)
     if (!code) continue
@@ -1322,7 +1324,13 @@ function searchList() {
   return loadList()
 }
 
+let listAbort: AbortController | null = null
 async function loadList() {
+  // 连续翻页 / 改筛选时取消上一个请求，避免慢响应后到、把新结果盖回旧的
+  listAbort?.abort()
+  const ac = new AbortController()
+  listAbort = ac
+  const signal = ac.signal
   loadingList.value = true
   listError.value = ''
   clearSelection()
@@ -1335,8 +1343,9 @@ async function loadList() {
       if (listQ.value.trim()) qs.set('q', listQ.value.trim())
       if (listPlan.value) qs.set('plan', listPlan.value)
       if (listStatus.value) qs.set('status', listStatus.value)
-      const r = await authFetch(`/api/v1/admin/cardplatform/cdks/stored?${qs.toString()}`)
+      const r = await authFetch(`/api/v1/admin/cardplatform/cdks/stored?${qs.toString()}`, { signal })
       const d = await r.json().catch(() => ({}))
+      if (signal.aborted) return
       if (!r.ok) {
         listError.value = d.error || d.msg || '加载本站完整码失败'
         rows.value = []
@@ -1360,8 +1369,9 @@ async function loadList() {
     if (listQ.value.trim()) qs.set('q', listQ.value.trim())
     if (listStatus.value) qs.set('status', listStatus.value)
     if (listPlan.value) qs.set('plan', listPlan.value)
-    const r = await authFetch(`/api/v1/admin/cardplatform/cdks?${qs.toString()}`)
+    const r = await authFetch(`/api/v1/admin/cardplatform/cdks?${qs.toString()}`, { signal })
     const d = await r.json().catch(() => ({}))
+    if (signal.aborted) return
     if (!r.ok) {
       listError.value = d.error || d.msg || '列表失败'
       rows.value = []
@@ -1374,8 +1384,14 @@ async function loadList() {
     total.value = d.total || 0
     storeStats.fullOnPage = d.full_code_on_page != null ? Number(d.full_code_on_page) : null
     storeStats.fullInStore = d.full_code_in_store != null ? Number(d.full_code_in_store) : null
+  } catch (e: any) {
+    if (signal.aborted || e?.name === 'AbortError') return
+    listError.value = e?.message || '网络错误'
   } finally {
-    loadingList.value = false
+    if (listAbort === ac) {
+      listAbort = null
+      loadingList.value = false
+    }
   }
 }
 
@@ -1500,6 +1516,22 @@ onMounted(async () => {
   gap: 6px;
   font-size: 11px;
 }
+
+.row-acts { display: inline-flex; gap: 2px; justify-content: flex-end; }
+.row-act {
+  padding: 2px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--primary);
+  font-size: 12px;
+  line-height: 20px;
+  cursor: pointer;
+}
+.row-act:hover:not(:disabled) { background: var(--primary-soft); }
+.row-act:disabled { color: var(--ink-3); cursor: not-allowed; opacity: .6; }
+.row-act--danger { color: var(--err); }
+.row-act--danger:hover:not(:disabled) { background: var(--err-soft); }
 
 .note-cell {
   display: block;

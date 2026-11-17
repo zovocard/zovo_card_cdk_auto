@@ -37,6 +37,9 @@
           document.documentElement.setAttribute('data-skin', skin)
           document.documentElement.setAttribute('data-layout', (boot && boot.layout) || 'top')
           if (boot && boot.family) document.documentElement.setAttribute('data-family', boot.family)
+          // 管理端(/ops)：不透明面板、静态氛围、完整 Element Plus 配色映射（见 styles/admin.css）。
+          // 首屏就标上，避免样式表到达后再切一次造成闪动/位移。
+          if (location.pathname === '/ops' || location.pathname.indexOf('/ops/') === 0) document.documentElement.setAttribute('data-area', 'admin')
         } catch (e) {}
       })()
     </script>

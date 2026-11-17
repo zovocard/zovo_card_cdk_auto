@@ -148,8 +148,8 @@ async function doLogout() {
 /* ── top nav ── */
 .topnav {
   position: sticky; top: 0; z-index: 100;
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
-  backdrop-filter: saturate(1.3) blur(12px);
+  /* 不透明 + 不模糊：backdrop-filter 会让下面每次重绘（表格滚动、氛围画布）都重算一遍模糊 */
+  background: var(--surface-solid);
   border-bottom: 1px solid var(--brd);
 }
 .nav-inner {
@@ -249,8 +249,7 @@ async function doLogout() {
 
 .subtop {
   border-bottom: 1px solid var(--brd);
-  background: color-mix(in srgb, var(--surface) 90%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--surface-solid);
   position: sticky; top: 0; z-index: 40;
 }
 .subtop-inner {
