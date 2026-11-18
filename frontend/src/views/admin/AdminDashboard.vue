@@ -9,7 +9,7 @@
     </AdminPageHeader>
 
     <div class="w-full space-y-4">
-      <div v-if="statsError" class="inline-err">
+      <div v-if="statsError" class="inline-err" :class="{ 'inline-err--setup': stats.configured === false }">
         <span>{{ statsError }}</span>
         <span class="flex gap-2 items-center">
           <router-link v-if="stats.configured === false" to="/ops/integration" class="adm-link text-xs">去配置 →</router-link>

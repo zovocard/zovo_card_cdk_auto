@@ -444,18 +444,36 @@ html[data-area='admin'] .chip__x {
 }
 html[data-area='admin'] .chip__x:hover { background: color-mix(in srgb, var(--primary) 18%, transparent); }
 
+/* 就地提示条：跟主题面板色融合 + 左侧色条，不再整块铺红/粉（18 套皮肤里都协调）。
+   --setup = 「还没配置」这类设置提醒，用主题主色；默认 = 真错误，用 --err 只做色条与图标点。 */
 html[data-area='admin'] .inline-err {
+  --notice-tone: var(--err);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 12px;
+  padding: 9px 12px 9px 14px;
   border-radius: var(--radius-md);
   font-size: 13px;
-  color: var(--err);
-  background: var(--err-soft);
-  border: 1px solid color-mix(in srgb, var(--err) 35%, transparent);
+  line-height: 1.5;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--notice-tone) 7%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--notice-tone) 22%, var(--brd));
+  box-shadow: inset 3px 0 0 var(--notice-tone);
 }
+html[data-area='admin'] .inline-err > span:first-child { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+html[data-area='admin'] .inline-err > span:first-child::before {
+  content: '';
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--notice-tone);
+}
+html[data-area='admin'] .inline-err--setup { --notice-tone: var(--primary); }
+html[data-area='admin'] .inline-err .adm-link { color: var(--notice-tone); font-weight: 600; }
+/* CDK 页状态条里的错误文字：同样不用刺眼红，降为次要文字 + 色点 */
+html[data-area='admin'] .adm-strip__err--setup { color: var(--ink-2); }
 
 /* 刷新时的顶部细进度条（保留旧数据，不整表蒙灰） */
 html[data-area='admin'] .adm-progress {

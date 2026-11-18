@@ -32,7 +32,7 @@
       </span>
       <span class="adm-strip__item text-subtle">价格 {{ priceSource }} · v{{ pricingVersion ?? '—' }}</span>
       <span class="adm-strip__grow" />
-      <span v-if="metaError" class="adm-strip__err" :title="metaError">{{ metaError }}</span>
+      <span v-if="metaError" class="adm-strip__err" :class="{ 'adm-strip__err--setup': metaLoaded && !configured }" :title="metaError">{{ metaError }}</span>
       <el-button v-if="metaError" size="small" :loading="loadingMeta" @click="loadMeta">重试</el-button>
       <router-link v-if="metaLoaded && !configured" to="/ops/integration" class="adm-link">去配置 API Key →</router-link>
     </div>
