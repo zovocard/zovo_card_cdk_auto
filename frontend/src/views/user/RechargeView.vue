@@ -408,6 +408,7 @@
 import { isXPremiumPlan, xPremiumCredential } from '../../lib/x-premium'
 import { grokCredential, isGrokPlan } from '../../lib/grok'
 import { parseSessionJsonLenient } from '../../lib/batch-session'
+import { forceCloseStripeChallenge } from '../../lib/stripe-challenge'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
@@ -483,6 +484,8 @@ const captchaTerminal = ref(false) // exhausted / expired：永久禁用按钮
 const captchaExpiresAt = ref(0) // ms epoch（上游 180s 窗口）
 const captchaNow = ref(Date.now())
 let captchaTimer: any = null
+// 到点强制收尾时 +1：进行中的那次验证作废，后续步骤（含回传 complete）一律不再执行。
+let captchaGen = 0
 const isNativeCaptcha = computed(
   () => String(resultStage.value || '').toLowerCase() === 'native_captcha',
 )
@@ -502,13 +505,30 @@ function startCaptchaTicker() {
   captchaNow.value = Date.now()
   captchaTimer = setInterval(() => {
     captchaNow.value = Date.now()
-    if (captchaTimedOut.value) stopCaptchaTicker()
+    if (captchaTimedOut.value) {
+      stopCaptchaTicker()
+      if (!captchaTerminal.value) expireCaptchaNow()
+    }
   }, 1000)
 }
 function stopCaptchaTicker() {
   if (captchaTimer) {
     clearInterval(captchaTimer)
     captchaTimer = null
+  }
+}
+// 180 秒到点强制收尾：clientSecret 在 Stripe 侧不随 180 秒失效，
+// 验证浮窗还开着时兑换者点完 Stripe 照样扣款，而订单已按「未扣款」判失败。
+// 到点即移除 Stripe 验证浮窗、作废进行中的尝试、永久禁用按钮。
+function expireCaptchaNow() {
+  captchaGen++
+  forceCloseStripeChallenge()
+  stripeJsPromise = null // Stripe.js 已卸掉，下次需要时重新加载
+  captchaTerminal.value = true
+  captchaError.value = t('nativeCaptcha.timeout')
+  if (captchaBusy.value) {
+    captchaBusy.value = false
+    startPoll()
   }
 }
 function resetCaptchaState() {
@@ -624,6 +644,8 @@ function handleCaptchaResult(cdata: any) {
 
 async function startNativeCaptcha() {
   if (captchaDisabled.value) return
+  const gen = captchaGen
+  const stale = () => gen !== captchaGen // 已到点强制收尾：本次尝试作废
   captchaError.value = ''
   captchaBusy.value = true
   // 过码期间暂停轮询，避免状态来回跳；结束后 startPoll() 恢复。
@@ -635,6 +657,7 @@ async function startNativeCaptcha() {
   try {
     const tok = redemptionToken.value
     const params = await fetchCaptchaParams()
+    if (stale()) return
     if (!params.ok) {
       captchaError.value = params.msg || t('nativeCaptcha.loadFailed')
       return
@@ -653,6 +676,7 @@ async function startNativeCaptcha() {
       return
     }
     const StripeCtor = await loadStripeJs()
+    if (stale()) return
     if (typeof StripeCtor !== 'function') {
       captchaError.value = t('nativeCaptcha.loadFailed')
       return
@@ -662,6 +686,7 @@ async function startNativeCaptcha() {
     // 由卡台(ACC)按 PI 真相计数（这是尝试次数/granted 的唯一真相源）。
     try {
       const retrieved = await stripe.retrievePaymentIntent(clientSecret)
+      if (stale()) return
       const pi = retrieved?.paymentIntent
       if (pi && piId && pi.id !== piId) {
         // 安全中止：PI 不匹配不回传，不计失败次数。
@@ -669,25 +694,33 @@ async function startNativeCaptcha() {
         return
       }
       if (pi && (pi.status === 'requires_action' || pi.status === 'requires_source_action')) {
+        if (captchaTimedOut.value) return expireCaptchaNow()
         await stripe.handleNextAction({ clientSecret })
+        if (stale()) return
         await stripe.retrievePaymentIntent(clientSecret)
       }
     } catch {
       /* 本地异常也回传 complete，由卡台核验 PI 真相 */
     }
+    if (stale()) return
     // 回传卡台推进订单（只带 token/code，绝不带 clientSecret）
     const { data: cdata } = await api('/api/v1/public/cdk/native-captcha/complete', {
       method: 'POST',
       body: JSON.stringify(tok ? { token: tok } : { code: code.value.trim() }),
     })
+    if (stale()) return
     handleCaptchaResult(cdata)
   } catch (e: any) {
+    if (stale()) return
     captchaError.value = e && e.message ? String(e.message) : t('nativeCaptcha.failed')
   } finally {
-    captchaBusy.value = false
-    // 恢复轮询，让后续状态（completed / declined 等）正常收敛；
-    // 终态(exhausted/expired)按钮由 captchaDisabled 维持禁用，不受轮询影响。
-    startPoll()
+    // 已到点强制收尾的尝试：expireCaptchaNow 已复位按钮并恢复轮询，这里不再动
+    if (!stale()) {
+      captchaBusy.value = false
+      // 恢复轮询，让后续状态（completed / declined 等）正常收敛；
+      // 终态(exhausted/expired)按钮由 captchaDisabled 维持禁用，不受轮询影响。
+      startPoll()
+    }
   }
 }
 
