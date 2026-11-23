@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/tuzi/cdk-recharge-system/internal/auth"
 	"github.com/tuzi/cdk-recharge-system/internal/config"
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 	"github.com/tuzi/cdk-recharge-system/internal/handler"
@@ -252,6 +254,21 @@ func setupRoutes(r *gin.Engine) {
 			}
 			// 防目录穿越：path.Clean 后再拼接，确保不越出 webDir
 			clean := path.Clean("/" + strings.TrimPrefix(p, "/"))
+			// ★后台前端代码门禁★：assets/admin/* 只对已登录管理员可见。未登录/非管理员一律 404，
+			// 不让匿名访客下载后台 JS（内含后台接口路径、上游品牌/域名）。用 404 而非 403，
+			// 不暴露「此处有受保护文件」。clean 已归一化，挡住 /assets/admin/.. 之类穿越写法。
+			if strings.HasPrefix(clean, "/assets/admin/") {
+				// ★绝不缓存★：这些响应随 auth_token 而异（管理员 200 / 他人 404），一旦被
+				// CDN/浏览器按 URL 缓存，一个管理员取到的 JS 会被边缘缓存后发给匿名访客，
+				// 直接绕过本门禁。no-store 让 CF 与浏览器都不缓存（管理端非性能敏感，可接受回源）。
+				// 同时发 Vary: Cookie，双保险告知任何中间缓存按 Cookie 区分。
+				c.Header("Cache-Control", "no-store")
+				c.Header("Vary", "Cookie")
+				if !adminAssetAllowed(c) {
+					c.JSON(404, gin.H{"error": "not found"})
+					return
+				}
+			}
 			if clean != "/" {
 				fp := filepath.Join(webDir, filepath.FromSlash(clean))
 				if st, err := os.Stat(fp); err == nil && !st.IsDir() {
@@ -266,4 +283,34 @@ func setupRoutes(r *gin.Engine) {
 
 func (s *Server) Run(addr string) error {
 	return s.engine.Run(addr)
+}
+
+// adminAssetAllowed 判断请求是否来自已登录管理员，供 /assets/admin/ 静态门禁用。
+// 复用登录时下发的 HttpOnly auth_token cookie —— 浏览器加载同源 /assets/admin/*.js 会自动带上它，
+// 所以无需为静态资源单独发凭证；同时兼容 Authorization: Bearer（非浏览器客户端）。
+// 只认签名有效、未过期且 is_admin=true 的票；任何不满足都返回 false（调用方据此 404）。
+// 这里只读不写、不做 CSRF 校验（GET 静态资源本就不改状态）。
+func adminAssetAllowed(c *gin.Context) bool {
+	var tokenStr string
+	if authHeader := c.GetHeader("Authorization"); authHeader != "" {
+		if parts := strings.Split(authHeader, " "); len(parts) == 2 && parts[0] == "Bearer" {
+			tokenStr = parts[1]
+		}
+	}
+	if tokenStr == "" {
+		if ck, err := c.Cookie("auth_token"); err == nil {
+			tokenStr = ck
+		}
+	}
+	if tokenStr == "" {
+		return false
+	}
+	claims := &auth.CustomClaims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, jwt.ErrSignatureInvalid
+		}
+		return []byte(auth.JWTSecret()), nil
+	})
+	return err == nil && token.Valid && claims.IsAdmin
 }

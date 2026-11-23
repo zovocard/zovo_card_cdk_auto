@@ -67,13 +67,14 @@ const MYTHIC_FONTS = ['Manrope:wght@400;500;600;700', 'Cormorant+Garamond:wght@5
 
 export const SKINS: SkinMeta[] = [
   {
-    // 与卡台新版 UI 同一套设计语言：夜间=曜夜（深黑 + 雾金），日间=流金（象牙 + 暗金）
+    // 夜间=曜夜（深黑 + 雾金），日间=流金（象牙 + 暗金）。
+    // ★白标★：labelEn 不写上游品牌名——这是用户可见、且会打进公共包的主题选择器文案。
     id: 'zovo',
-    label: '卡台新版',
-    labelEn: 'ZovoCard',
+    label: '曜夜流金',
+    labelEn: 'Midnight Gold',
     swatch: '#cbb079',
     swatch2: '#0c0c11',
-    blurb: '曜夜雾金 · 玻璃面板 · 与卡台新版一致',
+    blurb: '曜夜雾金 · 玻璃面板 · 暗金质感',
     heading: 'display',
     density: 'comfy',
     nav: 'pill',
