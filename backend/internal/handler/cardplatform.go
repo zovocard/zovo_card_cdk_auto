@@ -34,7 +34,7 @@ func CardPlatformPing(c *gin.Context) {
 	for _, u := range candidates {
 		req, err := http.NewRequestWithContext(c.Request.Context(), http.MethodGet, u, nil)
 		if err != nil {
-			lastErr = err.Error()
+			lastErr = cardplatform.RedactUpstreamDomains(err.Error())
 			continue
 		}
 		req.Header.Set("User-Agent", "cdk-recharge-system/cardplatform-ping")
@@ -43,7 +43,7 @@ func CardPlatformPing(c *gin.Context) {
 		}
 		resp, err := client.Do(req)
 		if err != nil {
-			lastErr = err.Error()
+			lastErr = cardplatform.RedactUpstreamDomains(err.Error())
 			continue
 		}
 		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 4096))

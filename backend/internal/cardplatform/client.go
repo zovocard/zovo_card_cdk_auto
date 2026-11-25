@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,6 +18,42 @@ import (
 
 	"github.com/tuzi/cdk-recharge-system/internal/db"
 )
+
+// RedactUpstreamDomains 抹掉文案里的上游(卡台)域名/URL —— 这是白标站,不能把
+// zovocard 暴露给兑换者。保留底层原因(超时/连接拒绝等)便于排查。供其它包(handler)复用。
+func RedactUpstreamDomains(s string) string { return redactUpstreamDomains(s) }
+
+func redactUpstreamDomains(s string) string {
+	for _, d := range []string{
+		"https://sandbox.zovocard.com", "https://zovocard.com",
+		"http://sandbox.zovocard.com", "http://zovocard.com",
+		"sandbox.zovocard.com", "zovocard.com",
+	} {
+		s = strings.ReplaceAll(s, d, "上游服务")
+	}
+	return s
+}
+
+// sanitizeUpstreamErr 脱敏上游调用错误。Go 的 *url.Error 会把目标 URL 带进 Error()
+// (如 Post "https://zovocard.com/api/v1/cdk/preflight": ...),直接回给前端会泄露上游域名。
+// 这里对 url.Error 整段去掉 URL 只留操作+原因;其它错误兜底按裸域名替换。
+func sanitizeUpstreamErr(err error) error {
+	if err == nil {
+		return nil
+	}
+	var ue *url.Error
+	if errors.As(err, &ue) {
+		reason := "请求失败"
+		if ue.Err != nil {
+			reason = redactUpstreamDomains(ue.Err.Error())
+		}
+		return fmt.Errorf("%s 上游服务：%s", ue.Op, reason)
+	}
+	if red := redactUpstreamDomains(err.Error()); red != err.Error() {
+		return errors.New(red)
+	}
+	return err
+}
 
 const defaultBase = "https://zovocard.com"
 
@@ -138,7 +175,7 @@ func (c *Client) doOpenAPIWithClient(ctx context.Context, httpc *http.Client, me
 	}
 	resp, err := httpc.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, sanitizeUpstreamErr(err)
 	}
 	defer resp.Body.Close()
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 4<<20))
@@ -912,7 +949,7 @@ func (c *Client) doPublicCDK(ctx context.Context, method, path string, body any,
 	}
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return 0, nil, err
+		return 0, nil, sanitizeUpstreamErr(err)
 	}
 	defer resp.Body.Close()
 	raw, _ := io.ReadAll(io.LimitReader(resp.Body, 2<<20))
