@@ -7,6 +7,10 @@ import vue from '@vitejs/plugin-vue'
 // ★前提★：管理端视图必须懒加载（router 里 () => import()），否则会被并进公共入口包，
 // 既拆不出去也会把后台路径带进公共包。当前 router 已全部懒加载。
 function isConsoleModule(id: string): boolean {
+  // ★例外:SetupView 是登录前的初始化向导(/ops/setup),新实例或未登录时就要加载它,
+  // 不能进受保护的 assets/admin/——否则会被 auth_token 网关 404,setup 页崩(v1.4.39 回归)。
+  // 它只引入 vue/vue-router/auth store,不含任何后台组件,放公共目录安全。
+  if (/[\\/]src[\\/]views[\\/]admin[\\/]SetupView\.vue/.test(id)) return false
   return /[\\/]src[\\/](views[\\/]admin[\\/]|components[\\/]admin[\\/]|layouts[\\/]AdminLayout\.vue)/.test(id)
 }
 
