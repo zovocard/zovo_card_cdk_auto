@@ -166,7 +166,7 @@ func SyncOwnerDirectCardRules(ctx context.Context) error {
 	for _, r := range existing {
 		byProd[strings.ToLower(strings.TrimSpace(r.Product))] = r
 	}
-	for _, prod := range []string{"gpt", "claude", "grok"} {
+	for _, prod := range []string{"gpt", "claude", "grok", "gemini"} {
 		cur, ok := byProd[prod]
 		if !ok {
 			cur = cardplatform.DirectCardRule{

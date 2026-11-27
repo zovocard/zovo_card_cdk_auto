@@ -1,5 +1,6 @@
 export default {
   grok: {"credential": "Grok 登录态", "hint": "登录 grok.com 后，在浏览器开发者工具 → Application → Cookies → grok.com 复制 sso 的值（或整段含 sso= 的 Cookie）。仅新订阅，美元固定价。", "placeholder": "sso=… 或 sso 的值", "invalid": "请填写有效的 Grok 登录态（grok.com 的 sso cookie）", "batchHint": "Grok 卡密请配对 Grok 登录态，格式为 sso=…（整段 Cookie），不要使用 ChatGPT Session。"},
+  gemini: {"credential": "Google 登录态", "hint": "粘贴 Google 账户 refresh_token（以 1// 开头，OAuthLogin scope）。仅新订阅；价格随账号所在区本地化。", "placeholder": "1//…（Google refresh_token）", "invalid": "请填写有效的 Google refresh_token（以 1// 开头）", "batchHint": "Gemini 卡密请配对 Google refresh_token（1//…），不要使用 ChatGPT Session。"},
   xPremium: {"placeholder": "JSON：auth_token、ct0、billing_email", "product": "产品", "credential": "X 登录凭据", "hint": "粘贴 JSON：auth_token、ct0、billing_email。仅新订阅，按日元实时报价；自动续费请在 X 管理。", "invalid": "请填写包含 auth_token、ct0、billing_email 的有效 X Cookie JSON", "batchHint": "X 卡密请配对 X Cookie JSON（auth_token、ct0、billing_email），不要使用 ChatGPT Session。"},
 
   nativeCaptcha: {"button": "点此完成人机验证", "processing": "验证中…", "prompt": "本次支付需要你在当前浏览器完成一次人机验证 / 3D 验证。点击下方按钮即可安全完成，完成后会自动继续处理。", "countdown": "请在 {s} 秒内完成验证", "timeout": "验证已超时失效", "retry": "本次未通过，还可再试 {n} 次", "exhausted": "两次验证都未通过，本单已失效（未扣款，可重新下单）", "expiredResult": "验证已超时失效（未扣款，可重新下单）", "loadFailed": "无法加载验证参数，请稍后重试。", "mismatch": "验证信息不匹配，请刷新后重试。", "failed": "验证未完成，请重试。"},

@@ -41,22 +41,22 @@
         <div><p class="font-medium text-ink"><span aria-hidden="true">✓</span>{{ appearanceCard.productData.cardCaption || planLabel(targetPlan) }}</p></div>
         <a :href="credentialPage.url" target="_blank" rel="noopener noreferrer" class="btn-secondary shrink-0 text-center">{{ credentialPage.label }}</a>
       </div>
-      <div v-if="!isXPremiumPlan(targetPlan) && !isGrok" class="recharge-mode-switch flex">
+      <div v-if="!isXPremiumPlan(targetPlan) && !isGrok && !isGemini" class="recharge-mode-switch flex">
         <button type="button" class="recharge-mode-btn" :class="{ 'recharge-mode-btn--active': credMode === 'session' }" :aria-pressed="credMode === 'session'" @click="credMode = 'session'">{{ t('rp.modeSession') }}</button>
         <button type="button" class="recharge-mode-btn" :class="{ 'recharge-mode-btn--active': credMode === 'mailbox' }" :aria-pressed="credMode === 'mailbox'" @click="credMode = 'mailbox'">{{ t('rp.modeMailbox') }}</button>
       </div>
       <div v-if="credMode === 'session'" class="form-group">
-        <label for="recharge-session-json">{{ isGrok ? t('rp.grokLabel') : isXPremiumPlan(targetPlan) ? t('rp.xLabel') : t('rp.sessionLabel') }}</label>
+        <label for="recharge-session-json">{{ isGrok ? t('rp.grokLabel') : isGemini ? t('rp.geminiLabel') : isXPremiumPlan(targetPlan) ? t('rp.xLabel') : t('rp.sessionLabel') }}</label>
         <textarea
           id="recharge-session-json"
           v-model="sessionRaw"
           rows="4"
           class="work-input input h-32 font-mono"
-          :placeholder="isGrok ? t('grok.placeholder') : isXPremiumPlan(targetPlan) ? t('xPremium.placeholder') : 'Session JSON (sessionToken)'"
+          :placeholder="isGrok ? t('grok.placeholder') : isGemini ? t('gemini.placeholder') : isXPremiumPlan(targetPlan) ? t('xPremium.placeholder') : 'Session JSON (sessionToken)'"
           @keydown.meta.enter.prevent="doPreflight"
           @keydown.ctrl.enter.prevent="doPreflight"
         ></textarea>
-        <p class="session-input-hint text-xs text-subtle">{{ isGrok ? t('grok.hint') : isXPremiumPlan(targetPlan) ? t('xPremium.hint') : t('rp.sessionHint') }}</p>
+        <p class="session-input-hint text-xs text-subtle">{{ isGrok ? t('grok.hint') : isGemini ? t('gemini.hint') : isXPremiumPlan(targetPlan) ? t('xPremium.hint') : t('rp.sessionHint') }}</p>
       </div>
       <div v-else class="form-group">
         <label for="recharge-mailbox-email">{{ t('rp.emailLabel') }}</label>
@@ -195,19 +195,20 @@
 
       <!-- 2 preflight -->
       <div v-show="step === 2" class="card space-y-4">
-        <h2 class="text-xl font-bold text-ink">{{ isGrok ? t('grok.credential') : isXPremiumPlan(targetPlan) ? t('xPremium.credential') : 'ChatGPT 凭证' }}</h2>
-        <div v-if="!isXPremiumPlan(targetPlan) && !isGrok" class="flex gap-2">
+        <h2 class="text-xl font-bold text-ink">{{ isGrok ? t('grok.credential') : isGemini ? t('gemini.credential') : isXPremiumPlan(targetPlan) ? t('xPremium.credential') : 'ChatGPT 凭证' }}</h2>
+        <div v-if="!isXPremiumPlan(targetPlan) && !isGrok && !isGemini" class="flex gap-2">
           <button type="button" class="btn-secondary !py-1" :class="{ 'ring-2': credMode === 'session' }" @click="credMode = 'session'">Session</button>
           <button type="button" class="btn-secondary !py-1" :class="{ 'ring-2': credMode === 'mailbox' }" @click="credMode = 'mailbox'">邮箱</button>
         </div>
         <template v-if="credMode === 'session'">
           <p v-if="isGrok" class="text-sm text-muted">{{ t('grok.hint') }}</p>
+          <p v-else-if="isGemini" class="text-sm text-muted">{{ t('gemini.hint') }}</p>
           <p v-else-if="isXPremiumPlan(targetPlan)" class="text-sm text-muted">{{ t('xPremium.hint') }}</p>
           <p v-else class="text-sm text-muted">打开
             <a class="app-link" href="https://chatgpt.com/api/auth/session" target="_blank" rel="noopener">chatgpt.com/api/auth/session</a>
             复制<strong>完整 JSON</strong>（必须含 <code>sessionToken</code>）。已禁用纯 Access Token。
           </p>
-          <textarea v-model="sessionRaw" class="input h-36 font-mono text-xs" :placeholder="isGrok ? t('grok.placeholder') : isXPremiumPlan(targetPlan) ? t('xPremium.placeholder') : 'Session JSON (sessionToken)'" />
+          <textarea v-model="sessionRaw" class="input h-36 font-mono text-xs" :placeholder="isGrok ? t('grok.placeholder') : isGemini ? t('gemini.placeholder') : isXPremiumPlan(targetPlan) ? t('xPremium.placeholder') : 'Session JSON (sessionToken)'" />
         </template>
         <template v-else>
           <input v-model="email" class="input" placeholder="email@outlook.com" />
@@ -407,6 +408,7 @@
 <script setup lang="ts">
 import { isXPremiumPlan, xPremiumCredential } from '../../lib/x-premium'
 import { grokCredential, isGrokPlan } from '../../lib/grok'
+import { geminiCredential, isGeminiPlan } from '../../lib/gemini'
 import { parseSessionJsonLenient } from '../../lib/batch-session'
 import { forceCloseStripeChallenge } from '../../lib/stripe-challenge'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -845,12 +847,17 @@ const targetPlan = computed(() => {
   // 新版卡台预览带 product：Grok / X 补上产品前缀再判，裸 premium_monthly 两家都有（2026-10-19 Grok 改名）。
   const product = String(previewInfo.value?.product || '').toLowerCase()
   if (plan && product === 'grok' && !plan.startsWith('grok_')) return 'grok_' + plan
+  if (plan && product === 'gemini' && !plan.startsWith('gemini_')) return 'gemini_' + plan
   if (plan && product === 'x' && !plan.startsWith('x_')) return 'x_' + plan
   return plan
 })
 const isGrok = computed(() => isGrokPlan(targetPlan.value) && !isXPremiumPlan(targetPlan.value))
-// GPT / X：必须有预检票；Grok：预检通过且没有阻塞项即可。
-const canRedeem = computed(() => isGrok.value ? !!grokSession.value && !grokBlockingReason.value : !!preflightToken.value)
+// Gemini 与 Grok 同构:凭据式(Google rt)、无 preflight 票、复用 grokSession/grokBlockingReason 做凭据 holder。
+const isGemini = computed(() => isGeminiPlan(targetPlan.value))
+// 凭据式产品(Grok/Gemini)共用判据:预检通过且无阻塞即可;GPT/X 必须有预检票。
+const isCredProduct = computed(() => isGrok.value || isGemini.value)
+// GPT / X：必须有预检票；Grok/Gemini：预检通过且没有阻塞项即可。
+const canRedeem = computed(() => isCredProduct.value ? !!grokSession.value && !grokBlockingReason.value : !!preflightToken.value)
 
 const subscriptionStatusText = computed(() => {
   if (account.value.subscriptionHasActive === true) return '有效'
@@ -1228,7 +1235,7 @@ async function doPreview() {
     // 兼容多种返回结构
     redemptionToken.value = data.redemption_token || data.data?.redemption_token || data.token || ''
     previewInfo.value = data.data || data
-    if (isXPremiumPlan(targetPlan.value) || isGrokPlan(targetPlan.value)) credMode.value = 'session'
+    if (isXPremiumPlan(targetPlan.value) || isGrokPlan(targetPlan.value) || isGeminiPlan(targetPlan.value)) credMode.value = 'session'
     if (!redemptionToken.value) {
       // 有的实现把 token 放在顶层其它字段
       error.value = '未返回 redemption_token，请检查卡台 Base 配置'
@@ -1250,9 +1257,11 @@ async function doPreflight() {
     let credential: any
     if (credMode.value === 'session') {
       const session = isGrok.value ? grokCredential(sessionRaw.value)
+        : isGemini.value ? geminiCredential(sessionRaw.value)
         : isXPremiumPlan(targetPlan.value) ? xPremiumCredential(sessionRaw.value) : extractSession(sessionRaw.value)
       if (!session) {
         error.value = isGrok.value ? t('grok.invalid')
+          : isGemini.value ? t('gemini.invalid')
           : isXPremiumPlan(targetPlan.value) ? t('xPremium.invalid') : '请粘贴完整 Session JSON（必须含 sessionToken），不能只用 Access Token'
         return
       }
@@ -1279,8 +1288,8 @@ async function doPreflight() {
       return
     }
     const body = data?.data && typeof data.data === 'object' ? data.data : data || {}
-    if (isGrok.value) {
-      // Grok：预检只查账号，没有 preflight_token。blocking_reason 是卡台的拦截判据（登录态失效 / 已有订阅等）。
+    if (isCredProduct.value) {
+      // Grok/Gemini：预检只查账号，没有 preflight_token。blocking_reason 是卡台的拦截判据（登录态失效 / 已有订阅等）。
       grokSession.value = credential.session
       grokBlockingReason.value = String(body.blocking_reason || '')
       applyAccountFromPreflight(data)
@@ -1336,7 +1345,7 @@ async function doRedeem() {
     const client_request_id = 'web-' + deviceId.slice(0, 8) + '-' + Date.now()
     const { r, data } = await api('/api/v1/public/cdk/redeem', {
       method: 'POST',
-      body: JSON.stringify(isGrok.value
+      body: JSON.stringify(isCredProduct.value
         ? { redemption_token: redemptionToken.value, credential: { mode: 'session', session: grokSession.value }, client_request_id }
         : { redemption_token: redemptionToken.value, preflight_token: preflightToken.value, client_request_id }),
     })
@@ -1436,9 +1445,11 @@ function resetAll() {
 const presentationCopy = computed(() => publicContent.value!.copy)
 const credentialPage = computed(() => isGrok.value
   ? { url: 'https://grok.com/', label: t('rp.openGrok') }
-  : isXPremiumPlan(targetPlan.value)
-    ? { url: 'https://x.com/', label: t('rp.openX') }
-    : { url: 'https://chatgpt.com/api/auth/session', label: t('rp.openSession') })
+  : isGemini.value
+    ? { url: 'https://one.google.com/', label: t('rp.openGemini') }
+    : isXPremiumPlan(targetPlan.value)
+      ? { url: 'https://x.com/', label: t('rp.openX') }
+      : { url: 'https://chatgpt.com/api/auth/session', label: t('rp.openSession') })
 const appearanceVerifyStart = ref<number | null>(null)
 watch(busy, (on) => { if (on && step.value === 1) appearanceVerifyStart.value = Date.now() })
 function parseTime(v: unknown): number | null {

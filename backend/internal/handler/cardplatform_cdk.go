@@ -98,7 +98,7 @@ func CardPlatformBalance(c *gin.Context) {
 // issueProduct 发码产品线：显式传入优先（只认 gpt / x / grok / claude），否则按档位键推断。
 func issueProduct(explicit, plan string) string {
 	switch p := strings.ToLower(strings.TrimSpace(explicit)); p {
-	case "gpt", "x", "grok", "claude":
+	case "gpt", "x", "grok", "claude", "gemini":
 		return p
 	}
 	if cardplatform.IsXPremiumPlan(plan) {
@@ -109,6 +109,9 @@ func issueProduct(explicit, plan string) string {
 	}
 	if cardplatform.IsClaudePlan(plan) {
 		return "claude"
+	}
+	if cardplatform.IsGeminiPlan(plan) {
+		return "gemini"
 	}
 	return "gpt"
 }
@@ -151,6 +154,9 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	}
 	if product == "claude" {
 		plan = cardplatform.ClaudeBarePlan(plan)
+	}
+	if product == "gemini" {
+		plan = cardplatform.GeminiBarePlan(plan)
 	}
 	if cli := cardplatform.NewFromSettings(); cli != nil {
 		if plans, err := cli.GetPlans(c.Request.Context(), product); err == nil && plans != nil && len(plans.Plans) > 0 {
@@ -225,6 +231,9 @@ func CardPlatformIssueCDKs(c *gin.Context) {
 	}
 	if product == "claude" {
 		wirePlan = cardplatform.ClaudeIssuePlan(plan)
+	}
+	if product == "gemini" {
+		wirePlan = cardplatform.GeminiIssuePlan(plan)
 	}
 	if len(issuePrefs) > 0 {
 		res, err = cli.IssueCDKs(c.Request.Context(), wirePlan, req.Count, idem, issuePrefs[0])

@@ -264,7 +264,7 @@ type PlansResponse struct {
 // 卡台返回 PaymentConfig：version + plans[key].serviceFeeUsdMinor
 func (c *Client) GetPlans(ctx context.Context, products ...string) (*PlansResponse, error) {
 	product := "gpt"
-	if len(products) > 0 && (products[0] == "x" || products[0] == "grok" || products[0] == "claude") {
+	if len(products) > 0 && (products[0] == "x" || products[0] == "grok" || products[0] == "claude" || products[0] == "gemini") {
 		product = products[0]
 	}
 	path := "/gpt-direct/plans"
