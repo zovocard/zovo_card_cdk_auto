@@ -53,6 +53,7 @@
             <el-radio-button value="x">X Premium</el-radio-button>
             <el-radio-button value="grok">Grok</el-radio-button>
             <el-radio-button value="claude">Claude</el-radio-button>
+            <el-radio-button value="gemini">Gemini</el-radio-button>
           </el-radio-group>
         </div>
         <div class="issue-row issue-row--top">
@@ -557,7 +558,7 @@ const tableMaxHeight = computed(() => Math.max(420, viewportH.value - 150))
 function sortById(a: any, b: any) { return (Number(a.id) || 0) - (Number(b.id) || 0) }
 function sortByFee(a: any, b: any) { return (Number(a.fee_amount_minor) || 0) - (Number(b.fee_amount_minor) || 0) }
 
-const PRODUCT_LABELS: Record<string, string> = { gpt: 'ChatGPT', x: 'X Premium', grok: 'Grok', claude: 'Claude' }
+const PRODUCT_LABELS: Record<string, string> = { gpt: 'ChatGPT', x: 'X Premium', grok: 'Grok', claude: 'Claude', gemini: 'Gemini' }
 
 // 档位清单、展示顺序、能不能卖，全部由服务端下发的 registry 决定。
 // ★代理侧不再维护任何档位清单，也不再自己判断可见性★
